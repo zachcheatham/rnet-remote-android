@@ -13,7 +13,6 @@ import android.view.MenuItem;
 
 public class RemoteActivity extends AppCompatActivity
 {
-    private ZonePagerAdapter zonesPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -23,14 +22,6 @@ public class RemoteActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        zonesPagerAdapter = new ZonePagerAdapter(getSupportFragmentManager());
-
-        ViewPager viewPager = (ViewPager) findViewById(R.id.container);
-        viewPager.setAdapter(zonesPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override
@@ -44,38 +35,11 @@ public class RemoteActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int id = item.getItemId();
-        if (id == R.id.action_settings)
+        if (id == R.id.action_change_server)
         {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public class ZonePagerAdapter extends FragmentPagerAdapter
-    {
-
-        public ZonePagerAdapter(FragmentManager fm)
-        {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position)
-        {
-            return ZoneFragment.newInstance((short) position);
-        }
-
-        @Override
-        public int getCount()
-        {
-            return 6;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position)
-        {
-            return "Zone " + (position + 1);
-        }
     }
 }
