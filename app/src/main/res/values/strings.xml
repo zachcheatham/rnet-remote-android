@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">RNET Remote</string>
-    <string name="action_change_server">Change Link</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_change_server">Change Controller</string>
     <string name="action_power_all">On/Off All</string>
+    <string name="action_enter_ip">Manually enter address…</string>
+    <string name="dialog_change_server">Select Controller</string>
+    <string name="notice_searching_links">Scanning for controllers…</string>
 </resources>

@@ -1,17 +1,14 @@
 package zachcheatham.me.rnetremote;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class RemoteActivity extends AppCompatActivity
+import java.net.InetAddress;
+
+public class MainActivity extends AppCompatActivity implements SelectServerDialogFragment.SelectServerListener
 {
 
     @Override
@@ -37,9 +34,18 @@ public class RemoteActivity extends AppCompatActivity
         int id = item.getItemId();
         if (id == R.id.action_change_server)
         {
+            SelectServerDialogFragment dialog = new SelectServerDialogFragment();
+            dialog.setCancelable(false);
+            dialog.show(getSupportFragmentManager(), "SelectServerDialogFragment");
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void serverSelected(String name, InetAddress address, int port)
+    {
+
     }
 }
