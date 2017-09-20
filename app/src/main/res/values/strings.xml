@@ -5,5 +5,7 @@
     <string name="action_power_all">On/Off All</string>
     <string name="action_enter_ip">Manually enter address…</string>
     <string name="dialog_change_server">Select Controller</string>
+    <string name="notice_connecting">Connecting</string>
+    <string name="notice_connecting_long">Unable to connect. Retrying…</string>
     <string name="notice_searching_links">Scanning for controllers…</string>
 </resources>
