@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RNET Remote</string>
+    <string name="app_name">RNet Remote</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_change_server">Change Controller</string>
     <string name="action_power_all">On/Off All</string>

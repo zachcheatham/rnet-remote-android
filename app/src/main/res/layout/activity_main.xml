@@ -6,6 +6,7 @@
                                                  android:layout_width="match_parent"
                                                  android:layout_height="match_parent"
                                                  android:fitsSystemWindows="true"
+                                                 android:animateLayoutChanges="true"
                                                  tools:context="zachcheatham.me.rnetremote.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -30,36 +31,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:animateLayoutChanges="true"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:animateLayoutChanges="true">
 
         <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            />
 
         <TextView
             android:id="@+id/text_view_connecting_placeholder_notice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/generic_spacing"
-            android:layout_weight="1"
+            android:layout_marginTop="@dimen/placeholder_spacing_group"
             android:text="@string/notice_connecting_long"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?android:attr/textColorSecondaryNoDisable"
+            android:textColor="@color/colorPlaceholderText"
             android:visibility="gone"/>
 
         <Button
             android:id="@+id/button_connecting_placeholder_connect"
-            android:layout_width="match_parent"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
-            android:paddingLeft="@dimen/button_horizontal_padding"
-            android:paddingRight="@dimen/button_horizontal_padding"
             android:text="@string/action_change_server"
             android:textColor="@color/colorAccent"
             android:visibility="gone"/>

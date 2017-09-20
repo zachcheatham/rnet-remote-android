@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +74,7 @@ public class SelectServerDialogFragment extends DialogFragment implements Server
     {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getContext(), R.style.AppTheme_Dialog));
         builder.setTitle(R.string.dialog_change_server);
 
         View view = inflater.inflate(R.layout.dialog_fragment_select_server, null);

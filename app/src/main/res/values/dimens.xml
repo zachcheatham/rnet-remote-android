@@ -12,7 +12,5 @@
     <dimen name="list_text_left_padding">16dp</dimen>
     <dimen name="list_single_line_text_size">16sp</dimen>
 
-    <dimen name="button_horizontal_padding">16dp</dimen>
-
-    <dimen name="generic_spacing">24dp</dimen>
+    <dimen name="placeholder_spacing_group">32dp</dimen>
 </resources>
