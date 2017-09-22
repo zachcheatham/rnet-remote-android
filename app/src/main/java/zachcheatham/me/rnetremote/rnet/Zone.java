@@ -2,6 +2,9 @@ package zachcheatham.me.rnetremote.rnet;
 
 import android.util.Log;
 
+import zachcheatham.me.rnetremote.rnet.packet.PacketC2SZonePower;
+import zachcheatham.me.rnetremote.rnet.packet.PacketC2SZoneVolume;
+
 public class Zone
 {
     private static final String LOG_TAG = "Zone";
@@ -15,7 +18,7 @@ public class Zone
     private int volume;
     private int sourceId;
 
-    public Zone(int controllerId, int zoneId, RNetServer server)
+    Zone(int controllerId, int zoneId, RNetServer server)
     {
         this.controllerId = controllerId;
         this.zoneId = zoneId;
@@ -36,8 +39,8 @@ public class Zone
     {
         this.name = name;
 
-        for (RNetServer.ZonesListener listener : server.getZoneListeners())
-            listener.zoneChanged(this);
+        for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
 
         Log.i(LOG_TAG, String.format("Zone #%d-%d renamed to %s", controllerId, zoneId, name));
 
@@ -58,13 +61,11 @@ public class Zone
 
         Log.i(LOG_TAG, String.format("Zone #%d-%d power set %s", controllerId, zoneId, power ? "on" : "off"));
 
-        for (RNetServer.ZonesListener listener : server.getZoneListeners())
-            listener.zoneChanged(this);
+        for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.POWER);
 
         if (!setRemotely)
-        {
-            // TODO Send power packet
-        }
+            server.new SendPacketTask().execute(new PacketC2SZonePower(controllerId, zoneId, power));
     }
 
     public boolean getPowered()
@@ -78,13 +79,11 @@ public class Zone
 
         Log.i(LOG_TAG, String.format("Zone #%d-%d volume set to %d", controllerId, zoneId, volume));
 
-        for (RNetServer.ZonesListener listener : server.getZoneListeners())
-            listener.zoneChanged(this);
+        for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.VOLUME);
 
         if (!setRemotely)
-        {
-            // TODO Send volume packet
-        }
+            server.new SendPacketTask().execute(new PacketC2SZoneVolume(controllerId, zoneId, volume));
     }
 
     public int getVolume()
@@ -98,12 +97,12 @@ public class Zone
 
         Log.i(LOG_TAG, String.format("Zone #%d-%d source set to #%d", controllerId, zoneId, sourceId));
 
-        for (RNetServer.ZonesListener listener : server.getZoneListeners())
-            listener.zoneChanged(this);
+        for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.SOURCE);
 
         if (!setRemotely)
         {
-            // TODO send source packet
+
         }
     }
 

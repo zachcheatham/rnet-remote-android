@@ -1,5 +1,6 @@
 package zachcheatham.me.rnetremote.rnet;
 
+import android.os.AsyncTask;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -29,11 +30,11 @@ public class RNetServer
     private static final String LOG_TAG = "RNetServer";
 
     private final String clientName;
-    private final InetAddress address;
-    private final int port;
     private final StateListener stateListener;
 
     private SocketChannel channel;
+    private InetAddress address;
+    private int port;
 
     private final ByteBuffer pendingBuffer = ByteBuffer.allocate(255);
     private byte pendingPacketType = 0x00;
@@ -45,20 +46,36 @@ public class RNetServer
     private SparseArray<Source> sources = new SparseArray<>();
     private SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
 
-    private List<ZonesListener> zoneListeners = new ArrayList<>();
+    private List<ZonesListener> zonesListeners = new ArrayList<>();
 
-    public RNetServer(String clientName, InetAddress address, int port, StateListener stateListener)
+    public RNetServer(String clientName, StateListener stateListener)
     {
         this.clientName = clientName;
-        this.address = address;
-        this.port = port;
         this.stateListener = stateListener;
 
         pendingBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
-    public void run()
+    public void setConnectionInfo(InetAddress address, int port)
     {
+        this.address = address;
+        this.port = port;
+    }
+
+    private void run()
+    {
+        if (channel != null)
+        {
+            throw new IllegalStateException("RNetServer already running.");
+        }
+
+        if (port == 0 || address == null)
+        {
+            throw new IllegalStateException("Connection information hasn't been set yet.");
+        }
+
+        cleanUp();
+
         run = true;
 
         try
@@ -87,9 +104,13 @@ public class RNetServer
         {
             stateListener.disconnected(run);
         }
+
+        sentName = false;
+        serialConnected = false;
+        channel = null;
     }
 
-    public void sendPacket(RNetPacket packet)
+    private void sendPacket(RNetPacket packet)
     {
         try
         {
@@ -119,25 +140,72 @@ public class RNetServer
         return sentName;
     }
 
+    public boolean hasSentName()
+    {
+        return sentName;
+    }
+
     public boolean isSerialConnected()
     {
         return serialConnected;
     }
 
+    public Zone getZone(int controllerId, int zoneId)
+    {
+        if (zones.get(controllerId) != null)
+        {
+            return zones.get(controllerId).get(zoneId);
+        }
+
+        return null;
+    }
+
+    public boolean anyZonesOn()
+    {
+        for (int i = 0; i < zones.size(); i++)
+        {
+            int ctrllrId = zones.keyAt(i);
+            for (int c = 0; c < zones.get(ctrllrId).size(); c++)
+            {
+                int zoneId = zones.get(ctrllrId).keyAt(c);
+                if (zones.get(ctrllrId).get(zoneId).getPowered())
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean allZonesOn()
+    {
+        for (int i = 0; i < zones.size(); i++)
+        {
+            int ctrllrId = zones.keyAt(i);
+            for (int c = 0; c < zones.get(ctrllrId).size(); c++)
+            {
+                int zoneId = zones.get(ctrllrId).keyAt(c);
+                if (!zones.get(ctrllrId).get(zoneId).getPowered())
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
     public void addZoneListener(ZonesListener listener)
     {
-        zoneListeners.add(listener);
+        zonesListeners.add(listener);
     }
 
-    public List<ZonesListener> getZoneListeners()
+    List<ZonesListener> getZonesListeners()
     {
-        return zoneListeners;
+        return zonesListeners;
     }
 
-    public void removeZoneListener(ZonesListener listener)
+    /*public void removeZoneListener(ZonesListener listener)
     {
-        zoneListeners.remove(listener);
-    }
+        zonesListeners.remove(listener);
+    }*/
 
     private void readChannel()
     {
@@ -214,7 +282,8 @@ public class RNetServer
             case PacketS2CRNetStatus.ID:
             {
                 PacketS2CRNetStatus packet = new PacketS2CRNetStatus(buffer);
-                this.setRNetConnected(packet.getRNetConnected());
+                serialConnected = packet.getRNetConnected();
+                stateListener.serialStateChanged(packet.getRNetConnected());
                 break;
             }
             case PacketS2CSourceDeleted.ID:
@@ -254,7 +323,7 @@ public class RNetServer
 
                     Log.i(LOG_TAG, String.format("Created zone #%d-%d", packet.getControllerId(), packet.getZoneId()));
 
-                    for (ZonesListener listener : zoneListeners)
+                    for (ZonesListener listener : zonesListeners)
                         listener.zoneAdded(zone);
                 }
 
@@ -275,7 +344,7 @@ public class RNetServer
                         Log.i(LOG_TAG, String.format("Deleted controller #%d", packet.getControllerId()));
                     }
 
-                    for (ZonesListener listener : zoneListeners)
+                    for (ZonesListener listener : zonesListeners)
                         listener.zoneRemoved(packet.getControllerId(), packet.getZoneId());
                 }
                 break;
@@ -329,10 +398,41 @@ public class RNetServer
         }
     }
 
-    private void setRNetConnected(boolean rNetConnected)
+    private void cleanUp()
     {
-        serialConnected = rNetConnected;
-        stateListener.serialStateChanged(rNetConnected);
+        for (int i = 0; i < zones.size(); i++)
+        {
+            int k = zones.keyAt(i);
+            zones.get(k).clear();
+        }
+        zones.clear();
+        sources.clear();
+        serialConnected = false;
+        sentName = false;
+
+        for (ZonesListener listener : zonesListeners)
+            listener.dataReset();
+    }
+
+    public class ServerRunnable implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            RNetServer.this.run();
+        }
+    }
+
+    public class SendPacketTask extends AsyncTask<RNetPacket, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(RNetPacket... rNetPackets)
+        {
+            for (RNetPacket packet : rNetPackets)
+                sendPacket(packet);
+
+            return null;
+        }
     }
 
     public interface StateListener
@@ -345,8 +445,14 @@ public class RNetServer
 
     public interface ZonesListener
     {
+        void dataReset();
         void zoneAdded(Zone zone);
-        void zoneChanged(Zone zone);
+        void zoneChanged(Zone zone, boolean setRemotely, ZoneChangeType type);
         void zoneRemoved(int controllerId, int zoneId);
+    }
+
+    public enum ZoneChangeType
+    {
+        NAME, POWER, VOLUME, SOURCE
     }
 }

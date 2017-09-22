@@ -8,5 +8,9 @@
     <string name="notice_connecting">Connecting</string>
     <string name="notice_connecting_long">Unable to connect. Retrying…</string>
     <string name="notice_searching_links">Scanning for controllers…</string>
-    <string name="notice_serial_disconnected">No serial connection. The unit may be powered off.</string>
+    <string name="notice_serial_disconnected">No serial connection. The unit could be off.</string>
+    <string name="placeholder">placeholder</string>
+    <string name="set_all_on_off">Zone Power</string>
+    <string name="action_all_on">All On</string>
+    <string name="action_all_off">All Off</string>
 </resources>

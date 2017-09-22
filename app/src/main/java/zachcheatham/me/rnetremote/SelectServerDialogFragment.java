@@ -19,7 +19,8 @@ import android.view.ViewGroup;
 
 import java.net.InetAddress;
 
-public class SelectServerDialogFragment extends DialogFragment implements ServersAdapter.ItemClickListener
+public class SelectServerDialogFragment extends DialogFragment
+        implements ServersAdapter.ItemClickListener
 
 {
     private SelectServerListener listener;
@@ -74,7 +75,8 @@ public class SelectServerDialogFragment extends DialogFragment implements Server
     {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getContext(), R.style.AppTheme_Dialog));
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                new ContextThemeWrapper(getContext(), R.style.AppTheme_Dialog));
         builder.setTitle(R.string.dialog_change_server);
 
         View view = inflater.inflate(R.layout.dialog_fragment_select_server, null);
@@ -97,7 +99,8 @@ public class SelectServerDialogFragment extends DialogFragment implements Server
         }
         else
         {
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) recyclerView.getLayoutParams();
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) recyclerView
+                    .getLayoutParams();
             params.setMargins(0, 0, 0, (int) getResources().getDimension(R.dimen.dialog_padding));
 
             params = (ViewGroup.MarginLayoutParams) searchingIndicator.getLayoutParams();

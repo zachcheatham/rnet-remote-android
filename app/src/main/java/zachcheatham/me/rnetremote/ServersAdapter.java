@@ -30,16 +30,17 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position)
+    public void onBindViewHolder(ViewHolder holder, int position)
     {
         RNetServer rNetServer = servers.get(position);
         holder.textView.setText(rNetServer.name);
 
+        final int finalPosition = position;
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                clickListener.onItemClick(position);
+                clickListener.onItemClick(finalPosition);
             }
         });
     }
