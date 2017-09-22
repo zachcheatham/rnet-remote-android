@@ -8,4 +8,5 @@
     <string name="notice_connecting">Connecting</string>
     <string name="notice_connecting_long">Unable to connect. Retrying…</string>
     <string name="notice_searching_links">Scanning for controllers…</string>
+    <string name="notice_serial_disconnected">No serial connection. The unit may be powered off.</string>
 </resources>
