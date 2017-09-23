@@ -145,13 +145,10 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         case R.id.action_power_all:
             if (rNetServer.allZonesOn())
             {
-                Log.d(LOG_TAG, "All zones were on.");
                 rNetServer.new SendPacketTask().execute(new PacketC2SAllPower(false));
             }
             else if (rNetServer.anyZonesOn())
             {
-                Log.d(LOG_TAG, "Some zones were on.");
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_Dialog));
                 builder.setTitle(R.string.set_all_on_off);
                 builder.setNegativeButton(R.string.action_all_off,
@@ -175,8 +172,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             }
             else
             {
-                Log.d(LOG_TAG, "Some zones were off.");
-
                 rNetServer.new SendPacketTask().execute(new PacketC2SAllPower(true));
             }
 
@@ -346,7 +341,10 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
                         @Override
                         public void run()
                         {
-                            connectToServer(serverName, serverAddress, serverPort);
+                            if (!rNetServer.isRunning())
+                            {
+                                connectToServer(serverName, serverAddress, serverPort);
+                            }
                         }
                     }, 5000);
                 }

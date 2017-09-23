@@ -63,66 +63,6 @@ public class RNetServer
         this.port = port;
     }
 
-    private void run()
-    {
-        if (channel != null)
-        {
-            throw new IllegalStateException("RNetServer already running.");
-        }
-
-        if (port == 0 || address == null)
-        {
-            throw new IllegalStateException("Connection information hasn't been set yet.");
-        }
-
-        cleanUp();
-
-        run = true;
-
-        try
-        {
-            channel = SocketChannel.open();
-            channel.connect(new InetSocketAddress(address, port));
-
-            readChannel();
-
-            try
-            {
-                channel.close();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            stateListener.connectError();
-        }
-
-        if (sentName)
-        {
-            stateListener.disconnected(run);
-        }
-
-        sentName = false;
-        serialConnected = false;
-        channel = null;
-    }
-
-    private void sendPacket(RNetPacket packet)
-    {
-        try
-        {
-            channel.write(ByteBuffer.wrap(packet.getData()));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     public void disconnect()
     {
         run = false;
@@ -134,6 +74,11 @@ public class RNetServer
         {
             e.printStackTrace();
         }
+    }
+
+    public boolean isRunning()
+    {
+        return run;
     }
 
     public boolean isConnected()
@@ -207,6 +152,55 @@ public class RNetServer
     {
         zonesListeners.remove(listener);
     }*/
+
+    private void run()
+    {
+        if (channel != null)
+        {
+            throw new IllegalStateException("RNetServer already running.");
+        }
+
+        if (port == 0 || address == null)
+        {
+            throw new IllegalStateException("Connection information hasn't been set yet.");
+        }
+
+        cleanUp();
+
+        run = true;
+
+        try
+        {
+            channel = SocketChannel.open();
+            channel.connect(new InetSocketAddress(address, port));
+
+            readChannel();
+
+            try
+            {
+                channel.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            stateListener.connectError();
+        }
+
+        if (sentName)
+        {
+            stateListener.disconnected(run);
+        }
+
+        sentName = false;
+        serialConnected = false;
+        channel = null;
+        run = false;
+    }
 
     private void readChannel()
     {
@@ -385,6 +379,18 @@ public class RNetServer
             }
             default:
                 Log.w(LOG_TAG, String.format("Received invalid packet %d", packetType));
+        }
+    }
+
+    private void sendPacket(RNetPacket packet)
+    {
+        try
+        {
+            channel.write(ByteBuffer.wrap(packet.getData()));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 
