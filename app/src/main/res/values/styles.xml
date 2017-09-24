@@ -19,4 +19,8 @@
     <style name="AppTheme.DialogOverlay" parent="ThemeOverlay.AppCompat.Dialog">
         <item name="android:background">@color/colorDialog</item>
     </style>
+
+    <style name="AppTheme.SourceListOverlay" parent="ThemeOverlay.AppCompat">
+        <item name="colorControlActivated">@color/colorSelectedListItem</item>
+    </style>
 </resources>

@@ -3,12 +3,13 @@ package zachcheatham.me.rnetremote;
 import android.app.Activity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseArray;
+import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -20,7 +21,6 @@ import net.cachapa.expandablelayout.ExpandableLayout;
 import java.util.ArrayList;
 
 import zachcheatham.me.rnetremote.rnet.RNetServer;
-import zachcheatham.me.rnetremote.rnet.Source;
 import zachcheatham.me.rnetremote.rnet.Zone;
 
 public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
@@ -32,6 +32,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private final RNetServer server;
     private final ArrayList<int[]> zoneIndex = new ArrayList<>();
     private ArrayAdapter<String> sourcesAdapter;
+    private RecyclerView recyclerView;
     
     ZonesAdapter(Activity a, RNetServer server)
     {
@@ -39,7 +40,20 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         this.server = server;
         server.addZoneListener(this);
 
-        sourcesAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_activated_1, new String[0]);
+        sourcesAdapter = new ArrayAdapter<>(new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay), android.R.layout.simple_list_item_activated_1, new ArrayList<String>());
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView)
+    {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView)
+    {
+        this.recyclerView = null;
     }
 
     @Override
@@ -52,7 +66,8 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(ZonesAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ZonesAdapter.ViewHolder holder, int position)
+    {
         int[] zoneInfo = zoneIndex.get(position);
         Zone zone = server.getZone(zoneInfo[0], zoneInfo[1]);
 
@@ -65,8 +80,10 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         else
             holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
 
-        holder.sources.setAdapter(sourcesAdapter);
+        if (holder.sources.getAdapter() == null)
+            holder.sources.setAdapter(sourcesAdapter);
 
+        holder.sources.setItemChecked(server.getSources().indexOfKey(zone.getSourceId()), true);
     }
 
     @Override
@@ -166,21 +183,28 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public void sourcesChanged()
     {
-        sourcesAdapter.clear();
-        for (int i = 0; i < server.getSources().size(); i++)
+        activity.runOnUiThread(new Runnable()
         {
-            int key = server.getSources().keyAt(i);
-            sourcesAdapter.add(server.getSources().get(key).getName());
-        }
-        sourcesAdapter.notifyDataSetChanged();
+            @Override
+            public void run()
+            {
+                sourcesAdapter.clear();
+                for (int i = 0; i < server.getSources().size(); i++)
+                {
+                    int key = server.getSources().keyAt(i);
+                    sourcesAdapter.add(server.getSources().get(key).getName());
+                }
+            }
+        });
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener,
-            View.OnClickListener
+            View.OnClickListener, ExpandableLayout.OnExpansionUpdateListener,
+            AdapterView.OnItemClickListener
     {
         TextView name;
         ImageButton power;
-        ExpandableLayout extraSettings;
+        ExpandableLayout sourcesContainer;
         ListView sources;
         View primaryDivider;
         SeekBar seekBar;
@@ -189,19 +213,21 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         {
             super(itemView);
             name = itemView.findViewById(R.id.name);
-            extraSettings = itemView.findViewById(R.id.sources_container);
-            primaryDivider = itemView.findViewById(R.id.primary_divider);
-
-            seekBar = itemView.findViewById(R.id.volume);
             power = itemView.findViewById(R.id.power);
 
+            primaryDivider = itemView.findViewById(R.id.primary_divider);
+            sourcesContainer = itemView.findViewById(R.id.sources_container);
+            seekBar = itemView.findViewById(R.id.volume);
             sources = itemView.findViewById(R.id.sources);
 
-            View header = itemView.findViewById(R.id.header);
-            header.setOnClickListener(this);
             power.setOnClickListener(this);
             seekBar.setOnSeekBarChangeListener(this);
             sources.setAdapter(sourcesAdapter);
+            sources.setOnItemClickListener(this);
+            sourcesContainer.setOnExpansionUpdateListener(this);
+
+            View header = itemView.findViewById(R.id.header);
+            header.setOnClickListener(this);
         }
 
         @Override
@@ -229,21 +255,37 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             switch (view.getId())
             {
                 case R.id.header:
-                    if (extraSettings.isExpanded())
+                    if (sourcesContainer.isExpanded())
                     {
-                        extraSettings.collapse();
+                        sourcesContainer.collapse();
                         primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDivider));
                     }
                     else
                     {
-                        extraSettings.expand();
+                        sourcesContainer.expand();
                         primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDividerDarker));
                     }
-                    return;
+                    break;
                 case R.id.power:
                     zone.setPower(!zone.getPowered(), false);
-                    return;
+                    break;
             }
+        }
+
+        @Override
+        public void onExpansionUpdate(float expansionFraction, int state)
+        {
+            recyclerView.scrollToPosition(getAdapterPosition());
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+        {
+            int[] id = zoneIndex.get(getAdapterPosition());
+            Zone zone = server.getZone(id[0], id[1]);
+
+            int sourceId = server.getSources().keyAt(i);
+            zone.setSourceId(sourceId, false);
         }
     }
 }

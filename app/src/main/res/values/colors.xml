@@ -6,6 +6,8 @@
     <color name="colorAccent">#f9a825</color>
     <color name="colorDialog">#0F1D29</color>
 
+    <color name="colorSelectedListItem">#309F6404</color>
+
     <color name="colorCard">#0f1d29</color>
     <color name="colorCardDivider">#0C1823</color>
     <color name="colorCardDividerDarker">#071521</color>
