@@ -76,7 +76,7 @@ public class SelectServerDialogFragment extends DialogFragment
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(
-                new ContextThemeWrapper(getContext(), R.style.AppTheme_Dialog));
+                new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
         builder.setTitle(R.string.dialog_change_server);
 
         View view = inflater.inflate(R.layout.dialog_fragment_select_server, null);

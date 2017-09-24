@@ -136,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        int id = item.getItemId();
         switch (item.getItemId())
         {
         case R.id.action_change_server:
@@ -149,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             }
             else if (rNetServer.anyZonesOn())
             {
-                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_Dialog));
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay));
                 builder.setTitle(R.string.set_all_on_off);
                 builder.setNegativeButton(R.string.action_all_off,
                         new DialogInterface.OnClickListener() {
