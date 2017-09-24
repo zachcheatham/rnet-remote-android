@@ -11,9 +11,11 @@
     <dimen name="list_text_right_padding">16dp</dimen>
     <dimen name="list_text_left_padding">16dp</dimen>
     <dimen name="list_single_line_text_size">16sp</dimen>
+    <dimen name="list_icon_text_margin">32dp</dimen>
 
     <dimen name="card_margin">8dp</dimen>
     <dimen name="card_content_padding">20dp</dimen>
+    <dimen name="card_content_padding_radio">16dp</dimen>
     <dimen name="card_content_padding_bottom">16dp</dimen>
     <dimen name="card_action_height">52dp</dimen>
     <dimen name="card_action_padding">8dp</dimen>

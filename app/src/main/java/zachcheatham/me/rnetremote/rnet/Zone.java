@@ -3,6 +3,7 @@ package zachcheatham.me.rnetremote.rnet;
 import android.util.Log;
 
 import zachcheatham.me.rnetremote.rnet.packet.PacketC2SZonePower;
+import zachcheatham.me.rnetremote.rnet.packet.PacketC2SZoneSource;
 import zachcheatham.me.rnetremote.rnet.packet.PacketC2SZoneVolume;
 
 public class Zone
@@ -101,9 +102,7 @@ public class Zone
             listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.SOURCE);
 
         if (!setRemotely)
-        {
-
-        }
+            server.new SendPacketTask().execute(new PacketC2SZoneSource(controllerId, zoneId, sourceId));
     }
 
     public int getSourceId()

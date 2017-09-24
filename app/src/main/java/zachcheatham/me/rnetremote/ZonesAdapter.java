@@ -1,22 +1,26 @@
 package zachcheatham.me.rnetremote;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.ListView;
+
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
 
 import zachcheatham.me.rnetremote.rnet.RNetServer;
+import zachcheatham.me.rnetremote.rnet.Source;
 import zachcheatham.me.rnetremote.rnet.Zone;
 
 public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
@@ -27,12 +31,15 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private final Activity activity;
     private final RNetServer server;
     private final ArrayList<int[]> zoneIndex = new ArrayList<>();
-
+    private ArrayAdapter<String> sourcesAdapter;
+    
     ZonesAdapter(Activity a, RNetServer server)
     {
         this.activity = a;
         this.server = server;
         server.addZoneListener(this);
+
+        sourcesAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_activated_1, new String[0]);
     }
 
     @Override
@@ -40,13 +47,12 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     {
         View view = LayoutInflater.from(parent.getContext())
                                   .inflate(R.layout.item_zone, parent, false);
-
+        
         return new ZonesAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ZonesAdapter.ViewHolder holder, int position)
-    {
+    public void onBindViewHolder(ZonesAdapter.ViewHolder holder, int position) {
         int[] zoneInfo = zoneIndex.get(position);
         Zone zone = server.getZone(zoneInfo[0], zoneInfo[1]);
 
@@ -58,6 +64,9 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorAccent));
         else
             holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
+
+        holder.sources.setAdapter(sourcesAdapter);
+
     }
 
     @Override
@@ -154,32 +163,45 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         });
     }
 
+    @Override
+    public void sourcesChanged()
+    {
+        sourcesAdapter.clear();
+        for (int i = 0; i < server.getSources().size(); i++)
+        {
+            int key = server.getSources().keyAt(i);
+            sourcesAdapter.add(server.getSources().get(key).getName());
+        }
+        sourcesAdapter.notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener,
             View.OnClickListener
     {
         TextView name;
         ImageButton power;
-        View extraSettings;
+        ExpandableLayout extraSettings;
+        ListView sources;
         View primaryDivider;
-        View secondaryDivider;
         SeekBar seekBar;
-
 
         ViewHolder(View itemView)
         {
             super(itemView);
             name = itemView.findViewById(R.id.name);
-            extraSettings = itemView.findViewById(R.id.extra_settings);
+            extraSettings = itemView.findViewById(R.id.sources_container);
             primaryDivider = itemView.findViewById(R.id.primary_divider);
-            secondaryDivider = itemView.findViewById(R.id.secondary_divider);
 
             seekBar = itemView.findViewById(R.id.volume);
             power = itemView.findViewById(R.id.power);
+
+            sources = itemView.findViewById(R.id.sources);
 
             View header = itemView.findViewById(R.id.header);
             header.setOnClickListener(this);
             power.setOnClickListener(this);
             seekBar.setOnSeekBarChangeListener(this);
+            sources.setAdapter(sourcesAdapter);
         }
 
         @Override
@@ -201,27 +223,26 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         @Override
         public void onClick(View view)
         {
+            int[] id = zoneIndex.get(getAdapterPosition());
+            Zone zone = server.getZone(id[0], id[1]);
+
             switch (view.getId())
             {
-            case R.id.header:
-                if (extraSettings.getVisibility() == View.VISIBLE)
-                {
-                    extraSettings.setVisibility(View.GONE);
-                    secondaryDivider.setVisibility(View.GONE);
-                    primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDivider));
-                }
-                else
-                {
-                    extraSettings.setVisibility(View.VISIBLE);
-                    secondaryDivider.setVisibility(View.VISIBLE);
-                    primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDividerDarker));
-                }
-                break;
-            case R.id.power:
-                int[] id = zoneIndex.get(getAdapterPosition());
-                Zone zone = server.getZone(id[0], id[1]);
-                zone.setPower(!zone.getPowered(), false);
-                break;
+                case R.id.header:
+                    if (extraSettings.isExpanded())
+                    {
+                        extraSettings.collapse();
+                        primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDivider));
+                    }
+                    else
+                    {
+                        extraSettings.expand();
+                        primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDividerDarker));
+                    }
+                    return;
+                case R.id.power:
+                    zone.setPower(!zone.getPowered(), false);
+                    return;
             }
         }
     }

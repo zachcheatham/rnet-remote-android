@@ -138,6 +138,11 @@ public class RNetServer
         return true;
     }
 
+    public SparseArray<Source> getSources()
+    {
+        return sources;
+    }
+
     public void addZoneListener(ZonesListener listener)
     {
         zonesListeners.add(listener);
@@ -285,7 +290,11 @@ public class RNetServer
             {
                 PacketS2CSourceDeleted packet = new PacketS2CSourceDeleted(buffer);
                 sources.remove(packet.getSourceId());
+
                 Log.i(LOG_TAG, String.format("Source #%d deleted.", packet.getSourceId()));
+
+                for (ZonesListener listener : zonesListeners)
+                    listener.sourcesChanged();
             }
             case PacketS2CSourceName.ID:
             {
@@ -295,10 +304,13 @@ public class RNetServer
                 {
                     source = new Source(packet.getSourceId(), this);
                     sources.put(packet.getSourceId(), source);
+
                     Log.i(LOG_TAG, String.format("Source #%d created", packet.getSourceId()));
                 }
                 source.setName(packet.getSourceName(), true);
                 Log.i(LOG_TAG, String.format("Source #%d renamed to %s", packet.getSourceId(), packet.getSourceName()));
+                for (ZonesListener listener : zonesListeners)
+                    listener.sourcesChanged();
                 break;
             }
             case PacketS2CZoneName.ID:
@@ -456,6 +468,7 @@ public class RNetServer
         void zoneAdded(Zone zone);
         void zoneChanged(Zone zone, boolean setRemotely, ZoneChangeType type);
         void zoneRemoved(int controllerId, int zoneId);
+        void sourcesChanged();
     }
 
     public enum ZoneChangeType
