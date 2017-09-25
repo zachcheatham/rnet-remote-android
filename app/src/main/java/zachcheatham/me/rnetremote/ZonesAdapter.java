@@ -76,9 +76,20 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             holder.seekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
 
         if (zone.getPowered())
+        {
             holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorAccent));
+            holder.seekBar.setEnabled(true);
+        }
         else
+        {
             holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
+            holder.seekBar.setEnabled(false);
+            if (holder.sourcesContainer.isExpanded())
+            {
+                holder.sourcesContainer.collapse();
+                holder.primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDivider));
+            }
+        }
 
         if (holder.sources.getAdapter() == null)
             holder.sources.setAdapter(sourcesAdapter);
@@ -260,7 +271,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                         sourcesContainer.collapse();
                         primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDivider));
                     }
-                    else
+                    else if (zone.getPowered())
                     {
                         sourcesContainer.expand();
                         primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDividerDarker));
