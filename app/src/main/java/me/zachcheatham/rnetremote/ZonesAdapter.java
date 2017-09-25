@@ -28,18 +28,28 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private static final String LOG_TAG = "ZonesAdapter";
 
     private final Activity activity;
-    private final RNetServer server;
     private final ArrayList<int[]> zoneIndex = new ArrayList<>();
+    private RNetServer server;
     private ArrayAdapter<String> sourcesAdapter;
     private RecyclerView recyclerView;
     
-    ZonesAdapter(Activity a, RNetServer server)
+    ZonesAdapter(Activity a)
     {
         this.activity = a;
-        this.server = server;
-        server.addZoneListener(this);
-
         sourcesAdapter = new ArrayAdapter<>(new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay), android.R.layout.simple_list_item_activated_1, new ArrayList<String>());
+    }
+
+    public void setServer(RNetServer server)
+    {
+        if (this.server != null)
+            server.removeZoneListener(this);
+
+        dataReset();
+
+        if (server != null)
+            server.addZoneListener(this);
+
+        this.server = server;
     }
 
     @Override
@@ -53,6 +63,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     public void onDetachedFromRecyclerView(RecyclerView recyclerView)
     {
         this.recyclerView = null;
+
     }
 
     @Override
@@ -99,14 +110,16 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public int getItemCount()
     {
-        return zoneIndex.size();
+        if (server == null)
+            return 0;
+        else
+            return zoneIndex.size();
     }
 
     @Override
     public void dataReset()
     {
         zoneIndex.clear();
-
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run()

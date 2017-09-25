@@ -31,7 +31,6 @@ public class RNetServer
     private static final String LOG_TAG = "RNetServer";
 
     private final String clientName;
-    private final StateListener stateListener;
 
     private SocketChannel channel;
     private InetAddress address;
@@ -47,23 +46,22 @@ public class RNetServer
     private SparseArray<Source> sources = new SparseArray<>();
     private SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
 
+    private List<StateListener> stateListeners = new ArrayList<>();
     private List<ZonesListener> zonesListeners = new ArrayList<>();
 
-    public RNetServer(String clientName, StateListener stateListener)
+    public RNetServer(String clientName)
     {
         this.clientName = clientName;
-        this.stateListener = stateListener;
-
         pendingBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
-    public void setConnectionInfo(InetAddress address, int port)
+    void setConnectionInfo(InetAddress address, int port)
     {
         this.address = address;
         this.port = port;
     }
 
-    public void disconnect()
+    void disconnect()
     {
         run = false;
         try
@@ -83,7 +81,7 @@ public class RNetServer
 
     public boolean isConnected()
     {
-        return sentName;
+        return channel != null && channel.isConnected();
     }
 
     public boolean hasSentName()
@@ -143,6 +141,21 @@ public class RNetServer
         return sources;
     }
 
+    public void addStateListener(StateListener listener)
+    {
+        stateListeners.add(listener);
+    }
+
+    List<StateListener> getStateListeners()
+    {
+        return stateListeners;
+    }
+
+    public void removeStateListener(StateListener listener)
+    {
+        stateListeners.remove(listener);
+    }
+
     public void addZoneListener(ZonesListener listener)
     {
         zonesListeners.add(listener);
@@ -153,10 +166,10 @@ public class RNetServer
         return zonesListeners;
     }
 
-    /*public void removeZoneListener(ZonesListener listener)
+    public void removeZoneListener(ZonesListener listener)
     {
         zonesListeners.remove(listener);
-    }*/
+    }
 
     private void run()
     {
@@ -170,14 +183,21 @@ public class RNetServer
             throw new IllegalStateException("Connection information hasn't been set yet.");
         }
 
+        Log.d(LOG_TAG, "Server run started.");
+
         cleanUp();
 
         run = true;
+
+        for (StateListener listener : stateListeners)
+            listener.connectionInitiated();
 
         try
         {
             channel = SocketChannel.open();
             channel.connect(new InetSocketAddress(address, port));
+
+            Log.d(LOG_TAG, "Server socket opened.");
 
             readChannel();
 
@@ -185,26 +205,27 @@ public class RNetServer
             {
                 channel.close();
             }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            catch (IOException ignored) {}
+
+            if (sentName)
+                for (StateListener listener : stateListeners)
+                    listener.disconnected(run);
+            else
+                for (StateListener listener : stateListeners)
+                    listener.connectError();
         }
         catch (IOException e)
         {
-            e.printStackTrace();
-            stateListener.connectError();
-        }
-
-        if (sentName)
-        {
-            stateListener.disconnected(run);
+            for (StateListener listener : stateListeners)
+                listener.connectError();
         }
 
         sentName = false;
         serialConnected = false;
         channel = null;
         run = false;
+
+        Log.d(LOG_TAG, "Server run ended.");
     }
 
     private void readChannel()
@@ -266,10 +287,7 @@ public class RNetServer
                 }
             }
         }
-        catch (IOException e)
-        {
-            //e.printStackTrace();
-        }
+        catch (IOException ignored) {}
     }
 
     private void constructAndHandlePacket(byte packetType, ByteBuffer buffer)
@@ -283,7 +301,8 @@ public class RNetServer
             {
                 PacketS2CRNetStatus packet = new PacketS2CRNetStatus(buffer);
                 serialConnected = packet.getRNetConnected();
-                stateListener.serialStateChanged(packet.getRNetConnected());
+                for (StateListener listener : stateListeners)
+                    listener.serialStateChanged(packet.getRNetConnected());
                 break;
             }
             case PacketS2CSourceDeleted.ID:
@@ -413,7 +432,8 @@ public class RNetServer
         if (!sentName)
         {
             sentName = true;
-            stateListener.connected();
+            for (StateListener listener : stateListeners)
+                listener.connected();
         }
     }
 
@@ -433,7 +453,7 @@ public class RNetServer
             listener.dataReset();
     }
 
-    public class ServerRunnable implements Runnable
+    class ServerRunnable implements Runnable
     {
         @Override
         public void run()
@@ -456,6 +476,7 @@ public class RNetServer
 
     public interface StateListener
     {
+        void connectionInitiated();
         void connectError();
         void connected();
         void serialStateChanged(boolean connected);

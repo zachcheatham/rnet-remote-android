@@ -1,10 +1,12 @@
 package me.zachcheatham.rnetremote;
 
-import android.bluetooth.BluetoothAdapter;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.IBinder;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,29 +23,59 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import me.zachcheatham.rnetremote.rnet.RNetServer;
+import me.zachcheatham.rnetremote.rnet.RNetServerService;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
 
 public class MainActivity extends AppCompatActivity implements SelectServerDialogFragment.SelectServerListener,
         RNetServer.StateListener, View.OnClickListener
 {
-    private static final String PREFS = "rnet_remote";
     private static final String LOG_TAG = "MainActivity";
 
-    private String serverName = null;
-    private InetAddress serverAddress = null;
-    private int serverPort;
-    
-    private RNetServer rNetServer;
-    private boolean needServer = true;
-
     private RecyclerView zoneList;
+    private ZonesAdapter zoneAdapter;
     private View connectingPlaceholder;
     private TextView connectingPlaceholderText;
     private Button connectingPlaceholderButton;
     private Snackbar serialConnectionSnackbar;
+
+    private boolean boundToServerService = false;
+    private RNetServer server;
+    private RNetServerService serverService;
+    private ServiceConnection serviceConnection = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+        {
+            RNetServerService.LocalBinder binder = (RNetServerService.LocalBinder) iBinder;
+            serverService = binder.getService();
+            server = serverService.getServer();
+            boundToServerService = true;
+
+            if (!serverService.hasServerInfo())
+                promptSelectServer(false);
+            else
+                serverService.startServerConnection();
+
+            server.addStateListener(MainActivity.this);
+            zoneAdapter.setServer(server);
+
+            Log.d(LOG_TAG, "BOUND TO SERVER SERVICE");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName)
+        {
+            boundToServerService = false;
+            serverService = null;
+            server = null;
+
+            zoneAdapter.setServer(null);
+
+            Log.d(LOG_TAG, "UNBOUND FROM SERVER SERVICE");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,40 +86,17 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        zoneAdapter = new ZonesAdapter(this);
+
         zoneList = (RecyclerView) findViewById(R.id.list_zones);
         zoneList.setLayoutManager(new LinearLayoutManager(this));
         ((SimpleItemAnimator) zoneList.getItemAnimator()).setSupportsChangeAnimations(false);
+        zoneList.setAdapter(zoneAdapter);
 
         connectingPlaceholder = findViewById(R.id.connecting_placeholder);
         connectingPlaceholderText = (TextView) findViewById(R.id.text_view_connecting_placeholder_notice);
         connectingPlaceholderButton = (Button) findViewById(R.id.button_connecting_placeholder_connect);
         connectingPlaceholderButton.setOnClickListener(this);
-
-        rNetServer = new RNetServer(getBluetoothName(), this);
-        zoneList.setAdapter(new ZonesAdapter(MainActivity.this, rNetServer));
-
-        SharedPreferences settings = getSharedPreferences(PREFS, 0);
-
-        serverName = settings.getString("server_name", "");
-        if (serverName.length() > 0)
-        {
-            String addressName = settings.getString("server_address", "");
-            serverPort = settings.getInt("server_port", 0);
-
-            try
-            {
-                serverAddress = InetAddress.getByName(addressName);
-            }
-            catch (UnknownHostException e)
-            {
-                promptSelectServer(false);
-            }
-        }
-        else
-        {
-            serverName = null;
-            promptSelectServer(false);
-        }
     }
 
     @Override
@@ -95,9 +104,8 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     {
         super.onStop();
 
-        needServer = false;
-        if (rNetServer.isConnected())
-            rNetServer.disconnect();
+        server.removeStateListener(this);
+        unbindService(serviceConnection);
     }
 
     @Override
@@ -105,11 +113,8 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     {
         super.onStart();
 
-        needServer = true;
-        if (!rNetServer.isConnected() && serverName != null)
-        {
-            connectToServer(serverName, serverAddress, serverPort);
-        }
+        Intent intent = new Intent(this, RNetServerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -122,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        boolean connected = rNetServer.hasSentName();
+        boolean connected = boundToServerService && server.hasSentName();
 
         MenuItem allPower = menu.findItem(R.id.action_power_all);
         allPower.setVisible(connected);
@@ -142,11 +147,11 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             promptSelectServer(true);
             return true;
         case R.id.action_power_all:
-            if (rNetServer.allZonesOn())
+            if (server.allZonesOn())
             {
-                rNetServer.new SendPacketTask().execute(new PacketC2SAllPower(false));
+                server.new SendPacketTask().execute(new PacketC2SAllPower(false));
             }
-            else if (rNetServer.anyZonesOn())
+            else if (server.anyZonesOn())
             {
                 AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay));
                 builder.setTitle(R.string.set_all_on_off);
@@ -155,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
                             {
-                                rNetServer.new SendPacketTask().execute(new PacketC2SAllPower(false));
+                                server.new SendPacketTask().execute(new PacketC2SAllPower(false));
                             }
                         });
                 builder.setPositiveButton(R.string.action_all_on,
@@ -163,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i)
                             {
-                                rNetServer.new SendPacketTask().execute(new PacketC2SAllPower(true));
+                                server.new SendPacketTask().execute(new PacketC2SAllPower(true));
                             }
                         });
 
@@ -171,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             }
             else
             {
-                rNetServer.new SendPacketTask().execute(new PacketC2SAllPower(true));
+                server.new SendPacketTask().execute(new PacketC2SAllPower(true));
             }
 
             return true;
@@ -215,17 +220,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         dialog.show(getSupportFragmentManager(), "SelectServerDialogFragment");
     }
 
-    private void connectToServer(String name, InetAddress address, int port)
-    {
-        //noinspection ConstantConditions
-        getSupportActionBar().setTitle(name);
-
-        setConnectingVisible(true);
-
-        rNetServer.setConnectionInfo(address, port);
-        new Thread(rNetServer.new ServerRunnable()).start();
-    }
-
     @Override
     public void onClick(View view)
     {
@@ -238,52 +232,36 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     @Override
     public void serverSelected(String name, InetAddress address, int port)
     {
-        SharedPreferences settings = getSharedPreferences(PREFS, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("server_name", name);
-        editor.putString("server_address", address.getHostAddress());
-        editor.putInt("server_port", port);
-
-        editor.apply();
-
-        if (rNetServer.isConnected())
-            rNetServer.disconnect();
-
         setConnectingError(false);
-        connectToServer(name, address, port);
+        serverService.stopServerConnection();
+        serverService.setConnectionInfo(name, address, port);
+        serverService.startServerConnection();
+    }
 
-        this.serverName = name;
-        this.serverAddress = address;
-        this.serverPort = port;
+    @Override
+    public void connectionInitiated()
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                getSupportActionBar().setTitle(serverService.getServerName());
+                setConnectingVisible(true);
+            }
+        });
     }
 
     @Override
     public void connectError()
     {
-        Log.i("MainActivity", "Unable to connect.");
-
-        if (needServer)
+        this.runOnUiThread(new Runnable()
         {
-            this.runOnUiThread(new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    setConnectingError(true);
-
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            if (needServer)
-                                connectToServer(serverName, serverAddress, serverPort);
-                        }
-                    }, 5000);
-                }
-            });
-        }
+                setConnectingError(true);
+            }
+        });
     }
 
     @Override
@@ -299,9 +277,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
                 invalidateOptionsMenu();
             }
         });
-
-        if (!needServer)
-            rNetServer.disconnect();
     }
 
     @Override
@@ -323,30 +298,15 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     @Override
     public void disconnected(final boolean unexpected)
     {
-        invalidateOptionsMenu();
-
         runOnUiThread(new Runnable() {
             @Override
             public void run()
             {
-                if (unexpected && needServer)
-                {
-                    setConnectingVisible(true);
+                if (unexpected)
                     setConnectingError(true);
+                setConnectingVisible(true);
 
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            if (!rNetServer.isRunning())
-                            {
-                                connectToServer(serverName, serverAddress, serverPort);
-                            }
-                        }
-                    }, 5000);
-                }
+                invalidateOptionsMenu();
             }
         });
 
@@ -355,10 +315,5 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             serialConnectionSnackbar.dismiss();
             serialConnectionSnackbar = null;
         }
-    }
-
-    private static String getBluetoothName()
-    {
-        return BluetoothAdapter.getDefaultAdapter().getName();
     }
 }
