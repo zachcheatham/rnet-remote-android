@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote.rnet.packet;
+package me.zachcheatham.rnetremote.rnet.packet;
 
 public class PacketS2CName extends RNetPacket
 {

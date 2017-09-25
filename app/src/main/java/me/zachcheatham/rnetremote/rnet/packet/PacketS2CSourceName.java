@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote.rnet.packet;
+package me.zachcheatham.rnetremote.rnet.packet;
 
 import java.nio.ByteBuffer;
 

@@ -1,10 +1,10 @@
-package zachcheatham.me.rnetremote.rnet;
+package me.zachcheatham.rnetremote.rnet;
 
 import android.util.Log;
 
-import zachcheatham.me.rnetremote.rnet.packet.PacketC2SZonePower;
-import zachcheatham.me.rnetremote.rnet.packet.PacketC2SZoneSource;
-import zachcheatham.me.rnetremote.rnet.packet.PacketC2SZoneVolume;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZonePower;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneSource;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneVolume;
 
 public class Zone
 {

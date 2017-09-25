@@ -1,16 +1,16 @@
-package zachcheatham.me.rnetremote.rnet.packet;
+package me.zachcheatham.rnetremote.rnet.packet;
 
 import java.nio.ByteBuffer;
 
-public class PacketS2CZoneSource extends RNetPacket
+public class PacketS2CZoneVolume extends RNetPacket
 {
-    public static final byte ID = 0x0A;
+    public static final byte ID = 0x09;
 
     private int controllerId;
     private int zoneId;
-    private int sourceId;
+    private int volume;
 
-    public PacketS2CZoneSource(ByteBuffer buffer)
+    public PacketS2CZoneVolume(ByteBuffer buffer)
     {
         super(buffer);
     }
@@ -26,7 +26,7 @@ public class PacketS2CZoneSource extends RNetPacket
     {
         controllerId = buffer.get();
         zoneId = buffer.get();
-        sourceId = buffer.get();
+        volume = buffer.get();
     }
 
     public int getControllerId()
@@ -39,8 +39,8 @@ public class PacketS2CZoneSource extends RNetPacket
         return zoneId;
     }
 
-    public int getSourceId()
+    public int getVolume()
     {
-        return sourceId;
+        return volume;
     }
 }

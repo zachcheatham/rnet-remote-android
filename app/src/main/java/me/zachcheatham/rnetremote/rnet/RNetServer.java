@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote.rnet;
+package me.zachcheatham.rnetremote.rnet;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -14,17 +14,17 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import zachcheatham.me.rnetremote.rnet.packet.PacketC2SName;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CName;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CRNetStatus;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CSourceDeleted;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CSourceName;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CZoneDeleted;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CZoneName;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CZonePower;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CZoneSource;
-import zachcheatham.me.rnetremote.rnet.packet.PacketS2CZoneVolume;
-import zachcheatham.me.rnetremote.rnet.packet.RNetPacket;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SName;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CName;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CRNetStatus;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceDeleted;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceName;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneDeleted;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneName;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZonePower;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneSource;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneVolume;
+import me.zachcheatham.rnetremote.rnet.packet.RNetPacket;
 
 public class RNetServer
 {

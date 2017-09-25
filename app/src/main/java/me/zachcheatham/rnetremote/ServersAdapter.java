@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote;
+package me.zachcheatham.rnetremote;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

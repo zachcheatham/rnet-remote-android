@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote.rnet;
+package me.zachcheatham.rnetremote.rnet;
 
 public class Source
 {

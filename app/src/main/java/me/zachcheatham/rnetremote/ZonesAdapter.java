@@ -1,9 +1,8 @@
-package zachcheatham.me.rnetremote;
+package me.zachcheatham.rnetremote;
 
 import android.app.Activity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +19,8 @@ import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
 
-import zachcheatham.me.rnetremote.rnet.RNetServer;
-import zachcheatham.me.rnetremote.rnet.Zone;
+import me.zachcheatham.rnetremote.rnet.RNetServer;
+import me.zachcheatham.rnetremote.rnet.Zone;
 
 public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         implements RNetServer.ZonesListener
@@ -211,7 +210,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
     class ViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener,
             View.OnClickListener, ExpandableLayout.OnExpansionUpdateListener,
-            AdapterView.OnItemClickListener
+            AdapterView.OnItemClickListener, View.OnLongClickListener
     {
         TextView name;
         ImageButton power;
@@ -223,9 +222,9 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         ViewHolder(View itemView)
         {
             super(itemView);
+
             name = itemView.findViewById(R.id.name);
             power = itemView.findViewById(R.id.power);
-
             primaryDivider = itemView.findViewById(R.id.primary_divider);
             sourcesContainer = itemView.findViewById(R.id.sources_container);
             seekBar = itemView.findViewById(R.id.volume);
@@ -239,6 +238,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
             View header = itemView.findViewById(R.id.header);
             header.setOnClickListener(this);
+            header.setOnLongClickListener(this);
         }
 
         @Override
@@ -281,6 +281,12 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                     zone.setPower(!zone.getPowered(), false);
                     break;
             }
+        }
+
+        @Override
+        public boolean onLongClick(View view)
+        {
+            return false;
         }
 
         @Override

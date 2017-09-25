@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote;
+package me.zachcheatham.rnetremote;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

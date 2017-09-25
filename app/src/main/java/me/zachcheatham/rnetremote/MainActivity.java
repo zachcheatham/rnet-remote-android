@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote;
+package me.zachcheatham.rnetremote;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
@@ -23,8 +23,8 @@ import android.widget.TextView;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import zachcheatham.me.rnetremote.rnet.RNetServer;
-import zachcheatham.me.rnetremote.rnet.packet.PacketC2SAllPower;
+import me.zachcheatham.rnetremote.rnet.RNetServer;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
 
 public class MainActivity extends AppCompatActivity implements SelectServerDialogFragment.SelectServerListener,
         RNetServer.StateListener, View.OnClickListener

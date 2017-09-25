@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote.ui;
+package me.zachcheatham.rnetremote.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
