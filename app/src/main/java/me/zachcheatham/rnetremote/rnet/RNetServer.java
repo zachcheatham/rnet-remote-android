@@ -7,7 +7,6 @@ import android.util.SparseArray;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
@@ -49,7 +48,7 @@ public class RNetServer
     private List<StateListener> stateListeners = new ArrayList<>();
     private List<ZonesListener> zonesListeners = new ArrayList<>();
 
-    public RNetServer(String clientName)
+    RNetServer(String clientName)
     {
         this.clientName = clientName;
         pendingBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -79,7 +78,7 @@ public class RNetServer
         return run;
     }
 
-    public boolean isConnected()
+    boolean isConnected()
     {
         return channel != null && channel.isConnected();
     }
@@ -89,9 +88,14 @@ public class RNetServer
         return sentName;
     }
 
-    public boolean isSerialConnected()
+    /*public boolean isSerialConnected()
     {
         return serialConnected;
+    }*/
+
+    public SparseArray<SparseArray<Zone>> getZones()
+    {
+        return zones;
     }
 
     public Zone getZone(int controllerId, int zoneId)
@@ -144,11 +148,6 @@ public class RNetServer
     public void addStateListener(StateListener listener)
     {
         stateListeners.add(listener);
-    }
-
-    List<StateListener> getStateListeners()
-    {
-        return stateListeners;
     }
 
     public void removeStateListener(StateListener listener)

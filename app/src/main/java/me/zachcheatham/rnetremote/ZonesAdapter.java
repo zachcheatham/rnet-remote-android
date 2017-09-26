@@ -1,8 +1,10 @@
 package me.zachcheatham.rnetremote;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +24,7 @@ import java.util.ArrayList;
 import me.zachcheatham.rnetremote.rnet.RNetServer;
 import me.zachcheatham.rnetremote.rnet.Zone;
 
-public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
+class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         implements RNetServer.ZonesListener
 {
     private static final String LOG_TAG = "ZonesAdapter";
@@ -39,17 +41,44 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         sourcesAdapter = new ArrayAdapter<>(new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay), android.R.layout.simple_list_item_activated_1, new ArrayList<String>());
     }
 
-    public void setServer(RNetServer server)
+    void setServer(RNetServer server)
     {
         if (this.server != null)
             server.removeZoneListener(this);
 
-        dataReset();
-
         if (server != null)
+        {
             server.addZoneListener(this);
 
+            zoneIndex.clear();
+            SparseArray<SparseArray<Zone>> zones = server.getZones();
+            for (int i = 0; i < zones.size(); i++)
+            {
+                int ctrllrId = zones.keyAt(i);
+                for (int c = 0; c < zones.get(ctrllrId).size(); c++)
+                {
+                    int zoneId = zones.get(ctrllrId).keyAt(c);
+                    zoneIndex.add(new int[]{ctrllrId, zoneId});
+                }
+            }
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    notifyDataSetChanged();
+                }
+            });
+        }
+
         this.server = server;
+    }
+
+    private void compareZoneIndex()
+    {
+        ArrayList<int[]> zoneIndex = new ArrayList<>();
+        SparseArray<SparseArray<Zone>> zones = server.getZones();
+        //for (int i
     }
 
     @Override
@@ -299,6 +328,15 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         @Override
         public boolean onLongClick(View view)
         {
+            int[] id = zoneIndex.get(getAdapterPosition());
+            Zone zone = server.getZone(id[0], id[1]);
+
+            Intent intent = new Intent(activity, ZoneSettingsActivity.class);
+            intent.putExtra("cid", zone.getControllerId());
+            intent.putExtra("zid", zone.getZoneId());
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
+
             return false;
         }
 

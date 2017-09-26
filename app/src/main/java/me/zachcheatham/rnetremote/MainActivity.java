@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
 
             if (!serverService.hasServerInfo())
                 promptSelectServer(false);
-            else
+            else if (!server.isRunning())
                 serverService.startServerConnection();
 
             server.addStateListener(MainActivity.this);
@@ -67,11 +67,12 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         @Override
         public void onServiceDisconnected(ComponentName componentName)
         {
+            server.removeStateListener(MainActivity.this);
+            zoneAdapter.setServer(null);
+
             boundToServerService = false;
             serverService = null;
             server = null;
-
-            zoneAdapter.setServer(null);
 
             Log.d(LOG_TAG, "UNBOUND FROM SERVER SERVICE");
         }
@@ -97,15 +98,9 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         connectingPlaceholderText = (TextView) findViewById(R.id.text_view_connecting_placeholder_notice);
         connectingPlaceholderButton = (Button) findViewById(R.id.button_connecting_placeholder_connect);
         connectingPlaceholderButton.setOnClickListener(this);
-    }
 
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-
-        server.removeStateListener(this);
-        unbindService(serviceConnection);
+        //noinspection ConstantConditions
+        getSupportActionBar().setTitle("");
     }
 
     @Override
@@ -115,6 +110,14 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
 
         Intent intent = new Intent(this, RNetServerService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+
+        unbindService(serviceConnection);
     }
 
     @Override
@@ -242,6 +245,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     public void connectionInitiated()
     {
         runOnUiThread(new Runnable() {
+            @SuppressWarnings("ConstantConditions")
             @Override
             public void run()
             {
