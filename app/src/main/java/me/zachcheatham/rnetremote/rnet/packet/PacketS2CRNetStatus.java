@@ -22,7 +22,7 @@ public class PacketS2CRNetStatus extends RNetPacket
     @Override
     void parseData()
     {
-        connected = buffer.get() == 0x01;
+        connected = readUnsignedByte() == 1;
     }
 
     public boolean getRNetConnected()

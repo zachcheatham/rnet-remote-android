@@ -37,8 +37,8 @@ public class RNetServer
     private int port;
 
     private final ByteBuffer pendingBuffer = ByteBuffer.allocate(255);
-    private byte pendingPacketType = 0x00;
-    private short pendingRemainingBytes = -1;
+    private int pendingPacketType = 0;
+    private int pendingRemainingBytes = -1;
 
     private boolean run;
     private boolean sentName = false;
@@ -252,8 +252,8 @@ public class RNetServer
                     {
                         if (pendingRemainingBytes == -1)
                         {
-                            pendingPacketType = incomingBuffer.get();
-                            pendingRemainingBytes = incomingBuffer.get();
+                            pendingPacketType = incomingBuffer.get() & 0xff;
+                            pendingRemainingBytes = incomingBuffer.get() & 0xff;
                             pendingBuffer.limit(pendingRemainingBytes);
                         }
                         else
@@ -277,7 +277,7 @@ public class RNetServer
                             constructAndHandlePacket(pendingPacketType, pendingBuffer);
                             pendingBuffer.flip();
                             pendingRemainingBytes = -1;
-                            pendingPacketType = 0x00;
+                            pendingPacketType = 0;
                             pendingBuffer.clear();
                             pendingBuffer.rewind();
                         }
@@ -290,7 +290,7 @@ public class RNetServer
         catch (IOException ignored) {}
     }
 
-    private void constructAndHandlePacket(byte packetType, ByteBuffer buffer)
+    private void constructAndHandlePacket(int packetType, ByteBuffer buffer)
     {
         switch (packetType)
         {
@@ -462,6 +462,11 @@ public class RNetServer
 
         for (ZonesListener listener : zonesListeners)
             listener.dataReset();
+    }
+
+    public void deleteZone(int controllerId, int zoneId)
+    {
+
     }
 
     class ServerRunnable implements Runnable

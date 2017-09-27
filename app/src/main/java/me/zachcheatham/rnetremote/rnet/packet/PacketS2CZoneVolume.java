@@ -24,9 +24,9 @@ public class PacketS2CZoneVolume extends RNetPacket
     @Override
     void parseData()
     {
-        controllerId = buffer.get();
-        zoneId = buffer.get();
-        volume = buffer.get();
+        controllerId = readUnsignedByte();
+        zoneId = readUnsignedByte();
+        volume = readUnsignedByte();
     }
 
     public int getControllerId()

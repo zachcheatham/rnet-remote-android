@@ -158,6 +158,8 @@ public class Zone
 
         Log.i(LOG_TAG, String.format("Zone #%d-%d parameter #%d set to %s", controllerId, zoneId, parameterId, value));
 
+        Log.d(LOG_TAG, server.getZonesListeners().size() + " listeners");
+
         for (RNetServer.ZonesListener listener : server.getZonesListeners())
             listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.PARAMETER);
 

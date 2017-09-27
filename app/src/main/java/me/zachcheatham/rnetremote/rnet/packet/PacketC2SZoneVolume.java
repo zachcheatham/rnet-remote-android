@@ -5,9 +5,9 @@ public class PacketC2SZoneVolume extends RNetPacket
     public PacketC2SZoneVolume(int controllerId, int zoneId, int volume)
     {
         super();
-        buffer.put((byte) controllerId);
-        buffer.put((byte) zoneId);
-        buffer.put((byte) volume);
+        writeUnsignedByte(controllerId);
+        writeUnsignedByte(zoneId);
+        writeUnsignedByte(volume);
     }
 
     @Override

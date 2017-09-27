@@ -27,9 +27,9 @@ public class PacketS2CZoneParameter extends RNetPacket
     @Override
     void parseData()
     {
-        controllerId = buffer.get();
-        zoneId = buffer.get();
-        parameterId = buffer.get();
+        controllerId = readUnsignedByte();
+        zoneId = readUnsignedByte();
+        parameterId = readUnsignedByte();
 
         switch (parameterId)
         {
@@ -41,10 +41,10 @@ public class PacketS2CZoneParameter extends RNetPacket
         case Zone.PARAMETER_DO_NOT_DISTURB:
         case Zone.PARAMETER_FRONT_AV_ENABLE:
         case Zone.PARAMETER_LOUDNESS:
-            parameterValue = (buffer.get() == 0x01);
+            parameterValue = (readUnsignedByte() == 1);
             break;
         default:
-            parameterValue = (int) buffer.get();
+            parameterValue = readUnsignedByte();
         }
     }
 

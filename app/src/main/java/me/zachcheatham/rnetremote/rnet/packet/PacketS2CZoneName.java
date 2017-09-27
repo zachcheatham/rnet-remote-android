@@ -24,8 +24,8 @@ public class PacketS2CZoneName extends RNetPacket
     @Override
     void parseData()
     {
-        controllerId = buffer.get();
-        zoneId = buffer.get();
+        controllerId = readUnsignedByte();
+        zoneId = readUnsignedByte();
         zoneName = readNTString();
     }
 

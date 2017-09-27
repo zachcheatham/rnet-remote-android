@@ -23,7 +23,7 @@ public class PacketS2CSourceName extends RNetPacket
     @Override
     void parseData()
     {
-        sourceID = buffer.get();
+        sourceID = readUnsignedByte();
         sourceName = readNTString();
     }
 

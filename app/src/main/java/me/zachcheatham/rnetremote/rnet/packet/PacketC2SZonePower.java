@@ -5,9 +5,9 @@ public class PacketC2SZonePower extends RNetPacket
     public PacketC2SZonePower(int controllerId, int zoneId, boolean power)
     {
         super();
-        buffer.put((byte) controllerId);
-        buffer.put((byte) zoneId);
-        buffer.put((byte) (power ? 0x01 : 0x00));
+        writeUnsignedByte(controllerId);
+        writeUnsignedByte(zoneId);
+        writeUnsignedByte(power ? 0x01 : 0x00);
     }
 
     @Override

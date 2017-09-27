@@ -22,7 +22,7 @@ public class PacketS2CSourceDeleted extends RNetPacket
     @Override
     void parseData()
     {
-        sourceId = buffer.get();
+        sourceId = readUnsignedByte();
     }
 
     public int getSourceId()

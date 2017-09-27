@@ -23,8 +23,8 @@ public class PacketS2CZoneDeleted extends RNetPacket
     @Override
     void parseData()
     {
-        controllerId = buffer.get();
-        zoneId = buffer.get();
+        controllerId = readUnsignedByte();
+        zoneId = readUnsignedByte();
     }
 
     public int getControllerId()

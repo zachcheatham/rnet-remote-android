@@ -7,9 +7,9 @@ public class PacketC2SZoneParameter extends RNetPacket
     public PacketC2SZoneParameter(int controllerId, int zoneId, int parameterId, Object value)
     {
         super();
-        buffer.put((byte) controllerId);
-        buffer.put((byte) zoneId);
-        buffer.put((byte) parameterId);
+        writeUnsignedByte(controllerId);
+        writeUnsignedByte(zoneId);
+        writeUnsignedByte(parameterId);
 
         switch (parameterId)
         {
@@ -21,10 +21,10 @@ public class PacketC2SZoneParameter extends RNetPacket
         case Zone.PARAMETER_DO_NOT_DISTURB:
         case Zone.PARAMETER_FRONT_AV_ENABLE:
         case Zone.PARAMETER_LOUDNESS:
-            buffer.put((byte) ((boolean) value ? 0x01 : 0x00));
+            writeUnsignedByte((boolean) value ? 0 : 1);
             break;
         default:
-            buffer.put((byte) (int) value);
+            writeUnsignedByte((int) value);
             break;
         }
     }

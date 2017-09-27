@@ -11,7 +11,7 @@ public abstract class RNetPacket
     {
         buffer = ByteBuffer.allocate(255);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put(getPacketID());
+        writeUnsignedByte(getPacketID());
     }
 
     RNetPacket(ByteBuffer buffer)
@@ -35,8 +35,19 @@ public abstract class RNetPacket
         return data;
     }
 
+    void writeUnsignedByte(int i)
+    {
+        buffer.put((byte) (i & 0xff));
+    }
+
+    int readUnsignedByte()
+    {
+        return (buffer.get() & 0xff);
+    }
+
     void writeNTString(String s)
     {
+
         buffer.put(s.getBytes());
         buffer.put((byte) 0x00);
     }

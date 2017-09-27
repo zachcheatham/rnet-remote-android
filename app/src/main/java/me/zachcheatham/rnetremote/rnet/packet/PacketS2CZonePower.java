@@ -24,9 +24,9 @@ public class PacketS2CZonePower extends RNetPacket
     @Override
     void parseData()
     {
-        controllerId = buffer.get();
-        zoneId = buffer.get();
-        power = buffer.get() == 0x01;
+        controllerId = readUnsignedByte();
+        zoneId = readUnsignedByte();
+        power = readUnsignedByte() == 1;
     }
 
     public int getControllerId()
