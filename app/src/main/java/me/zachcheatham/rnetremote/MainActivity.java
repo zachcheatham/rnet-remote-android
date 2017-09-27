@@ -14,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,13 +54,19 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
 
             if (!serverService.hasServerInfo())
                 promptSelectServer(false);
-            else if (!server.isRunning())
-                serverService.startServerConnection();
+            else
+            {
+                //noinspection ConstantConditions
+                getSupportActionBar().setTitle(serverService.getServerName());
+
+                if (!server.isRunning())
+                    serverService.startServerConnection();
+                else
+                    setConnectingVisible(!server.hasSentName());
+            }
 
             server.addStateListener(MainActivity.this);
             zoneAdapter.setServer(server);
-
-            Log.d(LOG_TAG, "BOUND TO SERVER SERVICE");
         }
 
         @Override
@@ -73,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             boundToServerService = false;
             serverService = null;
             server = null;
-
-            Log.d(LOG_TAG, "UNBOUND FROM SERVER SERVICE");
         }
     };
 
@@ -116,8 +119,11 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     protected void onStop()
     {
         super.onStop();
-
         unbindService(serviceConnection);
+
+        if (server != null)
+            server.removeStateListener(this);
+        zoneAdapter.setServer(null);
     }
 
     @Override

@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
 
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -19,14 +19,31 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     private static final String PREFS = "rnet_remote";
     private static final String LOG_TAG = "RNetServerService";
 
+    private final Handler handler = new Handler();
     private final IBinder binder = new LocalBinder();
-    private int serviceClients = 0;
 
+    private boolean started = false;
     private String name;
     private InetAddress address = null;
     private int port;
     private RNetServer server;
-    private Thread connectingThread;
+
+    private Runnable delayedShutdown = new Runnable() {
+        @Override
+        public void run()
+        {
+            RNetServerService.this.stopSelf();
+        }
+    };
+
+    private Runnable delayedReconnect = new Runnable() {
+        @Override
+        public void run()
+        {
+            if (!server.isRunning())
+                new Thread(server.new ServerRunnable()).start();
+        }
+    };
 
     @Override
     public void onCreate()
@@ -59,8 +76,12 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     @Override
     public void onDestroy()
     {
+        started = false;
+
         if (server.isRunning())
             server.disconnect();
+
+        handler.removeCallbacks(delayedReconnect);
 
         Log.d(LOG_TAG, "Service destroyed.");
     }
@@ -69,15 +90,28 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     @Override
     public IBinder onBind(Intent intent)
     {
-        serviceClients++;
+        if (!started)
+        {
+            started = true;
+            startService(new Intent(this, RNetServerService.class));
+        }
+
+        cancelShutdown();
         return binder;
+    }
+
+    @Override
+    public void onRebind(Intent intent)
+    {
+        super.onRebind(intent);
+        cancelShutdown();
     }
 
     @Override
     public boolean onUnbind(Intent intent)
     {
-        serviceClients--;
-        return super.onUnbind(intent);
+        handler.postDelayed(delayedShutdown, 1000);
+        return true;
     }
 
     @Override
@@ -88,26 +122,10 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     {
         Log.d(LOG_TAG, "Server connect error.");
 
-        if (connectingThread == null)
-        {
-            Log.d(LOG_TAG, "Will restart in 5 seconds.");
-            connectingThread = new Thread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    try
-                    {
-                        Thread.sleep(5000);
-                        if (serviceClients > 0 && !server.isRunning())
-                            new Thread(server.new ServerRunnable()).start();
-                    }
-                    catch (InterruptedException ignored) {}
-                    connectingThread = null;
-                }
-            });
-            connectingThread.start();
-        }
+        handler.removeCallbacks(delayedReconnect);
+        Log.d(LOG_TAG, "Will restart in 5 seconds.");
+
+        handler.postDelayed(delayedReconnect, 5000);
     }
 
     @Override
@@ -120,25 +138,11 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     public void disconnected(boolean unexpected)
     {
         Log.d(LOG_TAG, "Server disconnected.");
-        if (unexpected && connectingThread == null)
+        if (unexpected)
         {
+            handler.removeCallbacks(delayedReconnect);
             Log.d(LOG_TAG, "Will restart in 5 seconds.");
-            connectingThread = new Thread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    try
-                    {
-                        Thread.sleep(5000);
-                        if (serviceClients > 0 && !server.isRunning())
-                            new Thread(server.new ServerRunnable()).start();
-                    }
-                    catch (InterruptedException ignored) {}
-                    connectingThread = null;
-                }
-            });
-            connectingThread.start();
+            handler.postDelayed(delayedReconnect, 5000);
         }
     }
 
@@ -176,6 +180,7 @@ public class RNetServerService extends Service implements RNetServer.StateListen
 
     public void startServerConnection()
     {
+        handler.removeCallbacks(delayedReconnect);
         server.setConnectionInfo(address, port);
         new Thread(server.new ServerRunnable()).start();
     }
@@ -189,6 +194,11 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     public RNetServer getServer()
     {
         return server;
+    }
+
+    private void cancelShutdown()
+    {
+        handler.removeCallbacks(delayedShutdown);
     }
 
     private static String getBluetoothName()

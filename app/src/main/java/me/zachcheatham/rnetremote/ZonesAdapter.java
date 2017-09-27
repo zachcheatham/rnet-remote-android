@@ -44,7 +44,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     void setServer(RNetServer server)
     {
         if (this.server != null)
-            server.removeZoneListener(this);
+            this.server.removeZoneListener(this);
 
         if (server != null)
         {
@@ -60,6 +60,13 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                     int zoneId = zones.get(ctrllrId).keyAt(c);
                     zoneIndex.add(new int[]{ctrllrId, zoneId});
                 }
+            }
+
+            sourcesAdapter.clear();
+            for (int i = 0; i < server.getSources().size(); i++)
+            {
+                int key = server.getSources().keyAt(i);
+                sourcesAdapter.add(server.getSources().get(key).getName());
             }
 
             activity.runOnUiThread(new Runnable() {
@@ -149,6 +156,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     public void dataReset()
     {
         zoneIndex.clear();
+        sourcesAdapter.clear();
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run()

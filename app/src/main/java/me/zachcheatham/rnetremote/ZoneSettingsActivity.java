@@ -143,8 +143,12 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     protected void onStop()
     {
         super.onStop();
-
         unbindService(serviceConnection);
+        if (server != null)
+        {
+            server.removeStateListener(this);
+            server.removeZoneListener(this);
+        }
     }
 
     @Override
