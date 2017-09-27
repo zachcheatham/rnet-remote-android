@@ -91,7 +91,7 @@ public class SelectServerDialogFragment extends DialogFragment
 
         if (isCancelable())
         {
-            builder.setNegativeButton(R.string.action_cancel, new DialogInterface.OnClickListener()
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
             {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {}

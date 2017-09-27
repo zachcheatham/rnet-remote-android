@@ -7,7 +7,7 @@
                                                  android:layout_height="match_parent"
                                                  android:fitsSystemWindows="true"
                                                  android:animateLayoutChanges="true"
-                                                 tools:context="me.zachcheatham.rnetremote.MainActivity">
+                                                 tools:context="me.zachcheatham.rnetremote.ZoneSettingsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -26,6 +26,272 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorCard"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/linear_layout_divider"
+            android:orientation="vertical"
+            android:showDividers="middle|end">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_double_line_height_dense"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_zone_id"
+                    android:textAppearance="?attr/textAppearanceListItem"/>
+
+                <TextView
+                    android:id="@+id/text_zone_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="@dimen/list_line_text_secondary_size"
+                    tools:text="ZONE ID"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/item_name"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_double_line_height_dense"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_zone_name"
+                    android:textAppearance="?attr/textAppearanceListItem"/>
+
+                <TextView
+                    android:id="@+id/text_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="@dimen/list_line_text_secondary_size"
+                    tools:text="ZONE NAME"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/list_double_line_height_dense"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
+                android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_balance"
+                        android:textAppearance="?attr/textAppearanceListItem"/>
+
+                    <TextView
+                        android:id="@+id/text_balance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="@dimen/list_line_text_secondary_size"
+                        android:text="@string/default_zone_slider_value" />
+
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/seek_bar_balance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/list_slider_padding_top"
+                    android:progressTint="@android:color/transparent"
+                    android:progress="10"
+                    android:max="20"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/list_double_line_height_dense"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
+                android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_bass"
+                        android:textAppearance="?attr/textAppearanceListItem"/>
+
+                    <TextView
+                        android:id="@+id/text_bass"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="@dimen/list_line_text_secondary_size"
+                        android:text="@string/default_zone_slider_value"/>
+
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/seek_bar_bass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/list_slider_padding_top"
+                    android:progressTint="@android:color/transparent"
+                    android:progress="10"
+                    android:max="20"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/list_double_line_height_dense"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
+                android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_treble"
+                        android:textAppearance="?attr/textAppearanceListItem"/>
+
+                    <TextView
+                        android:id="@+id/text_treble"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="@dimen/list_line_text_secondary_size"
+                        android:text="@string/default_zone_slider_value"/>
+
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/seek_bar_treble"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/list_slider_padding_top"
+                    android:progressTint="@android:color/transparent"
+                    android:progress="10"
+                    android:max="20"
+                    />
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch_loudness"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_single_line_height"
+                android:text="@string/label_loudness"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:textAppearance="?attr/textAppearanceListItem"
+                android:foreground="?android:attr/selectableItemBackground"/>
+
+            <LinearLayout
+                android:id="@+id/item_party_mode"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_double_line_height_dense"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_party_mode"
+                    android:textAppearance="?attr/textAppearanceListItem"/>
+
+                <TextView
+                    android:id="@+id/text_party_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="@dimen/list_line_text_secondary_size"
+                    tools:text="PARTY MODE"/>
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch_do_not_disturb"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_single_line_height"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:text="@string/label_do_not_disturb"
+                android:textAppearance="?attr/textAppearanceListItem"
+                android:foreground="?android:attr/selectableItemBackground"/>
+
+            <LinearLayout
+                android:id="@+id/item_delete_zone"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_single_line_height"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_delete_zone"
+                    android:textAppearance="?attr/textAppearanceListItem"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 
 </android.support.design.widget.CoordinatorLayout>

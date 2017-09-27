@@ -20,6 +20,7 @@ import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneName;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneParameter;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZonePower;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneSource;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneVolume;
@@ -385,6 +386,17 @@ public class RNetServer
                 }
                 break;
             }
+            case PacketS2CZoneParameter.ID:
+            {
+                PacketS2CZoneParameter packet = new PacketS2CZoneParameter(buffer);
+                if (zones.get(packet.getControllerId()) != null)
+                {
+                    Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
+                    if (zone != null)
+                        zone.setParameter(packet.getParameterId(), packet.getParameterValue(), true);
+                }
+                break;
+            }
             case PacketS2CZoneSource.ID:
             {
                 PacketS2CZoneSource packet = new PacketS2CZoneSource(buffer);
@@ -493,6 +505,6 @@ public class RNetServer
 
     public enum ZoneChangeType
     {
-        NAME, POWER, VOLUME, SOURCE
+        NAME, POWER, VOLUME, SOURCE, PARAMETER
     }
 }

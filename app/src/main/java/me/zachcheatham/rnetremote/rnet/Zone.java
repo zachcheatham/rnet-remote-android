@@ -2,6 +2,7 @@ package me.zachcheatham.rnetremote.rnet;
 
 import android.util.Log;
 
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneParameter;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZonePower;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneSource;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneVolume;
@@ -9,6 +10,18 @@ import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneVolume;
 public class Zone
 {
     private static final String LOG_TAG = "Zone";
+    public static final int PARAMETER_BASS = 0;
+    public static final int PARAMETER_TREBLE = 1;
+    public static final int PARAMETER_LOUDNESS = 2;
+    public static final int PARAMETER_BALANCE = 3;
+    public static final int PARAMETER_TURN_ON_VOLUME = 4;
+    public static final int PARAMETER_BACKGROUND_COLOR = 5;
+    public static final int PARAMETER_DO_NOT_DISTURB = 6;
+    public static final int PARAMETER_PARTY_MODE = 7;
+    public static final int PARAMETER_PARTY_MODE_OFF = 0;
+    public static final int PARAMETER_PARTY_MODE_ON = 1;
+    public static final int PARAMETER_PARTY_MODE_MASTER = 2;
+    public static final int PARAMETER_FRONT_AV_ENABLE = 8;
 
     private final int controllerId;
     private final int zoneId;
@@ -19,11 +32,23 @@ public class Zone
     private int volume;
     private int sourceId;
 
+    private final Object[] parameters = new Object[9];
+
     Zone(int controllerId, int zoneId, RNetServer server)
     {
         this.controllerId = controllerId;
         this.zoneId = zoneId;
         this.server = server;
+
+        parameters[0] = 0;
+        parameters[1] = 0;
+        parameters[2] = false;
+        parameters[3] = 0;
+        parameters[4] = 0;
+        parameters[5] = 0;
+        parameters[6] = false;
+        parameters[7] = 0;
+        parameters[8] = false;
     }
 
     public int getControllerId()
@@ -108,5 +133,40 @@ public class Zone
     public int getSourceId()
     {
         return sourceId;
+    }
+
+    public void setParameter(int parameterId, Object value, boolean setRemotely)
+    {
+        switch (parameterId)
+        {
+        case PARAMETER_BASS:
+        case PARAMETER_TREBLE:
+        case PARAMETER_BALANCE:
+        case PARAMETER_TURN_ON_VOLUME:
+        case PARAMETER_BACKGROUND_COLOR:
+        case PARAMETER_PARTY_MODE:
+            if (!(value instanceof Integer))
+                throw new IllegalArgumentException(String.format("Value must be Integer for %d. Instead got %s", parameterId, value.getClass().toString()));
+            break;
+        default:
+            if (!(value instanceof Boolean))
+                throw new IllegalArgumentException("Value must be Boolean");
+            break;
+        }
+
+        parameters[parameterId] = value;
+
+        Log.i(LOG_TAG, String.format("Zone #%d-%d parameter #%d set to %s", controllerId, zoneId, parameterId, value));
+
+        for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.PARAMETER);
+
+        if (!setRemotely)
+            server.new SendPacketTask().execute(new PacketC2SZoneParameter(controllerId, zoneId, parameterId, value));
+    }
+
+    public Object getParameter(int parameterId)
+    {
+        return parameters[parameterId];
     }
 }
