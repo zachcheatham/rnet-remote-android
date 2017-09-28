@@ -16,6 +16,8 @@
     <string name="action_all_off">All Off</string>
     <string name="label_zone_name">Zone Name</string>
     <string name="label_zone_id">Zone ID</string>
+    <string name="label_controller_num">Controller #</string>
+    <string name="label_zone_num">Zone #</string>
     <string name="label_balance">Balance</string>
     <string name="label_bass">Bass</string>
     <string name="label_treble">Treble</string>
@@ -32,4 +34,12 @@
     <string name="action_delete">Delete</string>
     <string name="action_create">Create</string>
     <string name="action_rename">Rename</string>
+    <string name="action_add_zone">Add Zone</string>
+    <string name="action_add">Add</string>
+    <string name="error_empty_zone_name">Enter a zone name</string>
+    <string name="error_long_zone_name">Zone name is too long</string>
+    <string name="error_empty_zone_id">Enter zone #</string>
+    <string name="error_id_range">Value must be 1–99</string>
+    <string name="error_empty_controller_id">Enter controller #</string>
+    <string name="error_zone_exists">A zone with that ID already exists.</string>
 </resources>

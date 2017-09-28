@@ -25,5 +25,8 @@
     <dimen name="card_action_padding">8dp</dimen>
     <dimen name="card_icon_button_padding">4dp</dimen>
 
+    <dimen name="input_spacing_vert_dense">4dp</dimen>
+    <dimen name="input_spacing_horz_half">6dp</dimen>
+
     <dimen name="placeholder_spacing_group">32dp</dimen>
 </resources>

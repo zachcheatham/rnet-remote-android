@@ -28,8 +28,9 @@ import me.zachcheatham.rnetremote.rnet.RNetServerService;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
 
 public class MainActivity extends AppCompatActivity implements SelectServerDialogFragment.SelectServerListener,
-        RNetServer.StateListener, View.OnClickListener
+        RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener
 {
+    @SuppressWarnings("unused")
     private static final String LOG_TAG = "MainActivity";
 
     private RecyclerView zoneList;
@@ -187,7 +188,10 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             {
                 server.new SendPacketTask().execute(new PacketC2SAllPower(true));
             }
-
+            return true;
+        case R.id.action_add_zone:
+            AddZoneDialogFragment dialog = new AddZoneDialogFragment();
+            dialog.show(getSupportFragmentManager(), "AddZoneDialogFragment");
             return true;
         }
 
@@ -245,6 +249,18 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         serverService.stopServerConnection();
         serverService.setConnectionInfo(name, address, port);
         serverService.startServerConnection();
+    }
+
+    @Override
+    public void addZone(String zoneName, int controllerId, int zoneId)
+    {
+        server.createZone(zoneName, controllerId, zoneId);
+    }
+
+    @Override
+    public boolean zoneExists(int controllerId, int zoneId)
+    {
+        return server.getZone(controllerId, zoneId) != null;
     }
 
     @Override

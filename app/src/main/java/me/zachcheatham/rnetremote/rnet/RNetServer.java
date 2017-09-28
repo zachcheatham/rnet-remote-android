@@ -13,7 +13,9 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SDeleteZone;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SName;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CRNetStatus;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceDeleted;
@@ -74,6 +76,33 @@ public class RNetServer
         }
     }
 
+    public void createZone(String zoneName, int controllerId, int zoneId)
+    {
+        if (zones.get(controllerId) == null || zones.get(controllerId).get(zoneId) == null)
+            new SendPacketTask().execute(new PacketC2SZoneName(controllerId, zoneId, zoneName));
+    }
+
+    public void deleteZone(int controllerId, int zoneId, boolean remotelyTriggered)
+    {
+        if (zones.get(controllerId) != null)
+        {
+            zones.get(controllerId).remove(zoneId);
+            Log.i(LOG_TAG, String.format("Deleted zone #%d-%d", controllerId, zoneId));
+
+            if (zones.get(controllerId).size() < 1)
+            {
+                zones.remove(controllerId);
+                Log.i(LOG_TAG, String.format("Deleted controller #%d", controllerId));
+            }
+
+            for (ZonesListener listener : zonesListeners)
+                listener.zoneRemoved(controllerId, zoneId);
+
+            if (!remotelyTriggered)
+                new SendPacketTask().execute(new PacketC2SDeleteZone(controllerId, zoneId));
+        }
+    }
+
     public boolean isRunning()
     {
         return run;
@@ -93,21 +122,6 @@ public class RNetServer
     {
         return serialConnected;
     }*/
-
-    public SparseArray<SparseArray<Zone>> getZones()
-    {
-        return zones;
-    }
-
-    public Zone getZone(int controllerId, int zoneId)
-    {
-        if (zones.get(controllerId) != null)
-        {
-            return zones.get(controllerId).get(zoneId);
-        }
-
-        return null;
-    }
 
     public boolean anyZonesOn()
     {
@@ -139,6 +153,21 @@ public class RNetServer
         }
 
         return true;
+    }
+
+    public SparseArray<SparseArray<Zone>> getZones()
+    {
+        return zones;
+    }
+
+    public Zone getZone(int controllerId, int zoneId)
+    {
+        if (zones.get(controllerId) != null)
+        {
+            return zones.get(controllerId).get(zoneId);
+        }
+
+        return null;
     }
 
     public SparseArray<Source> getSources()
@@ -359,20 +388,7 @@ public class RNetServer
             case PacketS2CZoneDeleted.ID:
             {
                 PacketS2CZoneDeleted packet = new PacketS2CZoneDeleted(buffer);
-                if (zones.get(packet.getControllerId()) != null)
-                {
-                    zones.get(packet.getControllerId()).remove(packet.getZoneId());
-                    Log.i(LOG_TAG, String.format("Deleted zone #%d-%d", packet.getControllerId(), packet.getZoneId()));
-
-                    if (zones.get(packet.getControllerId()).size() < 1)
-                    {
-                        zones.remove(packet.getControllerId());
-                        Log.i(LOG_TAG, String.format("Deleted controller #%d", packet.getControllerId()));
-                    }
-
-                    for (ZonesListener listener : zonesListeners)
-                        listener.zoneRemoved(packet.getControllerId(), packet.getZoneId());
-                }
+                deleteZone(packet.getControllerId(), packet.getZoneId(), true);
                 break;
             }
             case PacketS2CZonePower.ID:
@@ -462,11 +478,6 @@ public class RNetServer
 
         for (ZonesListener listener : zonesListeners)
             listener.dataReset();
-    }
-
-    public void deleteZone(int controllerId, int zoneId)
-    {
-
     }
 
     class ServerRunnable implements Runnable

@@ -3,7 +3,6 @@ package me.zachcheatham.rnetremote;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
@@ -46,7 +45,6 @@ public class SelectServerDialogFragment extends DialogFragment
     public void onAttach(Context context)
     {
         super.onAttach(context);
-
         listener = (SelectServerListener) context;
     }
 
@@ -91,11 +89,7 @@ public class SelectServerDialogFragment extends DialogFragment
 
         if (isCancelable())
         {
-            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {}
-            });
+            builder.setNegativeButton(android.R.string.cancel, null);
         }
         else
         {

@@ -2,6 +2,7 @@ package me.zachcheatham.rnetremote.rnet;
 
 import android.util.Log;
 
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneParameter;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZonePower;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneSource;
@@ -70,10 +71,11 @@ public class Zone
 
         Log.i(LOG_TAG, String.format("Zone #%d-%d renamed to %s", controllerId, zoneId, name));
 
+        for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
+
         if (!setRemotely)
-        {
-            // TODO Send rename packet
-        }
+            server.new SendPacketTask().execute(new PacketC2SZoneName(controllerId, zoneId, name));
     }
 
     public String getName()
@@ -157,8 +159,6 @@ public class Zone
         parameters[parameterId] = value;
 
         Log.i(LOG_TAG, String.format("Zone #%d-%d parameter #%d set to %s", controllerId, zoneId, parameterId, value));
-
-        Log.d(LOG_TAG, server.getZonesListeners().size() + " listeners");
 
         for (RNetServer.ZonesListener listener : server.getZonesListeners())
             listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.PARAMETER);

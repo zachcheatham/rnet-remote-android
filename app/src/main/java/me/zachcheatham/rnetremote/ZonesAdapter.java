@@ -156,11 +156,11 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     public void dataReset()
     {
         zoneIndex.clear();
-        sourcesAdapter.clear();
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run()
             {
+                sourcesAdapter.clear();
                 notifyDataSetChanged();
             }
         });

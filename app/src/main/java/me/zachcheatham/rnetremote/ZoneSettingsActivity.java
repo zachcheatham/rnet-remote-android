@@ -240,13 +240,13 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
             break;
         case R.id.item_delete_zone:
             new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay))
-                    .setMessage(R.string.action_delete)
-                    .setNegativeButton(android.R.string.yes, new DialogInterface.OnClickListener()
+                    .setMessage(R.string.confirm_delete_zone)
+                    .setNegativeButton(R.string.action_delete, new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i)
                         {
-                            server.deleteZone(controllerId, zoneId);
+                            server.deleteZone(controllerId, zoneId, false);
                             finish();
                         }
                     })
@@ -349,10 +349,7 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     }
 
     @Override
-    public void zoneAdded(Zone zone)
-    {
-
-    }
+    public void zoneAdded(Zone zone) {}
 
     @Override
     public void zoneChanged(Zone zone, boolean setRemotely, RNetServer.ZoneChangeType type)
@@ -364,7 +361,10 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void zoneRemoved(int controllerId, int zoneId)
     {
-
+        if (controllerId == this.controllerId && zoneId == this.zoneId)
+        {
+            finish();
+        }
     }
 
     @Override
