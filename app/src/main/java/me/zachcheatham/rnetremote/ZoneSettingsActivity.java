@@ -87,6 +87,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     private Switch loudnessSwitch;
     private TextView partyModeText;
     private Switch doNotDisturbSwitch;
+    private TextView turnOnVolumeText;
+    private SeekBar turnOnVolumeSlider;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -118,6 +120,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         this.partyModeText = (TextView) findViewById(R.id.text_party_mode);
         this.doNotDisturbSwitch = (Switch) findViewById(R.id.switch_do_not_disturb);
         View deleteItem = findViewById(R.id.item_delete_zone);
+        this.turnOnVolumeText = (TextView) findViewById(R.id.text_turn_on_volume);
+        this.turnOnVolumeSlider = (SeekBar) findViewById(R.id.seek_bar_turn_on_volume);
 
         zoneIdText.setText(getResources().getString(R.string.format_zone_id, controllerId + 1, zoneId + 1));
         zoneNameItem.setOnClickListener(this);
@@ -126,6 +130,7 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         this.trebleSlider.setOnSeekBarChangeListener(this);
         this.loudnessSwitch.setOnCheckedChangeListener(this);
         this.doNotDisturbSwitch.setOnCheckedChangeListener(this);
+        this.turnOnVolumeSlider.setOnSeekBarChangeListener(this);
         partyModeItem.setOnClickListener(this);
         deleteItem.setOnClickListener(this);
     }
@@ -181,6 +186,9 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
                     bassSlider.setProgress(((Integer) zone.getParameter(Zone.PARAMETER_BASS)) + 10);
                 if (!trebleSlider.isPressed())
                     trebleSlider.setProgress(((Integer) zone.getParameter(Zone.PARAMETER_TREBLE)) + 10);
+                if (!turnOnVolumeSlider.isPressed())
+                    turnOnVolumeSlider.setProgress(
+                            (int) Math.floor(((Integer) zone.getParameter(Zone.PARAMETER_TURN_ON_VOLUME)) / 2));
                 loudnessSwitch.setChecked((Boolean) zone.getParameter(Zone.PARAMETER_LOUDNESS));
                 doNotDisturbSwitch.setChecked((Boolean) zone.getParameter(Zone.PARAMETER_DO_NOT_DISTURB));
 
@@ -275,6 +283,11 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
             trebleText.setText((value > 10 ? "+" : "") + (value - 10));
             if (user)
                 zone.setParameter(Zone.PARAMETER_TREBLE, value - 10, false);
+            break;
+        case R.id.seek_bar_turn_on_volume:
+            turnOnVolumeText.setText((value * 2) + "");
+            if (user)
+                zone.setParameter(Zone.PARAMETER_TURN_ON_VOLUME, value * 2, false);
             break;
         }
     }

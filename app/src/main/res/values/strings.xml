@@ -42,4 +42,5 @@
     <string name="error_id_range">Value must be 1–99</string>
     <string name="error_empty_controller_id">Enter controller #</string>
     <string name="error_zone_exists">A zone with that ID already exists.</string>
+    <string name="label_turn_on_volume">Turn On Volume</string>
 </resources>

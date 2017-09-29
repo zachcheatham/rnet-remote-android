@@ -89,51 +89,15 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <Switch
+                android:id="@+id/switch_loudness"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="@dimen/list_double_line_height_dense"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
+                android:layout_height="@dimen/list_single_line_height"
+                android:text="@string/label_loudness"
                 android:paddingEnd="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
-                android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
-                android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/label_balance"
-                        android:textAppearance="?attr/textAppearanceListItem"/>
-
-                    <TextView
-                        android:id="@+id/text_balance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="@dimen/list_line_text_secondary_size"
-                        android:text="@string/default_zone_slider_value" />
-
-                </LinearLayout>
-
-                <SeekBar
-                    android:id="@+id/seek_bar_balance"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/list_slider_padding_top"
-                    android:progressTint="@android:color/transparent"
-                    android:progress="10"
-                    android:max="20"
-                    />
-
-            </LinearLayout>
+                android:textAppearance="?attr/textAppearanceListItem"
+                android:foreground="?android:attr/selectableItemBackground"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -225,13 +189,103 @@
 
             </LinearLayout>
 
-            <Switch
-                android:id="@+id/switch_loudness"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/list_single_line_height"
-                android:text="@string/label_loudness"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/list_double_line_height_dense"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
+                android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_balance"
+                        android:textAppearance="?attr/textAppearanceListItem"/>
+
+                    <TextView
+                        android:id="@+id/text_balance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="@dimen/list_line_text_secondary_size"
+                        android:text="@string/default_zone_slider_value" />
+
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/seek_bar_balance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/list_slider_padding_top"
+                    android:progressTint="@android:color/transparent"
+                    android:progress="10"
+                    android:max="20"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/list_double_line_height_dense"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
+                android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_turn_on_volume"
+                        android:textAppearance="?attr/textAppearanceListItem"/>
+
+                    <TextView
+                        android:id="@+id/text_turn_on_volume"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="@dimen/list_line_text_secondary_size"
+                        android:text="@string/default_zone_slider_value" />
+
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/seek_bar_turn_on_volume"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/list_slider_padding_top"
+                    android:max="50"
+                    />
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch_do_not_disturb"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/list_single_line_height"
+                android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:text="@string/label_do_not_disturb"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:foreground="?android:attr/selectableItemBackground"/>
 
@@ -260,16 +314,6 @@
                     tools:text="PARTY MODE"/>
 
             </LinearLayout>
-
-            <Switch
-                android:id="@+id/switch_do_not_disturb"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/list_single_line_height"
-                android:paddingEnd="@dimen/list_horizontal_padding"
-                android:paddingStart="@dimen/list_horizontal_padding"
-                android:text="@string/label_do_not_disturb"
-                android:textAppearance="?attr/textAppearanceListItem"
-                android:foreground="?android:attr/selectableItemBackground"/>
 
             <LinearLayout
                 android:id="@+id/item_delete_zone"
