@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.view.ContextThemeWrapper;
@@ -13,18 +14,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 public class AddZoneDialogFragment extends DialogFragment
 {
-    private  AddZoneListener listener;
+    private AddZoneListener listener;
     private TextInputLayout zoneNameInputLayout;
-    private EditText zoneNameEditText;
+    private TextInputEditText zoneNameEditText;
     private TextInputLayout controllerIdInputLayout;
-    private EditText controllerIdEditText;
+    private TextInputEditText controllerIdEditText;
     private TextInputLayout zoneIdInputLayout;
-    private EditText zoneIdEditText;
+    private TextInputEditText zoneIdEditText;
 
     @SuppressWarnings("ConstantConditions")
     @Override
