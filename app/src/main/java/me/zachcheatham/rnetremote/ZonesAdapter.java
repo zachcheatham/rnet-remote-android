@@ -117,30 +117,34 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         int[] zoneInfo = zoneIndex.get(position);
         Zone zone = server.getZone(zoneInfo[0], zoneInfo[1]);
 
-        holder.name.setText(zone.getName());
-        if (!holder.seekBar.isPressed())
-            holder.seekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
+        if (zone != null)
+        {
+            holder.name.setText(zone.getName());
+            if (!holder.seekBar.isPressed())
+                holder.seekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
 
-        if (zone.getPowered())
-        {
-            holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorAccent));
-            holder.seekBar.setEnabled(true);
-        }
-        else
-        {
-            holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
-            holder.seekBar.setEnabled(false);
-            if (holder.sourcesContainer.isExpanded())
+            if (zone.getPowered())
             {
-                holder.sourcesContainer.collapse();
-                holder.primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDivider));
+                holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorAccent));
+                holder.seekBar.setEnabled(true);
+            } else
+            {
+                holder.power
+                        .setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
+                holder.seekBar.setEnabled(false);
+                if (holder.sourcesContainer.isExpanded())
+                {
+                    holder.sourcesContainer.collapse();
+                    holder.primaryDivider
+                            .setBackground(activity.getDrawable(R.color.colorCardDivider));
+                }
             }
+
+            if (holder.sources.getAdapter() == null)
+                holder.sources.setAdapter(sourcesAdapter);
+
+            holder.sources.setItemChecked(server.getSources().indexOfKey(zone.getSourceId()), true);
         }
-
-        if (holder.sources.getAdapter() == null)
-            holder.sources.setAdapter(sourcesAdapter);
-
-        holder.sources.setItemChecked(server.getSources().indexOfKey(zone.getSourceId()), true);
     }
 
     @Override
@@ -155,11 +159,11 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public void dataReset()
     {
-        zoneIndex.clear();
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run()
             {
+                zoneIndex.clear();
                 sourcesAdapter.clear();
                 notifyDataSetChanged();
             }
@@ -196,7 +200,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public void zoneChanged(final Zone zone, boolean setRemotely, RNetServer.ZoneChangeType type)
     {
-        if (setRemotely || type != RNetServer.ZoneChangeType.VOLUME)
+        if (type != RNetServer.ZoneChangeType.PARAMETER && (setRemotely || type == RNetServer.ZoneChangeType.VOLUME))
         {
             activity.runOnUiThread(new Runnable()
             {

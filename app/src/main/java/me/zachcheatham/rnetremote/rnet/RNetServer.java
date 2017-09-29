@@ -442,13 +442,16 @@ public class RNetServer
 
     private void sendPacket(RNetPacket packet)
     {
-        try
+        if (channel != null)
         {
-            channel.write(ByteBuffer.wrap(packet.getData()));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            try
+            {
+                channel.write(ByteBuffer.wrap(packet.getData()));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
