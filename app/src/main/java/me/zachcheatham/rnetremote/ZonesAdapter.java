@@ -200,7 +200,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public void zoneChanged(final Zone zone, boolean setRemotely, RNetServer.ZoneChangeType type)
     {
-        if (type != RNetServer.ZoneChangeType.PARAMETER && (setRemotely || type == RNetServer.ZoneChangeType.VOLUME))
+        if (type != RNetServer.ZoneChangeType.PARAMETER && (setRemotely || type != RNetServer.ZoneChangeType.VOLUME))
         {
             activity.runOnUiThread(new Runnable()
             {
