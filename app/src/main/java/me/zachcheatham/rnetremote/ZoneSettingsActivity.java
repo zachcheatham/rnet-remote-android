@@ -352,7 +352,13 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void disconnected(boolean unexpected)
     {
-        finish();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -376,7 +382,13 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     {
         if (controllerId == this.controllerId && zoneId == this.zoneId)
         {
-            finish();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    finish();
+                }
+            });
         }
     }
 
