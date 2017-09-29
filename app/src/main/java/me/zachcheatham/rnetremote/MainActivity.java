@@ -2,19 +2,19 @@ package me.zachcheatham.rnetremote;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +28,8 @@ import me.zachcheatham.rnetremote.rnet.RNetServerService;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
 
 public class MainActivity extends AppCompatActivity implements SelectServerDialogFragment.SelectServerListener,
-        RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener
+        RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
+        PopupMenu.OnMenuItemClickListener
 {
     @SuppressWarnings("unused")
     private static final String LOG_TAG = "MainActivity";
@@ -163,26 +164,11 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             }
             else if (server.anyZonesOn())
             {
-                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay));
-                builder.setTitle(R.string.set_all_on_off);
-                builder.setNegativeButton(R.string.action_all_off,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
-                            {
-                                server.new SendPacketTask().execute(new PacketC2SAllPower(false));
-                            }
-                        });
-                builder.setPositiveButton(R.string.action_all_on,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
-                            {
-                                server.new SendPacketTask().execute(new PacketC2SAllPower(true));
-                            }
-                        });
-
-                builder.create().show();
+                PopupMenu menu = new PopupMenu(new ContextThemeWrapper(this, R.style.AppTheme_PopupOverlay), findViewById(R.id.action_power_all));
+                menu.setGravity(Gravity.CENTER | Gravity.LEFT);
+                menu.setOnMenuItemClickListener(this);
+                menu.inflate(R.menu.all_on_off_popup);
+                menu.show();
             }
             else
             {
@@ -240,6 +226,22 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         {
             promptSelectServer(true);
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+        case R.id.action_all_on:
+            server.new SendPacketTask().execute(new PacketC2SAllPower(true));
+            return true;
+        case R.id.action_all_off:
+            server.new SendPacketTask().execute(new PacketC2SAllPower(false));
+            return true;
+        }
+
+        return false;
     }
 
     @Override

@@ -3,7 +3,7 @@
     <string name="app_name_short">RNet</string>
     <string name="activity_name_zone">Zone Settings</string>
     <string name="action_change_server">Change Controller</string>
-    <string name="action_power_all">On/Off All</string>
+    <string name="action_power_all">All On/Off</string>
     <string name="action_enter_ip">Manually enter address…</string>
     <string name="dialog_change_server">Select Controller</string>
     <string name="notice_connecting">Connecting</string>
@@ -12,8 +12,8 @@
     <string name="notice_serial_disconnected">No serial connection. The unit could be off.</string>
     <string name="placeholder">placeholder</string>
     <string name="set_all_on_off">Zone Power</string>
-    <string name="action_all_on">All On</string>
-    <string name="action_all_off">All Off</string>
+    <string name="action_all_on">Turn all on</string>
+    <string name="action_all_off">Turn all off</string>
     <string name="label_zone_name">Zone Name</string>
     <string name="label_zone_id">Zone ID</string>
     <string name="label_controller_num">Controller #</string>
