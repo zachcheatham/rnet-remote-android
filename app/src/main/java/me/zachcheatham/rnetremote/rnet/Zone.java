@@ -64,18 +64,22 @@ public class Zone
 
     public void setName(String name, boolean setRemotely)
     {
-        this.name = name;
+        if (!name.equals(this.name))
+        {
+            this.name = name;
 
-        for (RNetServer.ZonesListener listener : server.getZonesListeners())
-            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
+            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+                listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
 
-        Log.i(LOG_TAG, String.format("Zone #%d-%d renamed to %s", controllerId, zoneId, name));
+            Log.i(LOG_TAG, String.format("Zone #%d-%d renamed to %s", controllerId, zoneId, name));
 
-        for (RNetServer.ZonesListener listener : server.getZonesListeners())
-            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
+            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+                listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
 
-        if (!setRemotely)
-            server.new SendPacketTask().execute(new PacketC2SZoneName(controllerId, zoneId, name));
+            if (!setRemotely)
+                server.new SendPacketTask()
+                        .execute(new PacketC2SZoneName(controllerId, zoneId, name));
+        }
     }
 
     public String getName()
@@ -85,15 +89,20 @@ public class Zone
 
     public void setPower(boolean power, boolean setRemotely)
     {
-        this.power = power;
+        if (power != this.power)
+        {
+            this.power = power;
 
-        Log.i(LOG_TAG, String.format("Zone #%d-%d power set %s", controllerId, zoneId, power ? "on" : "off"));
+            Log.i(LOG_TAG, String.format("Zone #%d-%d power set %s", controllerId, zoneId,
+                    power ? "on" : "off"));
 
-        for (RNetServer.ZonesListener listener : server.getZonesListeners())
-            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.POWER);
+            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+                listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.POWER);
 
-        if (!setRemotely)
-            server.new SendPacketTask().execute(new PacketC2SZonePower(controllerId, zoneId, power));
+            if (!setRemotely)
+                server.new SendPacketTask()
+                        .execute(new PacketC2SZonePower(controllerId, zoneId, power));
+        }
     }
 
     public boolean getPowered()
@@ -103,15 +112,20 @@ public class Zone
 
     public void setVolume(int volume, boolean setRemotely)
     {
-        this.volume = volume;
+        if (volume != this.volume)
+        {
+            this.volume = volume;
 
-        Log.i(LOG_TAG, String.format("Zone #%d-%d volume set to %d", controllerId, zoneId, volume));
+            Log.i(LOG_TAG,
+                    String.format("Zone #%d-%d volume set to %d", controllerId, zoneId, volume));
 
-        for (RNetServer.ZonesListener listener : server.getZonesListeners())
-            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.VOLUME);
+            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+                listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.VOLUME);
 
-        if (!setRemotely)
-            server.new SendPacketTask().execute(new PacketC2SZoneVolume(controllerId, zoneId, volume));
+            if (!setRemotely)
+                server.new SendPacketTask()
+                        .execute(new PacketC2SZoneVolume(controllerId, zoneId, volume));
+        }
     }
 
     public int getVolume()
@@ -121,15 +135,20 @@ public class Zone
 
     public void setSourceId(int sourceId, boolean setRemotely)
     {
-        this.sourceId = sourceId;
+        if (this.sourceId != sourceId)
+        {
+            this.sourceId = sourceId;
 
-        Log.i(LOG_TAG, String.format("Zone #%d-%d source set to #%d", controllerId, zoneId, sourceId));
+            Log.i(LOG_TAG,
+                    String.format("Zone #%d-%d source set to #%d", controllerId, zoneId, sourceId));
 
-        for (RNetServer.ZonesListener listener : server.getZonesListeners())
-            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.SOURCE);
+            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+                listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.SOURCE);
 
-        if (!setRemotely)
-            server.new SendPacketTask().execute(new PacketC2SZoneSource(controllerId, zoneId, sourceId));
+            if (!setRemotely)
+                server.new SendPacketTask()
+                        .execute(new PacketC2SZoneSource(controllerId, zoneId, sourceId));
+        }
     }
 
     public int getSourceId()
@@ -156,15 +175,21 @@ public class Zone
             break;
         }
 
-        parameters[parameterId] = value;
+        if (!parameters[parameterId].equals(value))
+        {
+            parameters[parameterId] = value;
 
-        Log.i(LOG_TAG, String.format("Zone #%d-%d parameter #%d set to %s", controllerId, zoneId, parameterId, value));
+            Log.i(LOG_TAG,
+                    String.format("Zone #%d-%d parameter #%d set to %s", controllerId, zoneId,
+                            parameterId, value));
 
-        for (RNetServer.ZonesListener listener : server.getZonesListeners())
-            listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.PARAMETER);
+            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+                listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.PARAMETER);
 
-        if (!setRemotely)
-            server.new SendPacketTask().execute(new PacketC2SZoneParameter(controllerId, zoneId, parameterId, value));
+            if (!setRemotely)
+                server.new SendPacketTask().execute(
+                        new PacketC2SZoneParameter(controllerId, zoneId, parameterId, value));
+        }
     }
 
     public Object getParameter(int parameterId)
