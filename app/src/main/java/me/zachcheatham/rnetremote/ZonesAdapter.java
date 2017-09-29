@@ -27,6 +27,7 @@ import me.zachcheatham.rnetremote.rnet.Zone;
 class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         implements RNetServer.ZonesListener
 {
+    @SuppressWarnings("unused")
     private static final String LOG_TAG = "ZonesAdapter";
 
     private final Activity activity;
@@ -79,13 +80,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         }
 
         this.server = server;
-    }
-
-    private void compareZoneIndex()
-    {
-        ArrayList<int[]> zoneIndex = new ArrayList<>();
-        SparseArray<SparseArray<Zone>> zones = server.getZones();
-        //for (int i
     }
 
     @Override
