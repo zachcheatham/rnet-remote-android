@@ -393,8 +393,5 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     }
 
     @Override
-    public void sourcesChanged()
-    {
-
-    }
+    public void sourcesChanged() {}
 }

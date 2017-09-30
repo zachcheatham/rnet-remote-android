@@ -140,11 +140,9 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     {
         boolean connected = boundToServerService && server.hasSentName();
 
-        MenuItem allPower = menu.findItem(R.id.action_power_all);
-        allPower.setVisible(connected);
-
-        MenuItem changeController = menu.findItem(R.id.action_change_server);
-        changeController.setVisible(connected);
+        menu.findItem(R.id.action_power_all).setVisible(connected);
+        menu.findItem(R.id.action_change_server).setVisible(connected);
+        menu.findItem(R.id.action_add_zone).setVisible(false);
 
         return true;
     }
@@ -165,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             else if (server.anyZonesOn())
             {
                 PopupMenu menu = new PopupMenu(new ContextThemeWrapper(this, R.style.AppTheme_PopupOverlay), findViewById(R.id.action_power_all));
-                menu.setGravity(Gravity.CENTER | Gravity.LEFT);
                 menu.setOnMenuItemClickListener(this);
                 menu.inflate(R.menu.all_on_off_popup);
                 menu.show();
