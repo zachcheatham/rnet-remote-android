@@ -2,8 +2,10 @@ package me.zachcheatham.rnetremote;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -13,33 +15,42 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
-
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import me.zachcheatham.rnetremote.rnet.RNetServer;
 import me.zachcheatham.rnetremote.rnet.Zone;
+import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
+import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
 
 class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
-        implements RNetServer.ZonesListener
+        implements RNetServer.ZonesListener, ItemTouchHelperAdapter
 {
     @SuppressWarnings("unused")
     private static final String LOG_TAG = "ZonesAdapter";
+    private static final String PREFS = "rnet_remote_zone_order";
 
     private final Activity activity;
     private final ArrayList<int[]> zoneIndex = new ArrayList<>();
+    private ItemTouchHelper itemTouchHelper;
     private RNetServer server;
     private ArrayAdapter<String> sourcesAdapter;
     private RecyclerView recyclerView;
+
     
     ZonesAdapter(Activity a)
     {
         this.activity = a;
         sourcesAdapter = new ArrayAdapter<>(new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay), android.R.layout.simple_list_item_activated_1, new ArrayList<String>());
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(this);
+        itemTouchHelper = new ItemTouchHelper(callback);
     }
 
     void setServer(RNetServer server)
@@ -47,21 +58,13 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         if (this.server != null)
             this.server.removeZoneListener(this);
 
+        this.server = server;
+
         if (server != null)
         {
             server.addZoneListener(this);
-
-            zoneIndex.clear();
-            SparseArray<SparseArray<Zone>> zones = server.getZones();
-            for (int i = 0; i < zones.size(); i++)
-            {
-                int ctrllrId = zones.keyAt(i);
-                for (int c = 0; c < zones.get(ctrllrId).size(); c++)
-                {
-                    int zoneId = zones.get(ctrllrId).keyAt(c);
-                    zoneIndex.add(new int[]{ctrllrId, zoneId});
-                }
-            }
+            if (server.isReady())
+                handleIndex();
 
             sourcesAdapter.clear();
             for (int i = 0; i < server.getSources().size(); i++)
@@ -78,8 +81,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 }
             });
         }
-
-        this.server = server;
     }
 
     @Override
@@ -87,13 +88,14 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     {
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView)
     {
         this.recyclerView = null;
-
+        itemTouchHelper.attachToRecyclerView(null);
     }
 
     @Override
@@ -151,7 +153,91 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void dataReset()
+    public boolean onItemMove(int fromPosition, int toPosition)
+    {
+        Collections.swap(zoneIndex, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        saveIndex();
+        return true;
+    }
+
+    private void handleIndex()
+    {
+        zoneIndex.clear();
+
+        SharedPreferences settings = activity.getSharedPreferences(PREFS, 0);
+        int size = settings.getInt("zones", 0);
+
+        if (size > 0)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                int controllerId = settings.getInt("index_" + i + "_controller", -1);
+                int zoneId = settings.getInt("index_" + i + "_zone", -1);
+
+                zoneIndex.add(i, new int[]{controllerId, zoneId});
+            }
+
+            // Remove removed zones
+            {
+                List<int[]> remove = new ArrayList<>();
+                for (int[] zoneInfo : zoneIndex)
+                {
+                    if (server.getZone(zoneInfo[0], zoneInfo[1]) == null)
+                        remove.add(zoneInfo);
+                }
+                for (int[] zoneInfo : remove)
+                    zoneIndex.remove(zoneInfo);
+                remove.clear();
+            }
+
+            // Add new zones
+            SparseArray<SparseArray<Zone>> zones = server.getZones();
+            for (int i = 0; i < zones.size(); i++)
+            {
+                int ctrllrId = zones.keyAt(i);
+                for (int c = 0; c < zones.get(ctrllrId).size(); c++)
+                {
+                    int zoneId = zones.get(ctrllrId).keyAt(c);
+                    if (!zoneIndexContains(zoneIndex, ctrllrId, zoneId))
+                        zoneIndex.add(new int[]{ctrllrId, zoneId});
+                }
+            }
+        }
+        else
+        {
+            SparseArray<SparseArray<Zone>> zones = server.getZones();
+            for (int i = 0; i < zones.size(); i++)
+            {
+                int ctrllrId = zones.keyAt(i);
+                for (int c = 0; c < zones.get(ctrllrId).size(); c++)
+                {
+                    int zoneId = zones.get(ctrllrId).keyAt(c);
+                    zoneIndex.add(new int[]{ctrllrId, zoneId});
+                }
+            }
+        }
+
+        saveIndex();
+    }
+
+    private void saveIndex()
+    {
+        SharedPreferences settings = activity.getSharedPreferences(PREFS, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.clear();
+        editor.putInt("zones", zoneIndex.size());
+        for (int i = 0; i < zoneIndex.size(); i++)
+        {
+            int[] zoneInfo = zoneIndex.get(i);
+            editor.putInt("index_" + i + "_controller", zoneInfo[0]);
+            editor.putInt("index_" + i + "_zone", zoneInfo[1]);
+        }
+        editor.apply();
+    }
+
+    @Override
+    public void cleared()
     {
         activity.runOnUiThread(new Runnable() {
             @Override
@@ -165,6 +251,19 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
+    public void indexReceived()
+    {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                handleIndex();
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
     public void zoneAdded(final Zone zone)
     {
         activity.runOnUiThread(new Runnable()
@@ -172,21 +271,8 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             @Override
             public void run()
             {
-                int index = zoneIndex.size();
-
-                for (int i = 0; i < zoneIndex.size(); i++)
-                {
-                    int[] zoneInfo = zoneIndex.get(i);
-                    if (zoneInfo[0] > zone.getControllerId() ||
-                        (zoneInfo[0] == zone.getControllerId() && zoneInfo[1] > zone.getZoneId()))
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-
-                zoneIndex.add(index, new int[]{zone.getControllerId(), zone.getZoneId()});
-                notifyItemInserted(index);
+                zoneIndex.add(zoneIndex.size(), new int[]{zone.getControllerId(), zone.getZoneId()});
+                notifyItemInserted(zoneIndex.size() - 1);
             }
         });
     }
@@ -287,6 +373,9 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             View header = itemView.findViewById(R.id.header);
             header.setOnClickListener(this);
             header.setOnLongClickListener(this);
+
+            ImageButton tuneSettings = itemView.findViewById(R.id.settings);
+            tuneSettings.setOnClickListener(this);
         }
 
         @Override
@@ -328,21 +417,20 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 case R.id.power:
                     zone.setPower(!zone.getPowered(), false);
                     break;
+                case R.id.settings:
+                    Intent intent = new Intent(activity, ZoneSettingsActivity.class);
+                    intent.putExtra("cid", zone.getControllerId());
+                    intent.putExtra("zid", zone.getZoneId());
+                    activity.startActivity(intent);
+                    activity.overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
+                    break;
             }
         }
 
         @Override
         public boolean onLongClick(View view)
         {
-            int[] id = zoneIndex.get(getAdapterPosition());
-            Zone zone = server.getZone(id[0], id[1]);
-
-            Intent intent = new Intent(activity, ZoneSettingsActivity.class);
-            intent.putExtra("cid", zone.getControllerId());
-            intent.putExtra("zid", zone.getZoneId());
-            activity.startActivity(intent);
-            activity.overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
-
+            itemTouchHelper.startDrag(this);
             return false;
         }
 
@@ -361,5 +449,15 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             int sourceId = server.getSources().keyAt(i);
             zone.setSourceId(sourceId, false);
         }
+    }
+
+    private static boolean zoneIndexContains(List<int[]> index, int controllerId, int zoneId)
+    {
+        for (int[] info : index)
+        {
+            if (info[0] == controllerId && info[1] == zoneId)
+                return true;
+        }
+        return false;
     }
 }

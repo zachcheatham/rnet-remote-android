@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.Snackbar;
@@ -14,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextThemeWrapper;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
         PopupMenu.OnMenuItemClickListener
 {
+    private static final String PREFS = "rnet_remote";
+    private static final String PREFS_ORDER = "rnet_remote_zone_order";
     @SuppressWarnings("unused")
     private static final String LOG_TAG = "MainActivity";
 
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
                 if (!server.isRunning())
                     serverService.startServerConnection();
                 else
-                    setConnectingVisible(!server.hasSentName());
+                    setConnectingVisible(!server.isReady());
             }
 
             server.addStateListener(MainActivity.this);
@@ -138,11 +140,11 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        boolean connected = boundToServerService && server.hasSentName();
+        boolean connected = boundToServerService && server.isReady();
 
         menu.findItem(R.id.action_power_all).setVisible(connected);
         menu.findItem(R.id.action_change_server).setVisible(connected);
-        menu.findItem(R.id.action_add_zone).setVisible(false);
+        menu.findItem(R.id.action_add_zone).setVisible(connected);
 
         return true;
     }
@@ -245,6 +247,19 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     public void serverSelected(String name, InetAddress address, int port)
     {
         setConnectingError(false);
+
+        SharedPreferences settings = getSharedPreferences(PREFS, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("server_name", name);
+        editor.putString("server_address", address.getHostAddress());
+        editor.putInt("server_port", port);
+        editor.apply();
+
+        settings = getSharedPreferences(PREFS_ORDER, 0);
+        editor = settings.edit();
+        editor.clear();
+        editor.commit();
+
         serverService.stopServerConnection();
         serverService.setConnectionInfo(name, address, port);
         serverService.startServerConnection();
@@ -290,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     }
 
     @Override
-    public void connected()
+    public void ready()
     {
         runOnUiThread(new Runnable()
         {

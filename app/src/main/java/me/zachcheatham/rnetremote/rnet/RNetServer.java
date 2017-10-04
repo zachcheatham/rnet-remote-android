@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SDeleteZone;
-import me.zachcheatham.rnetremote.rnet.packet.PacketC2SName;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SIntent;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneName;
-import me.zachcheatham.rnetremote.rnet.packet.PacketS2CName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CRNetStatus;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneDeleted;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneIndex;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneParameter;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZonePower;
@@ -32,8 +32,6 @@ public class RNetServer
 {
     private static final String LOG_TAG = "RNetServer";
 
-    private final String clientName;
-
     private SocketChannel channel;
     private InetAddress address;
     private int port;
@@ -43,7 +41,7 @@ public class RNetServer
     private int pendingRemainingBytes = -1;
 
     private boolean run;
-    private boolean sentName = false;
+    private boolean receivedIndex = false;
     private boolean serialConnected = false;
     private SparseArray<Source> sources = new SparseArray<>();
     private SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
@@ -51,9 +49,8 @@ public class RNetServer
     private List<StateListener> stateListeners = new ArrayList<>();
     private List<ZonesListener> zonesListeners = new ArrayList<>();
 
-    RNetServer(String clientName)
+    RNetServer()
     {
-        this.clientName = clientName;
         pendingBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -113,9 +110,9 @@ public class RNetServer
         return channel != null && channel.isConnected();
     }
 
-    public boolean hasSentName()
+    public boolean isReady()
     {
-        return sentName;
+        return receivedIndex;
     }
 
     /*public boolean isSerialConnected()
@@ -166,7 +163,6 @@ public class RNetServer
         {
             return zones.get(controllerId).get(zoneId);
         }
-
         return null;
     }
 
@@ -228,6 +224,7 @@ public class RNetServer
 
             Log.d(LOG_TAG, "Server socket opened.");
 
+            sendPacket(new PacketC2SIntent(PacketC2SIntent.INTENT_SUBSCRIBE));
             readChannel();
 
             try
@@ -236,7 +233,7 @@ public class RNetServer
             }
             catch (IOException ignored) {}
 
-            if (sentName)
+            if (isReady())
                 for (StateListener listener : stateListeners)
                     listener.disconnected(run);
             else
@@ -249,7 +246,7 @@ public class RNetServer
                 listener.connectError();
         }
 
-        sentName = false;
+        receivedIndex = false;
         serialConnected = false;
         channel = null;
         run = false;
@@ -321,11 +318,10 @@ public class RNetServer
 
     private void constructAndHandlePacket(int packetType, ByteBuffer buffer)
     {
-        switch (packetType)
+        if (receivedIndex)
         {
-            case PacketS2CName.ID:
-                sendName();
-                break;
+            switch (packetType)
+            {
             case PacketS2CRNetStatus.ID:
             {
                 PacketS2CRNetStatus packet = new PacketS2CRNetStatus(buffer);
@@ -356,7 +352,8 @@ public class RNetServer
                     Log.i(LOG_TAG, String.format("Source #%d created", packet.getSourceId()));
                 }
                 source.setName(packet.getSourceName(), true);
-                Log.i(LOG_TAG, String.format("Source #%d renamed to %s", packet.getSourceId(), packet.getSourceName()));
+                Log.i(LOG_TAG, String.format("Source #%d renamed to %s", packet.getSourceId(),
+                        packet.getSourceName()));
                 for (ZonesListener listener : zonesListeners)
                     listener.sourcesChanged();
                 break;
@@ -367,7 +364,8 @@ public class RNetServer
                 if (zones.get(packet.getControllerId()) == null)
                 {
                     zones.put(packet.getControllerId(), new SparseArray<Zone>());
-                    Log.i(LOG_TAG, String.format("Created controller #%d", packet.getControllerId()));
+                    Log.i(LOG_TAG,
+                            String.format("Created controller #%d", packet.getControllerId()));
                 }
 
                 Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
@@ -376,7 +374,9 @@ public class RNetServer
                     zone = new Zone(packet.getControllerId(), packet.getZoneId(), this);
                     zones.get(packet.getControllerId()).put(packet.getZoneId(), zone);
 
-                    Log.i(LOG_TAG, String.format("Created zone #%d-%d", packet.getControllerId(), packet.getZoneId()));
+                    Log.i(LOG_TAG,
+                            String.format("Created zone #%d-%d", packet.getControllerId(),
+                                    packet.getZoneId()));
 
                     for (ZonesListener listener : zonesListeners)
                         listener.zoneAdded(zone);
@@ -409,7 +409,8 @@ public class RNetServer
                 {
                     Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
                     if (zone != null)
-                        zone.setParameter(packet.getParameterId(), packet.getParameterValue(), true);
+                        zone.setParameter(packet.getParameterId(), packet.getParameterValue(),
+                                true);
                 }
                 break;
             }
@@ -437,6 +438,39 @@ public class RNetServer
             }
             default:
                 Log.w(LOG_TAG, String.format("Received invalid packet %d", packetType));
+            }
+        }
+        else if (packetType == PacketS2CZoneIndex.ID)
+        {
+            PacketS2CZoneIndex packet = new PacketS2CZoneIndex(buffer);
+            for (int[] zoneInfo : packet.getIndex())
+            {
+                if (zones.get(zoneInfo[0]) == null)
+                {
+                    zones.put(zoneInfo[0], new SparseArray<Zone>());
+                    Log.i(LOG_TAG,
+                            String.format("Created controller #%d", zoneInfo[0]));
+                }
+
+                Zone zone = zones.get(zoneInfo[0]).get(zoneInfo[1]);
+                if (zone == null)
+                {
+                    zone = new Zone(zoneInfo[0], zoneInfo[1], this);
+                    zones.get(zoneInfo[0]).put(zoneInfo[1], zone);
+
+                    Log.i(LOG_TAG,
+                            String.format("Created zone #%d-%d", zoneInfo[0], zoneInfo[1]));
+                }
+            }
+
+            for (ZonesListener listener : zonesListeners)
+                listener.indexReceived();
+
+            if (!receivedIndex)
+                for (StateListener listener : stateListeners)
+                    listener.ready();
+
+            receivedIndex = true;
         }
     }
 
@@ -455,18 +489,6 @@ public class RNetServer
         }
     }
 
-    private void sendName()
-    {
-        sendPacket(new PacketC2SName(clientName));
-
-        if (!sentName)
-        {
-            sentName = true;
-            for (StateListener listener : stateListeners)
-                listener.connected();
-        }
-    }
-
     private void cleanUp()
     {
         for (int i = 0; i < zones.size(); i++)
@@ -477,10 +499,10 @@ public class RNetServer
         zones.clear();
         sources.clear();
         serialConnected = false;
-        sentName = false;
+        receivedIndex = false;
 
         for (ZonesListener listener : zonesListeners)
-            listener.dataReset();
+            listener.cleared();
     }
 
     class ServerRunnable implements Runnable
@@ -508,18 +530,19 @@ public class RNetServer
     {
         void connectionInitiated();
         void connectError();
-        void connected();
+        void ready();
         void serialStateChanged(boolean connected);
         void disconnected(boolean unexpected);
     }
 
     public interface ZonesListener
     {
-        void dataReset();
+        void indexReceived();
+        void sourcesChanged();
         void zoneAdded(Zone zone);
         void zoneChanged(Zone zone, boolean setRemotely, ZoneChangeType type);
         void zoneRemoved(int controllerId, int zoneId);
-        void sourcesChanged();
+        void cleared();
     }
 
     public enum ZoneChangeType

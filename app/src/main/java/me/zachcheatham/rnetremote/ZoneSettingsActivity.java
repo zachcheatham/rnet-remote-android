@@ -344,7 +344,9 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     public void connectError() {}
 
     @Override
-    public void connected() {}
+    public void ready() {
+
+    }
 
     @Override
     public void serialStateChanged(boolean connected) {}
@@ -362,7 +364,7 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     }
 
     @Override
-    public void dataReset()
+    public void cleared()
     {
         finish();
     }
@@ -390,6 +392,12 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
                 }
             });
         }
+    }
+
+    @Override
+    public void indexReceived()
+    {
+
     }
 
     @Override

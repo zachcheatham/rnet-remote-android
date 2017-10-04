@@ -1,7 +1,6 @@
 package me.zachcheatham.rnetremote.rnet;
 
 import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
@@ -49,7 +48,7 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     public void onCreate()
     {
         super.onCreate();
-        server = new RNetServer(getBluetoothName());
+        server = new RNetServer();
         server.addStateListener(this);
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
@@ -129,7 +128,7 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     }
 
     @Override
-    public void connected() {}
+    public void ready() {}
 
     @Override
     public void serialStateChanged(boolean connected) {}
@@ -199,10 +198,5 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     private void cancelShutdown()
     {
         handler.removeCallbacks(delayedShutdown);
-    }
-
-    private static String getBluetoothName()
-    {
-        return BluetoothAdapter.getDefaultAdapter().getName();
     }
 }
