@@ -1,4 +1,4 @@
-package zachcheatham.me.rnetremote;
+package me.zachcheatham.rnetremote;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("zachcheatham.me.rnetremote", appContext.getPackageName());
+        assertEquals("me.zachcheatham.rnetremote", appContext.getPackageName());
     }
 }
