@@ -366,7 +366,13 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void cleared()
     {
-        finish();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                finish();
+            }
+        });
     }
 
     @Override

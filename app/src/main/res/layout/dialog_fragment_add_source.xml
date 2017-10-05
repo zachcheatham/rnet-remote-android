@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:paddingLeft="@dimen/dialog_padding"
+              android:paddingRight="@dimen/dialog_padding"
+              android:paddingTop="@dimen/input_spacing_vert_dense">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_layout_source_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/input_spacing_horz_half">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edit_text_source_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/label_source_num"
+            android:inputType="number"
+            android:maxLines="1"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_layout_source_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edit_text_source_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/label_source_name"
+            android:inputType="textCapWords"
+            android:maxLines="1"/>
+    </android.support.design.widget.TextInputLayout>
+
+</LinearLayout>

@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.menu_remote, menu);
+        getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
 
@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         menu.findItem(R.id.action_power_all).setVisible(connected);
         menu.findItem(R.id.action_change_server).setVisible(connected);
         menu.findItem(R.id.action_add_zone).setVisible(connected);
+        menu.findItem(R.id.action_manage_sources).setVisible(connected);
 
         return true;
     }
@@ -177,6 +178,11 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         case R.id.action_add_zone:
             AddZoneDialogFragment dialog = new AddZoneDialogFragment();
             dialog.show(getSupportFragmentManager(), "AddZoneDialogFragment");
+            return true;
+        case R.id.action_manage_sources:
+            Intent intent = new Intent(this, ManageSourcesActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
             return true;
         }
 

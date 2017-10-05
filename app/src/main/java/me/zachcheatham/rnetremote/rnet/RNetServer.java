@@ -13,6 +13,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SDeleteSource;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SDeleteZone;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SIntent;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneName;
@@ -98,6 +99,20 @@ public class RNetServer
             if (!remotelyTriggered)
                 new SendPacketTask().execute(new PacketC2SDeleteZone(controllerId, zoneId));
         }
+    }
+
+    public void createSource(int sourceId, String sourceName)
+    {
+        Source source = new Source(sourceId, this);
+        source.setName(sourceName, false);
+        sources.put(sourceId, source);
+    }
+
+    public void deleteSource(int sourceId)
+    {
+        sources.remove(sourceId);
+        new SendPacketTask().execute(new PacketC2SDeleteSource(sourceId));
+        // We don't update our listeners here because the server is going to send us a packet back...
     }
 
     public boolean isRunning()
@@ -339,6 +354,7 @@ public class RNetServer
 
                 for (ZonesListener listener : zonesListeners)
                     listener.sourcesChanged();
+                break;
             }
             case PacketS2CSourceName.ID:
             {

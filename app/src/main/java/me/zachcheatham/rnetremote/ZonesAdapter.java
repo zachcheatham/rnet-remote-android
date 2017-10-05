@@ -64,13 +64,15 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         {
             server.addZoneListener(this);
             if (server.isReady())
-                handleIndex();
-
-            sourcesAdapter.clear();
-            for (int i = 0; i < server.getSources().size(); i++)
             {
-                int key = server.getSources().keyAt(i);
-                sourcesAdapter.add(server.getSources().get(key).getName());
+                sourcesAdapter.clear();
+                for (int i = 0; i < server.getSources().size(); i++)
+                {
+                    int key = server.getSources().keyAt(i);
+                    sourcesAdapter.add(server.getSources().get(key).getName());
+                }
+
+                handleIndex();
             }
 
             activity.runOnUiThread(new Runnable() {

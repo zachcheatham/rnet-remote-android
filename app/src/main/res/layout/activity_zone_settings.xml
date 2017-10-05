@@ -92,7 +92,7 @@
             <Switch
                 android:id="@+id/switch_loudness"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/list_single_line_height"
+                android:layout_height="@dimen/list_single_line_height_dense"
                 android:text="@string/label_loudness"
                 android:paddingEnd="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
@@ -282,7 +282,7 @@
             <Switch
                 android:id="@+id/switch_do_not_disturb"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/list_single_line_height"
+                android:layout_height="@dimen/list_single_line_height_dense"
                 android:paddingEnd="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
                 android:text="@string/label_do_not_disturb"
@@ -318,7 +318,7 @@
             <LinearLayout
                 android:id="@+id/item_delete_zone"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/list_single_line_height"
+                android:layout_height="@dimen/list_single_line_height_dense"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="vertical"

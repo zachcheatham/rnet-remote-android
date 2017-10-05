@@ -1,5 +1,7 @@
 package me.zachcheatham.rnetremote.rnet;
 
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SSourceName;
+
 public class Source
 {
     private final int sourceId;
@@ -16,10 +18,12 @@ public class Source
     {
         this.name = name;
 
+        for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            listener.sourcesChanged();
+
         if (!setRemotely)
-        {
-            // TODO Send rename packet
-        }
+            server.new SendPacketTask().execute(
+                    new PacketC2SSourceName(sourceId, name));
     }
 
     public String getName()

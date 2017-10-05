@@ -6,29 +6,38 @@
 
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name_short"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ZoneSettingsActivity"
-            android:label="@string/activity_name_zone"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/activity_name_zone_settings"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".ManageSourcesActivity"
+            android:label="@string/activity_name_manage_sources"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".rnet.RNetServerService"
             android:enabled="true"
             android:exported="false"/>
+
     </application>
 
 </manifest>

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">RNet Remote</string>
     <string name="app_name_short">RNet</string>
-    <string name="activity_name_zone">Zone Settings</string>
+    <string name="activity_name_zone_settings">Zone Settings</string>
     <string name="action_change_server">Change Controller</string>
     <string name="action_power_all">All On/Off</string>
     <string name="action_enter_ip">Manually enter address…</string>
@@ -37,10 +37,19 @@
     <string name="action_add_zone">Add Zone</string>
     <string name="action_add">Add</string>
     <string name="error_empty_zone_name">Enter a zone name</string>
+    <string name="error_empty_source_name">Enter a source name</string>
     <string name="error_long_zone_name">Zone name is too long</string>
+    <string name="error_long_source_name">Source name is too long</string>
     <string name="error_empty_zone_id">Enter zone #</string>
+    <string name="error_empty_source_id">Enter source #</string>
     <string name="error_id_range">Value must be 1–99</string>
     <string name="error_empty_controller_id">Enter controller #</string>
     <string name="error_zone_exists">A zone with that ID already exists.</string>
+    <string name="error_source_exists">A source with that ID already exists.</string>
     <string name="label_turn_on_volume">Turn On Volume</string>
+    <string name="action_manage_sources">Manage Sources</string>
+    <string name="activity_name_manage_sources">Manage Sources</string>
+    <string name="action_add_source">Add Source</string>
+    <string name="label_source_name">Source Name</string>
+    <string name="label_source_num">Source #</string>
 </resources>
