@@ -31,11 +31,15 @@ import me.zachcheatham.rnetremote.rnet.packet.RNetPacket;
 
 public class RNetServer
 {
+    public static final int INTENT_ACTION = 0x01;
+    public static final int INTENT_SUBSCRIBE = 0x02;
+
     private static final String LOG_TAG = "RNetServer";
 
     private SocketChannel channel;
     private InetAddress address;
     private int port;
+    private int intent;
 
     private final ByteBuffer pendingBuffer = ByteBuffer.allocate(255);
     private int pendingPacketType = 0;
@@ -50,9 +54,10 @@ public class RNetServer
     private List<StateListener> stateListeners = new ArrayList<>();
     private List<ZonesListener> zonesListeners = new ArrayList<>();
 
-    RNetServer()
+    RNetServer(int intent)
     {
         pendingBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        this.intent = intent;
     }
 
     void setConnectionInfo(InetAddress address, int port)
@@ -127,7 +132,7 @@ public class RNetServer
 
     public boolean isReady()
     {
-        return receivedIndex;
+        return receivedIndex || (intent == INTENT_ACTION && isConnected());
     }
 
     /*public boolean isSerialConnected()
@@ -211,7 +216,7 @@ public class RNetServer
         zonesListeners.remove(listener);
     }
 
-    private void run()
+    public void run()
     {
         if (channel != null)
         {
@@ -239,7 +244,11 @@ public class RNetServer
 
             Log.d(LOG_TAG, "Server socket opened.");
 
-            sendPacket(new PacketC2SIntent(PacketC2SIntent.INTENT_SUBSCRIBE));
+            sendPacket(new PacketC2SIntent(intent));
+            if (intent == INTENT_ACTION)
+                for (StateListener listener : stateListeners)
+                    listener.ready();
+
             readChannel();
 
             try
@@ -482,7 +491,7 @@ public class RNetServer
             for (ZonesListener listener : zonesListeners)
                 listener.indexReceived();
 
-            if (!receivedIndex)
+            if (!receivedIndex && intent == INTENT_SUBSCRIBE)
                 for (StateListener listener : stateListeners)
                     listener.ready();
 
@@ -490,7 +499,7 @@ public class RNetServer
         }
     }
 
-    private void sendPacket(RNetPacket packet)
+    public void sendPacket(RNetPacket packet)
     {
         if (channel != null)
         {

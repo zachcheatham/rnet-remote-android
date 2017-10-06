@@ -48,7 +48,7 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     public void onCreate()
     {
         super.onCreate();
-        server = new RNetServer();
+        server = new RNetServer(RNetServer.INTENT_SUBSCRIBE);
         server.addStateListener(this);
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
@@ -168,13 +168,6 @@ public class RNetServerService extends Service implements RNetServer.StateListen
         this.name = name;
         this.address = address;
         this.port = port;
-
-        SharedPreferences settings = getSharedPreferences(PREFS, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("server_name", name);
-        editor.putString("server_address", address.getHostAddress());
-        editor.putInt("server_port", port);
-        editor.apply();
     }
 
     public void startServerConnection()

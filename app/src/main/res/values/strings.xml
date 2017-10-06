@@ -52,4 +52,12 @@
     <string name="action_add_source">Add Source</string>
     <string name="label_source_name">Source Name</string>
     <string name="label_source_num">Source #</string>
+    <string name="shortcut_all_on">All On</string>
+    <string name="shortcut_all_off">All Off</string>
+    <string name="shortcut_all_on_long">Turn all zones on</string>
+    <string name="shortcut_all_off_long">Turn all zones off</string>
+    <string name="shortcut_toggle_mute">Toggle mute</string>
+    <string name="toast_all_zones_on">All zones turned on</string>
+    <string name="toast_all_zones_off">All zones turned off</string>
+    <string name="toast_connect_error">Unable to connect to RNet controller</string>
 </resources>
