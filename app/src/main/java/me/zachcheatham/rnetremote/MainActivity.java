@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -106,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         connectingPlaceholderButton = (Button) findViewById(R.id.button_connecting_placeholder_connect);
         connectingPlaceholderButton.setOnClickListener(this);
 
+        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+
         //noinspection ConstantConditions
         getSupportActionBar().setTitle("");
     }
@@ -147,6 +151,9 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         menu.findItem(R.id.action_add_zone).setVisible(connected);
         menu.findItem(R.id.action_manage_sources).setVisible(connected);
 
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
+            menu.findItem(R.id.settings).setVisible(false);
+
         return true;
     }
 
@@ -165,7 +172,9 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             }
             else if (server.anyZonesOn())
             {
-                PopupMenu menu = new PopupMenu(new ContextThemeWrapper(this, R.style.AppTheme_PopupOverlay), findViewById(R.id.action_power_all));
+                PopupMenu menu = new PopupMenu(
+                        new ContextThemeWrapper(this, R.style.AppTheme_PopupOverlay),
+                        findViewById(R.id.action_power_all));
                 menu.setOnMenuItemClickListener(this);
                 menu.inflate(R.menu.all_on_off_popup);
                 menu.show();
@@ -180,10 +189,19 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             dialog.show(getSupportFragmentManager(), "AddZoneDialogFragment");
             return true;
         case R.id.action_manage_sources:
+        {
             Intent intent = new Intent(this, ManageSourcesActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
             return true;
+        }
+        case R.id.settings:
+        {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
+            return true;
+        }
         }
 
         return super.onOptionsItemSelected(item);

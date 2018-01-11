@@ -13,14 +13,22 @@ import java.net.UnknownHostException;
 
 import me.zachcheatham.rnetremote.R;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SMute;
+import me.zachcheatham.rnetremote.rnet.packet.RNetPacket;
 
 public class ActionService extends IntentService implements RNetServer.StateListener
 {
+    public static final String EXTRA_SILENT = "silent";
+    public static final String EXTRA_MUTED = "mute";
+    public static final String EXTRA_MUTE_TIME = "mute_time";
+
     private static final String PREFS = "rnet_remote";
 
     private RNetServer server;
     private Handler handler;
-    private String action;
+    private RNetPacket packet;
+    private boolean silent;
+    private int completeMessage;
 
     public ActionService()
     {
@@ -56,7 +64,39 @@ public class ActionService extends IntentService implements RNetServer.StateList
         }
 
         assert intent != null;
-        action = intent.getAction();
+        switch (intent.getAction())
+        {
+        case "me.zachcheatham.rnetremote.action.ALL_ON":
+            packet = new PacketC2SAllPower(true);
+            completeMessage = R.string.toast_all_zones_on;
+            break;
+        case "me.zachcheatham.rnetremote.action.ALL_OFF":
+            packet = new PacketC2SAllPower(false);
+            completeMessage = R.string.toast_all_zones_off;
+            break;
+        case "me.zachcheatham.rnetremote.action.MUTE":
+        {
+            boolean muted = intent.getBooleanExtra(EXTRA_MUTED, false);
+            short fadeTime = intent.getShortExtra(EXTRA_MUTE_TIME, (short) 0);
+
+            packet = new PacketC2SMute(muted ? 0x01 : 0x00, fadeTime);
+
+            if (muted)
+                completeMessage = R.string.toast_system_muted;
+            else
+                completeMessage = R.string.toast_system_unmuted;
+
+            break;
+        }
+        case "me.zachcheatham.rnetremote.action.TOGGLE_MUTE":
+        {
+            short fadeTime = intent.getShortExtra(EXTRA_MUTE_TIME, (short)0);
+            packet = new PacketC2SMute(PacketC2SMute.MUTE_TOGGLE, fadeTime);
+            completeMessage = R.string.toast_system_mute_toggled;
+        }
+        }
+
+        silent = intent.getBooleanExtra(EXTRA_SILENT, false);
 
         server.addStateListener(this);
         server.run();
@@ -74,18 +114,9 @@ public class ActionService extends IntentService implements RNetServer.StateList
     @Override
     public void ready()
     {
-        switch (action)
-        {
-        case "me.zachcheatham.rnetremote.action.ALL_ON":
-            server.sendPacket(new PacketC2SAllPower(true));
-            sendToast(R.string.toast_all_zones_on);
-            break;
-        case "me.zachcheatham.rnetremote.action.ALL_OFF":
-            server.sendPacket(new PacketC2SAllPower(false));
-            sendToast(R.string.toast_all_zones_off);
-            break;
-        }
-
+        server.sendPacket(packet);
+        if (!silent)
+            sendToast(completeMessage);
         server.disconnect();
         server.removeStateListener(this);
     }

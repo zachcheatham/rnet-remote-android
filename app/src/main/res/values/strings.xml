@@ -60,4 +60,16 @@
     <string name="toast_all_zones_on">All zones turned on</string>
     <string name="toast_all_zones_off">All zones turned off</string>
     <string name="toast_connect_error">Unable to connect to RNet controller</string>
+    <string name="toast_system_unmuted">Unmuted</string>
+    <string name="toast_system_muted">Muted</string>
+    <string name="toast_system_mute_toggled">Toggled mute</string>
+
+    <string name="settings">Settings</string>
+    <string name="setting_mute_during_call">Mute during call</string>
+    <string name="setting_mute_during_call_desc">Mute entire system during a phone call</string>
+    <string name="setting_mute_on_ring">Mute on ring</string>
+    <string name="setting_mute_on_ring_desc">Mute entire system when the phone is ringing</string>
+
+    <string name="explanation_phone">In order to mute RNet when you make or receive calls, you will have to permit this app to see your phone\'s current call state.</string>
+    <string name="permission_error_phone">Since you\'ve denied this app\'s access to your phone\'s call state, automatically muting RNet when you make or receive calls is not possible.</string>
 </resources>

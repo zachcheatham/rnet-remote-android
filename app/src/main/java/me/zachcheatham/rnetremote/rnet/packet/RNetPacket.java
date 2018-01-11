@@ -40,6 +40,11 @@ public abstract class RNetPacket
         buffer.put((byte) (i & 0xff));
     }
 
+    void writeUnsignedShort(int i)
+    {
+        buffer.putShort((short) (i & 0xffff));
+    }
+
     int readUnsignedByte()
     {
         return (buffer.get() & 0xff);
