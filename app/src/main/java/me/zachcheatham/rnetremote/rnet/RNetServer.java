@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.NotYetConnectedException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneIndex;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneMaxVolume;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneParameter;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZonePower;
@@ -461,6 +463,19 @@ public class RNetServer
                 }
                 break;
             }
+            case PacketS2CZoneMaxVolume.ID:
+            {
+                PacketS2CZoneMaxVolume packet = new PacketS2CZoneMaxVolume(buffer);
+                if (zones.get(packet.getControllerId()) != null)
+                {
+                    Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
+                    if (zone != null) {
+                        zone.setMaxVolume(packet.getMaxVolume(), true);
+                    }
+                }
+
+                break;
+            }
             default:
                 Log.w(LOG_TAG, String.format("Received invalid packet %d", packetType));
             }
@@ -507,7 +522,7 @@ public class RNetServer
             {
                 channel.write(ByteBuffer.wrap(packet.getData()));
             }
-            catch (IOException e)
+            catch (IOException | NotYetConnectedException e)
             {
                 e.printStackTrace();
             }
@@ -572,6 +587,6 @@ public class RNetServer
 
     public enum ZoneChangeType
     {
-        NAME, POWER, VOLUME, SOURCE, PARAMETER
+        NAME, POWER, VOLUME, SOURCE, MAX_VOLUME, PARAMETER
     }
 }

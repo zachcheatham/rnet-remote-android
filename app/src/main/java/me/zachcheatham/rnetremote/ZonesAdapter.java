@@ -121,6 +121,8 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             if (!holder.seekBar.isPressed())
                 holder.seekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
 
+            holder.seekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2));
+
             if (zone.getPowered())
             {
                 holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorAccent));

@@ -89,6 +89,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     private Switch doNotDisturbSwitch;
     private TextView turnOnVolumeText;
     private SeekBar turnOnVolumeSlider;
+    private TextView maxVolumeText;
+    private SeekBar maxVolumeSlider;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -122,6 +124,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         View deleteItem = findViewById(R.id.item_delete_zone);
         this.turnOnVolumeText = (TextView) findViewById(R.id.text_turn_on_volume);
         this.turnOnVolumeSlider = (SeekBar) findViewById(R.id.seek_bar_turn_on_volume);
+        this.maxVolumeText = (TextView) findViewById(R.id.text_max_volume);
+        this.maxVolumeSlider = (SeekBar) findViewById(R.id.seek_bar_max_volume);
 
         zoneIdText.setText(getResources().getString(R.string.format_zone_id, controllerId + 1, zoneId + 1));
         zoneNameItem.setOnClickListener(this);
@@ -131,6 +135,7 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         this.loudnessSwitch.setOnCheckedChangeListener(this);
         this.doNotDisturbSwitch.setOnCheckedChangeListener(this);
         this.turnOnVolumeSlider.setOnSeekBarChangeListener(this);
+        this.maxVolumeSlider.setOnSeekBarChangeListener(this);
         partyModeItem.setOnClickListener(this);
         deleteItem.setOnClickListener(this);
     }
@@ -189,6 +194,9 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
                 if (!turnOnVolumeSlider.isPressed())
                     turnOnVolumeSlider.setProgress(
                             (int) Math.floor(((Integer) zone.getParameter(Zone.PARAMETER_TURN_ON_VOLUME)) / 2));
+                if (!maxVolumeSlider.isPressed())
+                    maxVolumeSlider.setProgress(
+                            (int) Math.floor((zone.getMaxVolume()) / 2));
                 loudnessSwitch.setChecked((Boolean) zone.getParameter(Zone.PARAMETER_LOUDNESS));
                 doNotDisturbSwitch.setChecked((Boolean) zone.getParameter(Zone.PARAMETER_DO_NOT_DISTURB));
 
@@ -289,6 +297,11 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
             if (user)
                 zone.setParameter(Zone.PARAMETER_TURN_ON_VOLUME, value * 2, false);
             break;
+        case R.id.seek_bar_max_volume:
+            maxVolumeText.setText((value * 2) + "");
+            if (user)
+                zone.setMaxVolume(value * 2, false);
+            break;
         }
     }
 
@@ -381,7 +394,7 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void zoneChanged(Zone zone, boolean setRemotely, RNetServer.ZoneChangeType type)
     {
-        if (setRemotely && zone == this.zone && (type == RNetServer.ZoneChangeType.PARAMETER || type == RNetServer.ZoneChangeType.NAME))
+        if (setRemotely && zone == this.zone && (type == RNetServer.ZoneChangeType.PARAMETER || type == RNetServer.ZoneChangeType.NAME || type == RNetServer.ZoneChangeType.MAX_VOLUME))
             applyZoneParameters();
     }
 

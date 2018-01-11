@@ -2,6 +2,7 @@ package me.zachcheatham.rnetremote.rnet;
 
 import android.util.Log;
 
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneMaxVolume;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneParameter;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZonePower;
@@ -31,6 +32,7 @@ public class Zone
     private String name = "Unknown";
     private boolean power;
     private int volume;
+    private int maxVolume = 100;
     private int sourceId;
 
     private final Object[] parameters = new Object[9];
@@ -131,6 +133,27 @@ public class Zone
     public int getVolume()
     {
         return volume;
+    }
+
+    public void setMaxVolume(int maxVolume, boolean setRemotely)
+    {
+        if (maxVolume != this.maxVolume)
+        {
+            this.maxVolume = maxVolume;
+
+            Log.i(LOG_TAG, String.format("Zone #%d-%d max volume set to %d", controllerId, zoneId, maxVolume));
+
+            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+                listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.MAX_VOLUME);
+
+            if (!setRemotely)
+                server.new SendPacketTask().execute(new PacketC2SZoneMaxVolume(controllerId, zoneId, maxVolume));
+        }
+    }
+
+    public int getMaxVolume()
+    {
+        return maxVolume;
     }
 
     public void setSourceId(int sourceId, boolean setRemotely)

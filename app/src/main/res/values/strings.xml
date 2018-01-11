@@ -72,4 +72,5 @@
 
     <string name="explanation_phone">In order to mute RNet when you make or receive calls, you will have to permit this app to see your phone\'s current call state.</string>
     <string name="permission_error_phone">Since you\'ve denied this app\'s access to your phone\'s call state, automatically muting RNet when you make or receive calls is not possible.</string>
+    <string name="label_max_volume">Maximum Volume</string>
 </resources>
