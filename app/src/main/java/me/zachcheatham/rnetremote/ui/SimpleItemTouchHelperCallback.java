@@ -28,7 +28,10 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder)
     {
-        return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
+        if (recyclerView.getLayoutManager() instanceof GridAutofitLayoutManager)
+            return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,  0);
+        else
+            return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
     }
 
     @Override

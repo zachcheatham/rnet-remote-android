@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -28,6 +29,7 @@ import java.net.InetAddress;
 import me.zachcheatham.rnetremote.rnet.RNetServer;
 import me.zachcheatham.rnetremote.rnet.RNetServerService;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
+import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
 
 public class MainActivity extends AppCompatActivity implements SelectServerDialogFragment.SelectServerListener,
         RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
@@ -93,13 +95,18 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Configuration config = getResources().getConfiguration();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         zoneAdapter = new ZonesAdapter(this);
 
         zoneList = (RecyclerView) findViewById(R.id.list_zones);
-        zoneList.setLayoutManager(new LinearLayoutManager(this));
+        if (config.smallestScreenWidthDp < 600)
+            zoneList.setLayoutManager(new LinearLayoutManager(this));
+        else
+            zoneList.setLayoutManager(new GridAutofitLayoutManager(this, 350));
         ((SimpleItemAnimator) zoneList.getItemAnimator()).setSupportsChangeAnimations(false);
         zoneList.setAdapter(zoneAdapter);
 

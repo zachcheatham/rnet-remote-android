@@ -1,9 +1,11 @@
 package me.zachcheatham.rnetremote;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.SparseArray;
@@ -21,7 +23,6 @@ import android.widget.TextView;
 import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import me.zachcheatham.rnetremote.rnet.RNetServer;
@@ -43,7 +44,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private ArrayAdapter<String> sourcesAdapter;
     private RecyclerView recyclerView;
 
-    
     ZonesAdapter(Activity a)
     {
         this.activity = a;
@@ -127,12 +127,13 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             {
                 holder.power.setColorFilter(ContextCompat.getColor(activity, R.color.colorAccent));
                 holder.seekBar.setEnabled(true);
-            } else
+            }
+            else
             {
                 holder.power
                         .setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
                 holder.seekBar.setEnabled(false);
-                if (holder.sourcesContainer.isExpanded())
+                if (holder.sourcesContainer != null && holder.sourcesContainer.isExpanded())
                 {
                     holder.sourcesContainer.collapse();
                     holder.primaryDivider
@@ -140,10 +141,14 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 }
             }
 
-            if (holder.sources.getAdapter() == null)
-                holder.sources.setAdapter(sourcesAdapter);
+            if (holder.sources != null)
+            {
+                if (holder.sources.getAdapter() == null)
+                    holder.sources.setAdapter(sourcesAdapter);
 
-            holder.sources.setItemChecked(server.getSources().indexOfKey(zone.getSourceId()), true);
+                holder.sources
+                        .setItemChecked(server.getSources().indexOfKey(zone.getSourceId()), true);
+            }
         }
     }
 
@@ -159,7 +164,10 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public boolean onItemMove(int fromPosition, int toPosition)
     {
-        Collections.swap(zoneIndex, fromPosition, toPosition);
+        int[] i = zoneIndex.get(fromPosition);
+        zoneIndex.remove(fromPosition);
+        zoneIndex.add(toPosition, i);
+
         notifyItemMoved(fromPosition, toPosition);
         saveIndex();
         return true;
@@ -190,8 +198,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                     if (server.getZone(zoneInfo[0], zoneInfo[1]) == null)
                         remove.add(zoneInfo);
                 }
-                for (int[] zoneInfo : remove)
-                    zoneIndex.remove(zoneInfo);
+                zoneIndex.removeAll(remove);
                 remove.clear();
             }
 
@@ -370,16 +377,27 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
             power.setOnClickListener(this);
             seekBar.setOnSeekBarChangeListener(this);
-            sources.setAdapter(sourcesAdapter);
-            sources.setOnItemClickListener(this);
-            sourcesContainer.setOnExpansionUpdateListener(this);
+
+            if (sources != null)
+            {
+                sources.setAdapter(sourcesAdapter);
+                sources.setOnItemClickListener(this);
+                sourcesContainer.setOnExpansionUpdateListener(this);
+            }
 
             View header = itemView.findViewById(R.id.header);
-            header.setOnClickListener(this);
-            header.setOnLongClickListener(this);
+            if (header != null)
+            {
+                header.setOnClickListener(this);
+                header.setOnLongClickListener(this);
+            }
 
             ImageButton tuneSettings = itemView.findViewById(R.id.settings);
             tuneSettings.setOnClickListener(this);
+
+            ImageButton sourceSelect = itemView.findViewById(R.id.source_select);
+            if (sourceSelect != null)
+                sourceSelect.setOnClickListener(this);
         }
 
         @Override
@@ -402,7 +420,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         public void onClick(View view)
         {
             int[] id = zoneIndex.get(getAdapterPosition());
-            Zone zone = server.getZone(id[0], id[1]);
+            final Zone zone = server.getZone(id[0], id[1]);
 
             switch (view.getId())
             {
@@ -410,12 +428,14 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                     if (sourcesContainer.isExpanded())
                     {
                         sourcesContainer.collapse();
-                        primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDivider));
+                        primaryDivider
+                                .setBackground(activity.getDrawable(R.color.colorCardDivider));
                     }
                     else if (zone.getPowered())
                     {
                         sourcesContainer.expand();
-                        primaryDivider.setBackground(activity.getDrawable(R.color.colorCardDividerDarker));
+                        primaryDivider.setBackground(
+                                activity.getDrawable(R.color.colorCardDividerDarker));
                     }
                     break;
                 case R.id.power:
@@ -427,6 +447,22 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                     intent.putExtra("zid", zone.getZoneId());
                     activity.startActivity(intent);
                     activity.overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
+                    break;
+                case R.id.source_select:
+                    new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AppTheme_DialogOverlay))
+                            .setTitle(activity.getResources().getString(R.string.dialog_select_source, zone.getName()))
+                            .setSingleChoiceItems(sourcesAdapter,
+                                    server.getSources().indexOfKey(zone.getSourceId()),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i)
+                                        {
+                                            zone.setSourceId(server.getSources().keyAt(i), false);
+                                            dialogInterface.dismiss();
+                                        }
+                                    })
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
                     break;
             }
         }
