@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.net.InetAddress;
@@ -90,7 +89,7 @@ public class ActionService extends IntentService implements RNetServer.StateList
         }
         case "me.zachcheatham.rnetremote.action.TOGGLE_MUTE":
         {
-            short fadeTime = intent.getShortExtra(EXTRA_MUTE_TIME, (short)0);
+            short fadeTime = intent.getShortExtra(EXTRA_MUTE_TIME, (short) 0);
             packet = new PacketC2SMute(PacketC2SMute.MUTE_TOGGLE, fadeTime);
             completeMessage = R.string.toast_system_mute_toggled;
         }
@@ -129,7 +128,8 @@ public class ActionService extends IntentService implements RNetServer.StateList
 
     private void sendToast(final int messageId)
     {
-        handler.post(new Runnable() {
+        handler.post(new Runnable()
+        {
             @Override
             public void run()
             {

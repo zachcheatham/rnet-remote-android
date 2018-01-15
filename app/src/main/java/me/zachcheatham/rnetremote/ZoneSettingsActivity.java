@@ -13,7 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -43,6 +42,20 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     private RNetServer server;
     private Zone zone;
     private RNetServerService serverService;
+    private TextView zoneNameText;
+    private SeekBar balanceSlider;
+    private TextView balanceText;
+    private SeekBar bassSlider;
+    private TextView bassText;
+    private SeekBar trebleSlider;
+    private TextView trebleText;
+    private Switch loudnessSwitch;
+    private TextView partyModeText;
+    private Switch doNotDisturbSwitch;
+    private TextView turnOnVolumeText;
+    private SeekBar turnOnVolumeSlider;
+    private TextView maxVolumeText;
+    private SeekBar maxVolumeSlider;
     private ServiceConnection serviceConnection = new ServiceConnection()
     {
         @Override
@@ -76,21 +89,6 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
             server = null;
         }
     };
-
-    private TextView zoneNameText;
-    private SeekBar balanceSlider;
-    private TextView balanceText;
-    private SeekBar bassSlider;
-    private TextView bassText;
-    private SeekBar trebleSlider;
-    private TextView trebleText;
-    private Switch loudnessSwitch;
-    private TextView partyModeText;
-    private Switch doNotDisturbSwitch;
-    private TextView turnOnVolumeText;
-    private SeekBar turnOnVolumeSlider;
-    private TextView maxVolumeText;
-    private SeekBar maxVolumeSlider;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -127,7 +125,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         this.maxVolumeText = (TextView) findViewById(R.id.text_max_volume);
         this.maxVolumeSlider = (SeekBar) findViewById(R.id.seek_bar_max_volume);
 
-        zoneIdText.setText(getResources().getString(R.string.format_zone_id, controllerId + 1, zoneId + 1));
+        zoneIdText.setText(
+                getResources().getString(R.string.format_zone_id, controllerId + 1, zoneId + 1));
         zoneNameItem.setOnClickListener(this);
         this.balanceSlider.setOnSeekBarChangeListener(this);
         this.bassSlider.setOnSeekBarChangeListener(this);
@@ -177,7 +176,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
 
     private void applyZoneParameters()
     {
-        runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -186,19 +186,23 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
 
                 zoneNameText.setText(zone.getName());
                 if (!balanceSlider.isPressed())
-                    balanceSlider.setProgress(((Integer) zone.getParameter(Zone.PARAMETER_BALANCE)) + 10);
+                    balanceSlider.setProgress(
+                            ((Integer) zone.getParameter(Zone.PARAMETER_BALANCE)) + 10);
                 if (!bassSlider.isPressed())
                     bassSlider.setProgress(((Integer) zone.getParameter(Zone.PARAMETER_BASS)) + 10);
                 if (!trebleSlider.isPressed())
-                    trebleSlider.setProgress(((Integer) zone.getParameter(Zone.PARAMETER_TREBLE)) + 10);
+                    trebleSlider
+                            .setProgress(((Integer) zone.getParameter(Zone.PARAMETER_TREBLE)) + 10);
                 if (!turnOnVolumeSlider.isPressed())
                     turnOnVolumeSlider.setProgress(
-                            (int) Math.floor(((Integer) zone.getParameter(Zone.PARAMETER_TURN_ON_VOLUME)) / 2));
+                            (int) Math.floor(((Integer) zone
+                                    .getParameter(Zone.PARAMETER_TURN_ON_VOLUME)) / 2));
                 if (!maxVolumeSlider.isPressed())
                     maxVolumeSlider.setProgress(
                             (int) Math.floor((zone.getMaxVolume()) / 2));
                 loudnessSwitch.setChecked((Boolean) zone.getParameter(Zone.PARAMETER_LOUDNESS));
-                doNotDisturbSwitch.setChecked((Boolean) zone.getParameter(Zone.PARAMETER_DO_NOT_DISTURB));
+                doNotDisturbSwitch
+                        .setChecked((Boolean) zone.getParameter(Zone.PARAMETER_DO_NOT_DISTURB));
 
                 switch ((int) zone.getParameter(Zone.PARAMETER_PARTY_MODE))
                 {
@@ -222,11 +226,13 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         switch (view.getId())
         {
         case R.id.item_name:
-            @SuppressLint("InflateParams") View textContainer = LayoutInflater.from(this).inflate(R.layout.dialog_text, null, false);
+            @SuppressLint("InflateParams") View textContainer = LayoutInflater.from(this).inflate(
+                    R.layout.dialog_text, null, false);
             final EditText input = textContainer.findViewById(R.id.dialog_text);
             input.setText(zone.getName());
             input.setSelection(zone.getName().length());
-            AlertDialog dialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay))
+            AlertDialog dialog = new AlertDialog.Builder(
+                    new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay))
                     .setTitle(R.string.label_zone_name)
                     .setView(textContainer)
                     .setPositiveButton(R.string.action_rename, new DialogInterface.OnClickListener()
@@ -243,13 +249,15 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
                     })
                     .setNegativeButton(android.R.string.cancel, null)
                     .create();
-            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            dialog.getWindow()
+                  .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             dialog.show();
 
             input.requestFocus();
             break;
         case R.id.item_party_mode:
-            PopupMenu menu = new PopupMenu(new ContextThemeWrapper(this, R.style.AppTheme_PopupOverlay), view);
+            PopupMenu menu = new PopupMenu(
+                    new ContextThemeWrapper(this, R.style.AppTheme_PopupOverlay), view);
             menu.setOnMenuItemClickListener(this);
             menu.inflate(R.menu.party_mode_popup);
             menu.show();
@@ -357,7 +365,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     public void connectError() {}
 
     @Override
-    public void ready() {
+    public void ready()
+    {
 
     }
 
@@ -367,7 +376,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void disconnected(boolean unexpected)
     {
-        runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -379,7 +389,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void cleared()
     {
-        runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -394,7 +405,9 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void zoneChanged(Zone zone, boolean setRemotely, RNetServer.ZoneChangeType type)
     {
-        if (setRemotely && zone == this.zone && (type == RNetServer.ZoneChangeType.PARAMETER || type == RNetServer.ZoneChangeType.NAME || type == RNetServer.ZoneChangeType.MAX_VOLUME))
+        if (setRemotely && zone == this.zone && (type == RNetServer.ZoneChangeType.PARAMETER ||
+                                                 type == RNetServer.ZoneChangeType.NAME ||
+                                                 type == RNetServer.ZoneChangeType.MAX_VOLUME))
             applyZoneParameters();
     }
 
@@ -403,7 +416,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     {
         if (controllerId == this.controllerId && zoneId == this.zoneId)
         {
-            runOnUiThread(new Runnable() {
+            runOnUiThread(new Runnable()
+            {
                 @Override
                 public void run()
                 {

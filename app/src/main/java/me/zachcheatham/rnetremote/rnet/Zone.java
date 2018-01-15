@@ -11,7 +11,6 @@ import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneVolume;
 
 public class Zone
 {
-    private static final String LOG_TAG = "Zone";
     public static final int PARAMETER_BASS = 0;
     public static final int PARAMETER_TREBLE = 1;
     public static final int PARAMETER_LOUDNESS = 2;
@@ -24,18 +23,16 @@ public class Zone
     public static final int PARAMETER_PARTY_MODE_ON = 1;
     public static final int PARAMETER_PARTY_MODE_MASTER = 2;
     public static final int PARAMETER_FRONT_AV_ENABLE = 8;
-
+    private static final String LOG_TAG = "Zone";
     private final int controllerId;
     private final int zoneId;
     private final RNetServer server;
-
+    private final Object[] parameters = new Object[9];
     private String name = "Unknown";
     private boolean power;
     private int volume;
     private int maxVolume = 100;
     private int sourceId;
-
-    private final Object[] parameters = new Object[9];
 
     Zone(int controllerId, int zoneId, RNetServer server)
     {
@@ -141,13 +138,15 @@ public class Zone
         {
             this.maxVolume = maxVolume;
 
-            Log.i(LOG_TAG, String.format("Zone #%d-%d max volume set to %d", controllerId, zoneId, maxVolume));
+            Log.i(LOG_TAG, String.format("Zone #%d-%d max volume set to %d", controllerId, zoneId,
+                    maxVolume));
 
             for (RNetServer.ZonesListener listener : server.getZonesListeners())
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.MAX_VOLUME);
 
             if (!setRemotely)
-                server.new SendPacketTask().execute(new PacketC2SZoneMaxVolume(controllerId, zoneId, maxVolume));
+                server.new SendPacketTask()
+                        .execute(new PacketC2SZoneMaxVolume(controllerId, zoneId, maxVolume));
         }
     }
 
@@ -190,7 +189,9 @@ public class Zone
         case PARAMETER_BACKGROUND_COLOR:
         case PARAMETER_PARTY_MODE:
             if (!(value instanceof Integer))
-                throw new IllegalArgumentException(String.format("Value must be Integer for %d. Instead got %s", parameterId, value.getClass().toString()));
+                throw new IllegalArgumentException(
+                        String.format("Value must be Integer for %d. Instead got %s", parameterId,
+                                value.getClass().toString()));
             break;
         default:
             if (!(value instanceof Boolean))

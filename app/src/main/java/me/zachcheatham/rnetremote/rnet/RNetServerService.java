@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
-
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -27,7 +26,8 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     private int port;
     private RNetServer server;
 
-    private Runnable delayedShutdown = new Runnable() {
+    private Runnable delayedShutdown = new Runnable()
+    {
         @Override
         public void run()
         {
@@ -35,7 +35,8 @@ public class RNetServerService extends Service implements RNetServer.StateListen
         }
     };
 
-    private Runnable delayedReconnect = new Runnable() {
+    private Runnable delayedReconnect = new Runnable()
+    {
         @Override
         public void run()
         {
@@ -150,14 +151,6 @@ public class RNetServerService extends Service implements RNetServer.StateListen
         return name;
     }
 
-    public class LocalBinder extends Binder
-    {
-        public RNetServerService getService()
-        {
-            return RNetServerService.this;
-        }
-    }
-
     public boolean hasServerInfo()
     {
         return name != null;
@@ -191,5 +184,13 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     private void cancelShutdown()
     {
         handler.removeCallbacks(delayedShutdown);
+    }
+
+    public class LocalBinder extends Binder
+    {
+        public RNetServerService getService()
+        {
+            return RNetServerService.this;
+        }
     }
 }

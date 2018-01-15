@@ -1,7 +1,5 @@
 package me.zachcheatham.rnetremote.rnet.packet;
 
-import android.util.Log;
-
 public class PacketC2SZoneMaxVolume extends RNetPacket
 {
     public PacketC2SZoneMaxVolume(int controllerId, int zoneId, int maxVolume)

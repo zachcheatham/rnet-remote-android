@@ -21,6 +21,7 @@ public abstract class RNetPacket
     }
 
     abstract byte getPacketID();
+
     abstract void parseData();
 
     public byte[] getData()
@@ -57,7 +58,8 @@ public abstract class RNetPacket
         buffer.put((byte) 0x00);
     }
 
-    String readNTString() {
+    String readNTString()
+    {
         byte[] remaining = new byte[this.buffer.remaining()];
         buffer.slice().get(remaining);
 

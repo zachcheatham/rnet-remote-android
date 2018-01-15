@@ -4,9 +4,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,8 +27,8 @@ import me.zachcheatham.rnetremote.ui.SimpleDividerItemDecoration;
 public class ManageSourcesActivity extends AppCompatActivity implements RNetServer.StateListener,
         RNetServer.ZonesListener, AddSourceDialogFragment.AddSourceListener
 {
-    private RNetServer server;
     private final SourcesAdapter sourcesAdapter = new SourcesAdapter();
+    private RNetServer server;
     private boolean ignoreNextUpdate = false; // HACK I hate this
 
     private RNetServerService serverService;
@@ -153,7 +153,8 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
     @Override
     public void disconnected(boolean unexpected)
     {
-        runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable()
+        {
             @Override
             public void run()
             {

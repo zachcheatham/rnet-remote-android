@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import me.zachcheatham.rnetremote.rnet.ActionService;
 
@@ -77,12 +76,13 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
 
     private boolean onNetwork(Context context, String targetNetwork)
     {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         if (networkInfo.isConnected() && (
-            networkInfo.getType() == ConnectivityManager.TYPE_WIFI ||
-            networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET))
+                networkInfo.getType() == ConnectivityManager.TYPE_WIFI ||
+                networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET))
         {
             if (networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET || targetNetwork == null)
             {
@@ -90,7 +90,9 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
             }
             else
             {
-                WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                WifiManager wifiManager = (WifiManager) context.getApplicationContext()
+                                                               .getSystemService(
+                                                                       Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
                 return (wifiInfo != null && targetNetwork.equals(wifiInfo.getSSID()));

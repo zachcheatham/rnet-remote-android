@@ -29,7 +29,8 @@ public class AddSourceDialogFragment extends DialogFragment
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        getDialog().getWindow()
+                   .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     @Override
@@ -67,7 +68,8 @@ public class AddSourceDialogFragment extends DialogFragment
             @Override
             public void onShow(DialogInterface dialogInterface)
             {
-                Button button = ((AlertDialog) dialogInterface).getButton(AlertDialog.BUTTON_POSITIVE);
+                Button button = ((AlertDialog) dialogInterface)
+                        .getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
@@ -75,16 +77,19 @@ public class AddSourceDialogFragment extends DialogFragment
                     {
                         if (validate())
                         {
-                            int sourceId = Integer.parseInt(sourceIdEditText.getText().toString()) - 1;
+                            int sourceId =
+                                    Integer.parseInt(sourceIdEditText.getText().toString()) - 1;
 
                             if (!listener.sourceExists(sourceId))
                             {
                                 dialog.dismiss();
-                                listener.addSource(sourceNameEditText.getText().toString(), sourceId);
+                                listener.addSource(sourceNameEditText.getText().toString(),
+                                        sourceId);
                             }
                             else
                             {
-                                Toast.makeText(getContext(), R.string.error_source_exists, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), R.string.error_source_exists,
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -102,12 +107,14 @@ public class AddSourceDialogFragment extends DialogFragment
         if (sourceNameEditText.length() == 0)
         {
             validated = false;
-            sourceNameInputLayout.setError(getResources().getString(R.string.error_empty_source_name));
+            sourceNameInputLayout
+                    .setError(getResources().getString(R.string.error_empty_source_name));
         }
         else if (sourceNameEditText.length() > 251)
         {
             validated = false;
-            sourceNameInputLayout.setError(getResources().getString(R.string.error_long_source_name));
+            sourceNameInputLayout
+                    .setError(getResources().getString(R.string.error_long_source_name));
         }
         else
         {
@@ -139,6 +146,7 @@ public class AddSourceDialogFragment extends DialogFragment
     interface AddSourceListener
     {
         void addSource(String sourceName, int sourceId);
+
         boolean sourceExists(int sourceId);
     }
 }

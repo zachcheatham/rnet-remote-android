@@ -13,7 +13,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +21,6 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -122,8 +120,10 @@ public class MainActivity extends AppCompatActivity
         zoneList.setAdapter(zoneAdapter);
 
         connectingPlaceholder = findViewById(R.id.connecting_placeholder);
-        connectingPlaceholderText = (TextView) findViewById(R.id.text_view_connecting_placeholder_notice);
-        connectingPlaceholderButton = (Button) findViewById(R.id.button_connecting_placeholder_connect);
+        connectingPlaceholderText = (TextView) findViewById(
+                R.id.text_view_connecting_placeholder_notice);
+        connectingPlaceholderButton = (Button) findViewById(
+                R.id.button_connecting_placeholder_connect);
         connectingPlaceholderButton.setOnClickListener(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
@@ -294,7 +294,8 @@ public class MainActivity extends AppCompatActivity
     {
         setConnectingError(false);
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(
+                Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
@@ -319,7 +320,7 @@ public class MainActivity extends AppCompatActivity
         editor.commit();
 
         serverService.stopServerConnection();
-        while(!serverService.getServer().canStartConnection())
+        while (!serverService.getServer().canStartConnection())
             try {Thread.sleep(500);}
             catch (InterruptedException e) {break;}
 
@@ -342,7 +343,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void connectionInitiated()
     {
-        runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable()
+        {
             @SuppressWarnings("ConstantConditions")
             @Override
             public void run()
@@ -400,7 +402,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void disconnected(final boolean unexpected)
     {
-        runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable()
+        {
             @Override
             public void run()
             {

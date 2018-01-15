@@ -37,13 +37,11 @@ public class RNetServer
     public static final int INTENT_SUBSCRIBE = 0x02;
 
     private static final String LOG_TAG = "RNetServer";
-
+    private final ByteBuffer pendingBuffer = ByteBuffer.allocate(255);
     private SocketChannel channel;
     private InetAddress address;
     private int port;
     private int intent;
-
-    private final ByteBuffer pendingBuffer = ByteBuffer.allocate(255);
     private int pendingPacketType = 0;
     private int pendingRemainingBytes = -1;
 
@@ -119,7 +117,8 @@ public class RNetServer
     {
         sources.remove(sourceId);
         new SendPacketTask().execute(new PacketC2SDeleteSource(sourceId));
-        // We don't update our listeners here because the server is going to send us a packet back...
+        // We don't update our listeners here because the server is going to send us a packet
+        // back...
     }
 
     public boolean isRunning()
@@ -474,7 +473,8 @@ public class RNetServer
                 if (zones.get(packet.getControllerId()) != null)
                 {
                     Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
-                    if (zone != null) {
+                    if (zone != null)
+                    {
                         zone.setMaxVolume(packet.getMaxVolume(), true);
                     }
                 }
@@ -550,6 +550,39 @@ public class RNetServer
             listener.cleared();
     }
 
+    public enum ZoneChangeType
+    {
+        NAME, POWER, VOLUME, SOURCE, MAX_VOLUME, PARAMETER
+    }
+
+    public interface StateListener
+    {
+        void connectionInitiated();
+
+        void connectError();
+
+        void ready();
+
+        void serialStateChanged(boolean connected);
+
+        void disconnected(boolean unexpected);
+    }
+
+    public interface ZonesListener
+    {
+        void indexReceived();
+
+        void sourcesChanged();
+
+        void zoneAdded(Zone zone);
+
+        void zoneChanged(Zone zone, boolean setRemotely, ZoneChangeType type);
+
+        void zoneRemoved(int controllerId, int zoneId);
+
+        void cleared();
+    }
+
     class ServerRunnable implements Runnable
     {
         @Override
@@ -569,29 +602,5 @@ public class RNetServer
 
             return null;
         }
-    }
-
-    public interface StateListener
-    {
-        void connectionInitiated();
-        void connectError();
-        void ready();
-        void serialStateChanged(boolean connected);
-        void disconnected(boolean unexpected);
-    }
-
-    public interface ZonesListener
-    {
-        void indexReceived();
-        void sourcesChanged();
-        void zoneAdded(Zone zone);
-        void zoneChanged(Zone zone, boolean setRemotely, ZoneChangeType type);
-        void zoneRemoved(int controllerId, int zoneId);
-        void cleared();
-    }
-
-    public enum ZoneChangeType
-    {
-        NAME, POWER, VOLUME, SOURCE, MAX_VOLUME, PARAMETER
     }
 }

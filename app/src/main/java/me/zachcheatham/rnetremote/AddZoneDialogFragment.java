@@ -31,7 +31,8 @@ public class AddZoneDialogFragment extends DialogFragment
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        getDialog().getWindow()
+                   .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     @Override
@@ -71,7 +72,8 @@ public class AddZoneDialogFragment extends DialogFragment
             @Override
             public void onShow(DialogInterface dialogInterface)
             {
-                Button button = ((AlertDialog) dialogInterface).getButton(AlertDialog.BUTTON_POSITIVE);
+                Button button = ((AlertDialog) dialogInterface)
+                        .getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
@@ -79,17 +81,20 @@ public class AddZoneDialogFragment extends DialogFragment
                     {
                         if (validate())
                         {
-                            int controllerId = Integer.parseInt(controllerIdEditText.getText().toString()) - 1;
+                            int controllerId =
+                                    Integer.parseInt(controllerIdEditText.getText().toString()) - 1;
                             int zoneId = Integer.parseInt(zoneIdEditText.getText().toString()) - 1;
 
                             if (!listener.zoneExists(controllerId, zoneId))
                             {
                                 dialog.dismiss();
-                                listener.addZone(zoneNameEditText.getText().toString(), controllerId, zoneId);
+                                listener.addZone(zoneNameEditText.getText().toString(),
+                                        controllerId, zoneId);
                             }
                             else
                             {
-                                Toast.makeText(getContext(), R.string.error_zone_exists, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), R.string.error_zone_exists,
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -122,7 +127,8 @@ public class AddZoneDialogFragment extends DialogFragment
         if (controllerIdEditText.length() == 0)
         {
             validated = false;
-            controllerIdInputLayout.setError(getResources().getString(R.string.error_empty_controller_id));
+            controllerIdInputLayout
+                    .setError(getResources().getString(R.string.error_empty_controller_id));
         }
         else
         {
@@ -163,6 +169,7 @@ public class AddZoneDialogFragment extends DialogFragment
     interface AddZoneListener
     {
         void addZone(String zoneName, int controllerId, int zoneId);
+
         boolean zoneExists(int controllerId, int zoneId);
     }
 }
