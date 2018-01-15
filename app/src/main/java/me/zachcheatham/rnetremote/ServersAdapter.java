@@ -36,7 +36,8 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
         holder.textView.setText(rNetServer.name);
 
         final int finalPosition = position;
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View view)
             {
@@ -94,6 +95,11 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
         return servers.get(position);
     }
 
+    interface ItemClickListener
+    {
+        void onItemClick(int position);
+    }
+
     static class RNetServer
     {
         public String name;
@@ -112,10 +118,5 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
             textView = itemView.findViewById(R.id.name);
             imageView = itemView.findViewById(R.id.icon);
         }
-    }
-
-    interface ItemClickListener
-    {
-        void onItemClick(int position);
     }
 }

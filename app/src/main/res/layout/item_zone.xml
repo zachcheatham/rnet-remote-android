@@ -28,11 +28,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/placeholder"
+                android:ellipsize="marquee"
                 android:paddingBottom="@dimen/card_content_padding_bottom"
-                android:paddingStart="@dimen/card_content_padding_bottom"
                 android:paddingEnd="@dimen/card_content_padding"
+                android:paddingStart="@dimen/card_content_padding_bottom"
                 android:paddingTop="@dimen/card_content_padding_bottom"
+                android:singleLine="true"
+                android:text="@string/placeholder"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="?android:attr/textColorPrimary"/>
 
@@ -48,6 +50,17 @@
                 card_view:srcCompat="@drawable/ic_power_settings_white_24dp"/>
 
             <ImageButton
+                android:id="@+id/source_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/card_icon_button_spacing"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="@dimen/card_icon_button_padding"
+                android:tint="@color/colorCardButton"
+                tools:visible="false"
+                card_view:srcCompat="@drawable/ic_input_white_24dp"/>
+
+            <ImageButton
                 android:id="@+id/settings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,43 +73,10 @@
         </LinearLayout>
 
         <View
-            android:id="@+id/primary_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/colorCardDivider"
             />
-
-        <net.cachapa.expandablelayout.ExpandableLayout
-            android:id="@+id/sources_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:el_duration="200"
-            app:el_expanded="false"
-            app:el_parallax="0">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                android:orientation="vertical">
-
-                <me.zachcheatham.rnetremote.ui.WrapHeightListView
-                    android:id="@+id/sources"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:divider="@color/colorCardDividerDarker"
-                    android:dividerHeight="1dp"
-                    android:choiceMode="singleChoice"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/colorCardDividerDarker"
-                    />
-
-            </LinearLayout>
-
-        </net.cachapa.expandablelayout.ExpandableLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
