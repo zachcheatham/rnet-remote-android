@@ -127,9 +127,14 @@ public class RNetServer
         return run;
     }
 
-    boolean isConnected()
+    public boolean isConnected()
     {
         return channel != null && channel.isConnected();
+    }
+
+    public boolean canStartConnection()
+    {
+        return channel == null;
     }
 
     public boolean isReady()

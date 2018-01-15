@@ -7,8 +7,13 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +22,7 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     private TextView connectingPlaceholderText;
     private Button connectingPlaceholderButton;
     private Snackbar serialConnectionSnackbar;
+
+    private int scrollPosition = 0;
 
     private boolean boundToServerService = false;
     private RNetServer server;
@@ -93,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         Configuration config = getResources().getConfiguration();
@@ -279,10 +288,22 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
     {
         setConnectingError(false);
 
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("server_name", name);
         editor.putString("server_address", address.getHostAddress());
+
+        if (networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
+        {
+            WifiManager wifiManager = (WifiManager) getApplicationContext()
+                    .getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            editor.putString("server_wifi_ssid", wifiInfo.getSSID());
+        }
+
         editor.putInt("server_port", port);
         editor.apply();
 
@@ -292,6 +313,10 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         editor.commit();
 
         serverService.stopServerConnection();
+        while(!serverService.getServer().canStartConnection())
+            try {Thread.sleep(500);}
+            catch (InterruptedException e) {break;}
+
         serverService.setConnectionInfo(name, address, port);
         serverService.startServerConnection();
     }

@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.SparseArray;
@@ -27,6 +29,7 @@ import java.util.List;
 
 import me.zachcheatham.rnetremote.rnet.RNetServer;
 import me.zachcheatham.rnetremote.rnet.Zone;
+import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
 import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
 import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
 
@@ -43,12 +46,12 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private RNetServer server;
     private ArrayAdapter<String> sourcesAdapter;
     private RecyclerView recyclerView;
+    private int savedScrollPosition;
 
     ZonesAdapter(Activity a)
     {
         this.activity = a;
         sourcesAdapter = new ArrayAdapter<>(new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay), android.R.layout.simple_list_item_activated_1, new ArrayList<String>());
-
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(this);
         itemTouchHelper = new ItemTouchHelper(callback);
     }
@@ -56,7 +59,18 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     void setServer(RNetServer server)
     {
         if (this.server != null)
+        {
             this.server.removeZoneListener(this);
+
+            RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+            if (lm instanceof GridAutofitLayoutManager)
+                savedScrollPosition = ((GridAutofitLayoutManager) lm).findFirstCompletelyVisibleItemPosition();
+            else if (lm instanceof LinearLayoutManager)
+                savedScrollPosition = ((LinearLayoutManager) lm).findFirstCompletelyVisibleItemPosition();
+
+            if (savedScrollPosition < -1)
+                savedScrollPosition = 0;
+        }
 
         this.server = server;
 
@@ -73,15 +87,25 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 }
 
                 handleIndex();
-            }
 
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run()
-                {
-                    notifyDataSetChanged();
-                }
-            });
+                if (savedScrollPosition >= getItemCount())
+                    savedScrollPosition = 0;
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        notifyDataSetChanged();
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                recyclerView.scrollToPosition(savedScrollPosition);
+                            }
+                        }, 50);
+                    }
+                });
+            }
         }
     }
 
@@ -254,9 +278,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             @Override
             public void run()
             {
-                zoneIndex.clear();
-                sourcesAdapter.clear();
-                notifyDataSetChanged();
             }
         });
     }
@@ -264,12 +285,23 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public void indexReceived()
     {
+        if (savedScrollPosition >= getItemCount())
+            savedScrollPosition = 0;
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run()
             {
                 handleIndex();
                 notifyDataSetChanged();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+
+                        recyclerView.scrollToPosition(savedScrollPosition);
+                    }
+                }, 50);
             }
         });
     }
