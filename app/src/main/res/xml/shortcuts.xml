@@ -32,7 +32,7 @@
     </shortcut>
     <shortcut
         android:shortcutId="toggle_mute"
-        android:enabled="false"
+        android:enabled="true"
         android:icon="@mipmap/ic_shortcut_volume_off"
         android:shortcutShortLabel="@string/shortcut_toggle_mute"
         android:shortcutLongLabel="@string/shortcut_toggle_mute">

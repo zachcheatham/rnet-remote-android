@@ -35,9 +35,11 @@ import java.net.InetAddress;
 import me.zachcheatham.rnetremote.rnet.RNetServer;
 import me.zachcheatham.rnetremote.rnet.RNetServerService;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SMute;
 import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
 
-public class MainActivity extends AppCompatActivity implements SelectServerDialogFragment.SelectServerListener,
+public class MainActivity extends AppCompatActivity
+        implements SelectServerDialogFragment.SelectServerListener,
         RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
         PopupMenu.OnMenuItemClickListener
 {
@@ -166,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
         menu.findItem(R.id.action_change_server).setVisible(connected);
         menu.findItem(R.id.action_add_zone).setVisible(connected);
         menu.findItem(R.id.action_manage_sources).setVisible(connected);
+        menu.findItem(R.id.action_toggle_mute).setVisible(connected);
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
             menu.findItem(R.id.settings).setVisible(false);
@@ -199,6 +202,9 @@ public class MainActivity extends AppCompatActivity implements SelectServerDialo
             {
                 server.new SendPacketTask().execute(new PacketC2SAllPower(true));
             }
+            return true;
+        case R.id.action_toggle_mute:
+            server.new SendPacketTask().execute(new PacketC2SMute(PacketC2SMute.MUTE_TOGGLE, (short) 0));
             return true;
         case R.id.action_add_zone:
             AddZoneDialogFragment dialog = new AddZoneDialogFragment();

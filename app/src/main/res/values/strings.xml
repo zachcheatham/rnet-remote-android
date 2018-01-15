@@ -74,4 +74,5 @@
     <string name="permission_error_phone">Since you\'ve denied this app\'s access to your phone\'s call state, automatically muting RNet when you make or receive calls is not possible.</string>
     <string name="label_max_volume">Maximum Volume</string>
     <string name="dialog_select_source">%s Source</string>
+    <string name="action_toggle_mute">Toggle Mute</string>
 </resources>

@@ -3,10 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="me.zachcheatham.rnetremote.MainActivity" >
 
+    <item android:id="@+id/action_toggle_mute"
+          android:icon="@drawable/ic_volume_off_white_24dp"
+          android:title="@string/action_toggle_mute"
+          app:showAsAction="ifRoom|withText" />
+
     <item android:id="@+id/action_power_all"
           android:icon="@drawable/ic_power_settings_white_24dp"
           android:title="@string/action_power_all"
-          app:showAsAction="ifRoom" />
+          app:showAsAction="ifRoom|withText"/>
 
     <item android:id="@+id/action_add_zone"
           android:title="@string/action_add_zone"
