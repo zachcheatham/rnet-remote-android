@@ -75,4 +75,7 @@
     <string name="label_max_volume">Maximum Volume</string>
     <string name="dialog_select_source">%s Source</string>
     <string name="action_toggle_mute">Toggle Mute</string>
+    <string name="notification_channel_activity">Background Activity</string>
+    <string name="notification_channel_activity_desc">Notification of operations running in the background.</string>
+    <string name="notification_sending_command">Sending command…</string>
 </resources>

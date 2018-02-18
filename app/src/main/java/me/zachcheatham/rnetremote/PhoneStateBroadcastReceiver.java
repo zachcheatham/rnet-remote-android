@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.telephony.TelephonyManager;
 
 import me.zachcheatham.rnetremote.rnet.ActionService;
@@ -70,7 +71,13 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
         {
             //serviceIntent.putExtra(ActionService.EXTRA_MUTE_TIME, muteTime);
             serviceIntent.putExtra(ActionService.EXTRA_SILENT, true);
-            context.startService(serviceIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            {
+                serviceIntent.putExtra(ActionService.EXTRA_FOREGROUND, true);
+                context.startForegroundService(serviceIntent);
+            }
+            else
+                context.startService(serviceIntent);
         }
     }
 

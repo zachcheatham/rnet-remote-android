@@ -1,10 +1,17 @@
 package me.zachcheatham.rnetremote.rnet;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import java.net.InetAddress;
@@ -20,13 +27,17 @@ public class ActionService extends IntentService implements RNetServer.StateList
     public static final String EXTRA_SILENT = "silent";
     public static final String EXTRA_MUTED = "mute";
     public static final String EXTRA_MUTE_TIME = "mute_time";
+    public static final String EXTRA_FOREGROUND = "foreground";
 
     private static final String PREFS = "rnet_remote";
+    private static final String NOTIFICATION_CHANNEL_ACTIVITY = "rnet_background_activity";
+    private static final int NOTIFICATION_ID = 90;
 
     private RNetServer server;
     private Handler handler;
     private RNetPacket packet;
     private boolean silent;
+    private boolean foreground = false;
     private int completeMessage;
 
     public ActionService()
@@ -38,6 +49,27 @@ public class ActionService extends IntentService implements RNetServer.StateList
     @Override
     protected void onHandleIntent(@Nullable final Intent intent)
     {
+        assert intent != null;
+        if (intent.getBooleanExtra(EXTRA_FOREGROUND, false) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            foreground = true;
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(
+                    Context.NOTIFICATION_SERVICE);
+            assert notificationManager != null;
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ACTIVITY, getString(R.string.notification_channel_activity), NotificationManager.IMPORTANCE_LOW);
+            channel.setDescription(getString(R.string.notification_channel_activity_desc));
+            notificationManager.createNotificationChannel(channel);
+
+            Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ACTIVITY)
+                    .setSmallIcon(R.drawable.ic_app_24)
+                    .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
+                    .setContentTitle(getString(R.string.notification_sending_command))
+                    .build();
+
+            startForeground(NOTIFICATION_ID, notification);
+        }
+
         server = new RNetServer(RNetServer.INTENT_ACTION);
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
@@ -53,12 +85,16 @@ public class ActionService extends IntentService implements RNetServer.StateList
             catch (UnknownHostException e)
             {
                 sendToast(R.string.toast_connect_error);
+                if (foreground)
+                    stopForeground(true);
                 return;
             }
         }
         else
         {
             sendToast(R.string.toast_connect_error);
+            if (foreground)
+                stopForeground(true);
             return;
         }
 
@@ -124,7 +160,11 @@ public class ActionService extends IntentService implements RNetServer.StateList
     public void serialStateChanged(boolean connected) {}
 
     @Override
-    public void disconnected(boolean unexpected) {}
+    public void disconnected(boolean unexpected)
+    {
+        if (foreground)
+            stopForeground(true);
+    }
 
     private void sendToast(final int messageId)
     {
