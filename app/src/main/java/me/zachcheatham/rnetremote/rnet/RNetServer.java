@@ -266,7 +266,7 @@ public class RNetServer
             if (isReady())
                 for (StateListener listener : stateListeners)
                     listener.disconnected(run);
-            else
+            else if (run) // Don't notify an error if we wanted to disconnect
                 for (StateListener listener : stateListeners)
                     listener.connectError();
         }
