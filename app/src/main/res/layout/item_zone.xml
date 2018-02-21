@@ -6,6 +6,7 @@
                                     android:layout_height="wrap_content"
                                     xmlns:tools="http://schemas.android.com/tools"
                                     android:layout_marginTop="@dimen/card_margin"
+                                    android:layout_marginEnd="@dimen/card_margin"
                                     android:layout_marginRight="@dimen/card_margin"
                                     card_view:cardBackgroundColor="@color/colorCard">
 
@@ -31,7 +32,9 @@
                 android:ellipsize="marquee"
                 android:paddingBottom="@dimen/card_content_padding_bottom"
                 android:paddingEnd="@dimen/card_content_padding"
+                android:paddingRight="@dimen/card_content_padding"
                 android:paddingStart="@dimen/card_content_padding_bottom"
+                android:paddingLeft="@dimen/card_content_padding_bottom"
                 android:paddingTop="@dimen/card_content_padding_bottom"
                 android:singleLine="true"
                 android:text="@string/placeholder"
@@ -43,6 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/card_icon_button_spacing"
+                android:layout_marginRight="@dimen/card_icon_button_spacing"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="@dimen/card_icon_button_padding"
                 android:tint="@color/colorCardButton"
@@ -54,6 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/card_icon_button_spacing"
+                android:layout_marginRight="@dimen/card_icon_button_spacing"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="@dimen/card_icon_button_padding"
                 android:tint="@color/colorCardButton"
@@ -65,6 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/card_icon_button_edge_margin"
+                android:layout_marginRight="@dimen/card_icon_button_edge_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="@dimen/card_icon_button_padding"
                 android:tint="@color/colorCardButton"
@@ -88,18 +94,21 @@
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/card_content_padding"
                 android:layout_marginStart="@dimen/card_content_padding"
-                android:tint="?android:attr/textColorSecondary"
-                app:srcCompat="@drawable/ic_volume_up_black_24dp"/>
+                android:tint="@color/textColorSecondary"
+                app:srcCompat="@drawable/ic_volume_up_black_24dp"
+                android:contentDescription="@null"/>
 
             <SeekBar
                 android:id="@+id/volume"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/card_content_padding"
+                android:layout_marginRight="@dimen/card_content_padding"
                 android:layout_weight="1"
-                android:max="50"
-                />
+                android:maxHeight="1000dp"
+                android:max="50"/>
         </LinearLayout>
 
     </LinearLayout>

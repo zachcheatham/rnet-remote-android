@@ -4,7 +4,9 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:paddingEnd="@dimen/dialog_padding"
-              android:paddingStart="@dimen/dialog_padding">
+              android:paddingRight="@dimen/dialog_padding"
+              android:paddingStart="@dimen/dialog_padding"
+              android:paddingLeft="@dimen/dialog_padding">
     <EditText
           android:id="@+id/dialog_text"
           android:layout_width="match_parent"

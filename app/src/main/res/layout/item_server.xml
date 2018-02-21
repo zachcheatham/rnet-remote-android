@@ -14,7 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/dialog_padding"
-        app:srcCompat="@drawable/ic_wifi_white_24dp"/>
+        android:layout_marginLeft="@dimen/dialog_padding"
+        app:srcCompat="@drawable/ic_wifi_white_24dp"
+        />
 
     <TextView
         android:id="@+id/name"
@@ -22,7 +24,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/list_horizontal_padding"
+        android:layout_marginLeft="@dimen/list_horizontal_padding"
         android:layout_marginEnd="@dimen/list_horizontal_padding"
+        android:layout_marginRight="@dimen/list_horizontal_padding"
         android:ellipsize="marquee"
         android:fadingEdge="horizontal"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"

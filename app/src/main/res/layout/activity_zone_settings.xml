@@ -45,7 +45,9 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
-                android:paddingStart="@dimen/list_horizontal_padding">
+                android:paddingRight="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -71,7 +73,9 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
-                android:paddingStart="@dimen/list_horizontal_padding">
+                android:paddingRight="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -95,7 +99,9 @@
                 android:layout_height="@dimen/list_single_line_height_dense"
                 android:text="@string/label_loudness"
                 android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingRight="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:foreground="?android:attr/selectableItemBackground"/>
 
@@ -105,7 +111,9 @@
                 android:minHeight="@dimen/list_double_line_height_dense"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingRight="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding"
                 android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
                 android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
 
@@ -150,7 +158,9 @@
                 android:minHeight="@dimen/list_double_line_height_dense"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingRight="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding"
                 android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
                 android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
 
@@ -196,7 +206,9 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingRight="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding"
                 android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
                 android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
 
@@ -242,7 +254,9 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingRight="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding"
                 android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
                 android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
 
@@ -286,7 +300,9 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingRight="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding"
                 android:paddingTop="@dimen/list_double_line_vertical_padding_dense"
                 android:paddingBottom="@dimen/list_double_line_vertical_padding_dense">
 
@@ -328,7 +344,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/list_single_line_height_dense"
                 android:paddingEnd="@dimen/list_horizontal_padding"
+                android:paddingRight="@dimen/list_horizontal_padding"
                 android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding"
                 android:text="@string/label_do_not_disturb"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:foreground="?android:attr/selectableItemBackground"/>
@@ -341,7 +359,9 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
-                android:paddingStart="@dimen/list_horizontal_padding">
+                android:paddingRight="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -367,7 +387,9 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingEnd="@dimen/list_horizontal_padding"
-                android:paddingStart="@dimen/list_horizontal_padding">
+                android:paddingRight="@dimen/list_horizontal_padding"
+                android:paddingStart="@dimen/list_horizontal_padding"
+                android:paddingLeft="@dimen/list_horizontal_padding">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -380,6 +402,5 @@
         </LinearLayout>
 
     </ScrollView>
-
 
 </android.support.design.widget.CoordinatorLayout>

@@ -12,7 +12,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginEnd="@dimen/input_spacing_horz_half">
+        android:layout_marginEnd="@dimen/input_spacing_horz_half"
+        android:layout_marginRight="@dimen/input_spacing_horz_half">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/edit_text_source_id"

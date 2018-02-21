@@ -11,10 +11,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -259,7 +261,13 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
     private void promptSelectServer(boolean cancelable)
     {
-        SelectServerDialogFragment dialog = new SelectServerDialogFragment();
+        DialogFragment dialog;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            dialog = new SelectServerDialogFragment();
+        else
+            dialog = new EnterServerDialogFragment();
+
         dialog.setCancelable(cancelable);
         dialog.show(getSupportFragmentManager(), "SelectServerDialogFragment");
     }

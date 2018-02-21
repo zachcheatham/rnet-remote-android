@@ -5,12 +5,13 @@ android {
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "me.zachcheatham.rnetremote"
-        minSdkVersion 21
+        minSdkVersion 14
         targetSdkVersion 27
         versionCode 4
         versionName "1.0.0-beta4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         resConfigs "en"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {

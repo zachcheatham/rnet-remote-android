@@ -16,4 +16,7 @@
     <color name="colorPlaceholderText">#889097</color>
 
     <color name="colorError">#F44336</color>
+
+    <color name="textColorPrimary">#ddffffff</color>
+    <color name="textColorSecondary">#89ffffff</color>
 </resources>
