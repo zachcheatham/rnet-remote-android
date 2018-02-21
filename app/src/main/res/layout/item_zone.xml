@@ -50,6 +50,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="@dimen/card_icon_button_padding"
                 android:tint="@color/colorCardButton"
+                android:contentDescription="@string/description_toggle_power"
                 tools:visible="false"
                 card_view:srcCompat="@drawable/ic_power_settings_white_24dp"/>
 
@@ -63,6 +64,7 @@
                 android:padding="@dimen/card_icon_button_padding"
                 android:tint="@color/colorCardButton"
                 tools:visible="false"
+                android:contentDescription="@string/description_select_source"
                 card_view:srcCompat="@drawable/ic_input_white_24dp"/>
 
             <ImageButton
@@ -74,7 +76,8 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="@dimen/card_icon_button_padding"
                 android:tint="@color/colorCardButton"
-                card_view:srcCompat="@drawable/ic_tune_black_24dp"/>
+                card_view:srcCompat="@drawable/ic_tune_black_24dp"
+                android:contentDescription="@string/description_zone_settings"/>
 
         </LinearLayout>
 

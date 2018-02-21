@@ -85,4 +85,7 @@
     <string name="notification_channel_activity_desc">Notification of operations running in the background.</string>
     <string name="notification_sending_command">Sending command…</string>
     <string name="error_connect">Couldn\'t connect to controller.</string>
+    <string name="description_select_source">Select Source</string>
+    <string name="description_zone_settings">Zone Settings</string>
+    <string name="description_toggle_power">Toggle Zone Power</string>
 </resources>

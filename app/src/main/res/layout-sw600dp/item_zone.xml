@@ -57,7 +57,8 @@
                     android:padding="@dimen/card_icon_button_padding"
                     android:tint="@color/colorCardButton"
                     tools:visible="false"
-                    card_view:srcCompat="@drawable/ic_power_settings_white_24dp"/>
+                    card_view:srcCompat="@drawable/ic_power_settings_white_24dp"
+                    android:contentDescription="@string/description_toggle_power"/>
             </LinearLayout>
 
             <LinearLayout
@@ -75,7 +76,8 @@
                     android:padding="@dimen/card_icon_button_padding"
                     android:tint="@color/colorCardButton"
                     tools:visible="false"
-                    card_view:srcCompat="@drawable/ic_input_white_24dp"/>
+                    card_view:srcCompat="@drawable/ic_input_white_24dp"
+                    android:contentDescription="@string/description_select_source"/>
 
             </LinearLayout>
 
@@ -93,7 +95,8 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="@dimen/card_icon_button_padding"
                     android:tint="@color/colorCardButton"
-                    card_view:srcCompat="@drawable/ic_tune_black_24dp"/>
+                    card_view:srcCompat="@drawable/ic_tune_black_24dp"
+                    android:contentDescription="@string/description_zone_settings"/>
 
             </LinearLayout>
 
