@@ -594,15 +594,6 @@ public class RNetServer
         void cleared();
     }
 
-    public class ServerRunnable implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            RNetServer.this.run();
-        }
-    }
-
     public static class SendPacketTask extends AsyncTask<RNetPacket, Void, Void>
     {
         private final WeakReference<RNetServer> serverReference;
@@ -611,7 +602,7 @@ public class RNetServer
         {
             serverReference = new WeakReference<>(server);
         }
-        
+
         @Override
         protected Void doInBackground(RNetPacket... rNetPackets)
         {
@@ -621,6 +612,15 @@ public class RNetServer
                     server.sendPacket(packet);
 
             return null;
+        }
+    }
+
+    public class ServerRunnable implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            RNetServer.this.run();
         }
     }
 }

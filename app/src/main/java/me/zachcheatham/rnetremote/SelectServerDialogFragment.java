@@ -1,16 +1,16 @@
 package me.zachcheatham.rnetremote;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextThemeWrapper;
@@ -70,7 +70,8 @@ public class SelectServerDialogFragment extends DialogFragment
     {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
         builder.setTitle(R.string.dialog_change_server);
 
         View view = inflater.inflate(R.layout.dialog_fragment_select_server, null);

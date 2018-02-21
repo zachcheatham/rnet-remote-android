@@ -8,13 +8,13 @@ public class Source
     private final RNetServer server;
     private String name;
 
-    public Source(int sourceId, RNetServer server)
+    Source(int sourceId, RNetServer server)
     {
         this.sourceId = sourceId;
         this.server = server;
     }
 
-    public void setName(String name, boolean setRemotely)
+    void setName(String name, boolean setRemotely)
     {
         this.name = name;
 

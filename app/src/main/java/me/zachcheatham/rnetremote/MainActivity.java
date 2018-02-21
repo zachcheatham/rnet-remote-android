@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     private Button connectingPlaceholderButton;
     private Snackbar serialConnectionSnackbar;
 
-    private int scrollPosition = 0;
-
     private boolean boundToServerService = false;
     private RNetServer server;
     private RNetServerService serverService;
@@ -107,12 +105,12 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
         Configuration config = getResources().getConfiguration();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         zoneAdapter = new ZonesAdapter(this);
 
-        zoneList = (RecyclerView) findViewById(R.id.list_zones);
+        zoneList = findViewById(R.id.list_zones);
         if (config.smallestScreenWidthDp < 600)
             zoneList.setLayoutManager(new LinearLayoutManager(this));
         else
@@ -121,10 +119,8 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         zoneList.setAdapter(zoneAdapter);
 
         connectingPlaceholder = findViewById(R.id.connecting_placeholder);
-        connectingPlaceholderText = (TextView) findViewById(
-                R.id.text_view_connecting_placeholder_notice);
-        connectingPlaceholderButton = (Button) findViewById(
-                R.id.button_connecting_placeholder_connect);
+        connectingPlaceholderText = findViewById(R.id.text_view_connecting_placeholder_notice);
+        connectingPlaceholderButton = findViewById(R.id.button_connecting_placeholder_connect);
         connectingPlaceholderButton.setOnClickListener(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
@@ -304,6 +300,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(
                 Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
@@ -315,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         {
             WifiManager wifiManager = (WifiManager) getApplicationContext()
                     .getSystemService(Context.WIFI_SERVICE);
+            assert wifiManager != null;
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             editor.putString("server_wifi_ssid", wifiInfo.getSSID());
         }

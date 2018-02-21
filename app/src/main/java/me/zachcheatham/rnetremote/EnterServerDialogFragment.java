@@ -30,9 +30,13 @@ import me.zachcheatham.rnetremote.rnet.RNetServer;
 public class EnterServerDialogFragment extends DialogFragment implements RNetServer.StateListener
 {
     private final static String IP_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9" +
-                                           "]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]{1,5}$";
+                                           "]|25[0-5])\\.){3}" +
+                                           "([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])" +
+                                           ":[0-9]{1,5}$";
     private final static String HOST_REGEX = "(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9" +
-                                                        "\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]):[0-9]{1,5}$";
+                                             "\\-]*[a-zA-Z0-9])\\.)*" +
+                                             "([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])" +
+                                             ":[0-9]{1,5}$";
     private final RNetServer server = new RNetServer(RNetServer.INTENT_SUBSCRIBE);
 
     private SelectServerListener listener;
@@ -70,10 +74,12 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
         assert activity != null;
         LayoutInflater inflater = activity.getLayoutInflater();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
         builder.setTitle(R.string.dialog_enter_server);
 
-        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.dialog_fragment_enter_server, null);
+        @SuppressLint("InflateParams") View view = inflater
+                .inflate(R.layout.dialog_fragment_enter_server, null);
 
         addressInputLayout = view.findViewById(R.id.input_layout_address);
 
@@ -100,14 +106,16 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                     public void onClick(View view)
                     {
 
-                        ValidateAddressResult addressResult = validate(addressInputLayout.getEditText().getText().toString());
+                        ValidateAddressResult addressResult = validate(
+                                addressInputLayout.getEditText().getText().toString());
 
                         if (addressResult != ValidateAddressResult.OK)
                         {
                             switch (addressResult)
                             {
                             case HOSTNAME:
-                                addressInputLayout.setError(getString(R.string.error_invalid_hostname_port));
+                                addressInputLayout
+                                        .setError(getString(R.string.error_invalid_hostname_port));
                                 break;
                             case PORT:
                                 addressInputLayout.setError(getString(R.string.error_invalid_port));
@@ -156,7 +164,8 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
         Activity activity = getActivity();
         if (activity != null)
         {
-            activity.runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable()
+            {
                 @Override
                 public void run()
                 {
@@ -181,14 +190,16 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                 @Override
                 public void run()
                 {
-                    listener.serverSelected(getString(R.string.app_name), server.getAddress(), server.getPort());
+                    listener.serverSelected(getString(R.string.app_name), server.getAddress(),
+                            server.getPort());
 
                     dismiss();
 
                     FragmentManager fm = getFragmentManager();
                     if (fm != null)
                     {
-                        DialogFragment parent = (DialogFragment) fm.findFragmentByTag("SelectServerDialogFragment");
+                        DialogFragment parent = (DialogFragment) fm
+                                .findFragmentByTag("SelectServerDialogFragment");
                         if (parent != null)
                             parent.dismiss();
                     }
@@ -203,7 +214,8 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
     @Override
     public void disconnected(boolean unexpected) {}
 
-    private enum ValidateAddressResult {
+    private enum ValidateAddressResult
+    {
         HOSTNAME, PORT, OK
     }
 
@@ -238,11 +250,13 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                 {
                     Activity activity = dialog.getActivity();
                     assert activity != null;
-                    activity.runOnUiThread(new Runnable() {
+                    activity.runOnUiThread(new Runnable()
+                    {
                         @Override
                         public void run()
                         {
-                            dialog.addressInputLayout.setError(dialog.getString(R.string.error_invalid_hostname));
+                            dialog.addressInputLayout
+                                    .setError(dialog.getString(R.string.error_invalid_hostname));
                         }
                     });
 

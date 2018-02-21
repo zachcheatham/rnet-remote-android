@@ -2,6 +2,8 @@ package me.zachcheatham.rnetremote.rnet;
 
 import android.util.Log;
 
+import java.util.Locale;
+
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneMaxVolume;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneParameter;
@@ -190,7 +192,8 @@ public class Zone
         case PARAMETER_PARTY_MODE:
             if (!(value instanceof Integer))
                 throw new IllegalArgumentException(
-                        String.format("Value must be Integer for %d. Instead got %s", parameterId,
+                        String.format(Locale.getDefault(),
+                                "Value must be Integer for %d. Instead got %s", parameterId,
                                 value.getClass().toString()));
             break;
         default:
