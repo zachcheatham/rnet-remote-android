@@ -5,6 +5,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -82,7 +83,7 @@ public class RNetServer
     public void createZone(String zoneName, int controllerId, int zoneId)
     {
         if (zones.get(controllerId) == null || zones.get(controllerId).get(zoneId) == null)
-            new SendPacketTask().execute(new PacketC2SZoneName(controllerId, zoneId, zoneName));
+            new SendPacketTask(this).execute(new PacketC2SZoneName(controllerId, zoneId, zoneName));
     }
 
     public void deleteZone(int controllerId, int zoneId, boolean remotelyTriggered)
@@ -102,7 +103,7 @@ public class RNetServer
                 listener.zoneRemoved(controllerId, zoneId);
 
             if (!remotelyTriggered)
-                new SendPacketTask().execute(new PacketC2SDeleteZone(controllerId, zoneId));
+                new SendPacketTask(this).execute(new PacketC2SDeleteZone(controllerId, zoneId));
         }
     }
 
@@ -116,7 +117,7 @@ public class RNetServer
     public void deleteSource(int sourceId)
     {
         sources.remove(sourceId);
-        new SendPacketTask().execute(new PacketC2SDeleteSource(sourceId));
+        new SendPacketTask(this).execute(new PacketC2SDeleteSource(sourceId));
         // We don't update our listeners here because the server is going to send us a packet
         // back...
     }
@@ -602,13 +603,22 @@ public class RNetServer
         }
     }
 
-    public class SendPacketTask extends AsyncTask<RNetPacket, Void, Void>
+    public static class SendPacketTask extends AsyncTask<RNetPacket, Void, Void>
     {
+        private final WeakReference<RNetServer> serverReference;
+
+        public SendPacketTask(RNetServer server)
+        {
+            serverReference = new WeakReference<>(server);
+        }
+        
         @Override
         protected Void doInBackground(RNetPacket... rNetPackets)
         {
-            for (RNetPacket packet : rNetPackets)
-                sendPacket(packet);
+            RNetServer server = serverReference.get();
+            if (server != null)
+                for (RNetPacket packet : rNetPackets)
+                    server.sendPacket(packet);
 
             return null;
         }

@@ -76,7 +76,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
 
             if (!setRemotely)
-                server.new SendPacketTask()
+                new RNetServer.SendPacketTask(server)
                         .execute(new PacketC2SZoneName(controllerId, zoneId, name));
         }
     }
@@ -99,7 +99,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.POWER);
 
             if (!setRemotely)
-                server.new SendPacketTask()
+                new RNetServer.SendPacketTask(server)
                         .execute(new PacketC2SZonePower(controllerId, zoneId, power));
         }
     }
@@ -122,7 +122,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.VOLUME);
 
             if (!setRemotely)
-                server.new SendPacketTask()
+                new RNetServer.SendPacketTask(server)
                         .execute(new PacketC2SZoneVolume(controllerId, zoneId, volume));
         }
     }
@@ -145,7 +145,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.MAX_VOLUME);
 
             if (!setRemotely)
-                server.new SendPacketTask()
+                new RNetServer.SendPacketTask(server)
                         .execute(new PacketC2SZoneMaxVolume(controllerId, zoneId, maxVolume));
         }
     }
@@ -168,7 +168,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.SOURCE);
 
             if (!setRemotely)
-                server.new SendPacketTask()
+                new RNetServer.SendPacketTask(server)
                         .execute(new PacketC2SZoneSource(controllerId, zoneId, sourceId));
         }
     }
@@ -211,7 +211,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.PARAMETER);
 
             if (!setRemotely)
-                server.new SendPacketTask().execute(
+                new RNetServer.SendPacketTask(server).execute(
                         new PacketC2SZoneParameter(controllerId, zoneId, parameterId, value));
         }
     }

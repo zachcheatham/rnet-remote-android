@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         case R.id.action_power_all:
             if (server.allZonesOn())
             {
-                server.new SendPacketTask().execute(new PacketC2SAllPower(false));
+                new RNetServer.SendPacketTask(server).execute(new PacketC2SAllPower(false));
             }
             else if (server.anyZonesOn())
             {
@@ -199,11 +199,12 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             }
             else
             {
-                server.new SendPacketTask().execute(new PacketC2SAllPower(true));
+                new RNetServer.SendPacketTask(server).execute(new PacketC2SAllPower(true));
             }
             return true;
         case R.id.action_toggle_mute:
-            server.new SendPacketTask().execute(new PacketC2SMute(PacketC2SMute.MUTE_TOGGLE, (short) 0));
+            new RNetServer.SendPacketTask(server)
+                    .execute(new PacketC2SMute(PacketC2SMute.MUTE_TOGGLE, (short) 0));
             return true;
         case R.id.action_add_zone:
             AddZoneDialogFragment dialog = new AddZoneDialogFragment();
@@ -278,10 +279,10 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         switch (item.getItemId())
         {
         case R.id.action_all_on:
-            server.new SendPacketTask().execute(new PacketC2SAllPower(true));
+            new RNetServer.SendPacketTask(server).execute(new PacketC2SAllPower(true));
             return true;
         case R.id.action_all_off:
-            server.new SendPacketTask().execute(new PacketC2SAllPower(false));
+            new RNetServer.SendPacketTask(server).execute(new PacketC2SAllPower(false));
             return true;
         }
 

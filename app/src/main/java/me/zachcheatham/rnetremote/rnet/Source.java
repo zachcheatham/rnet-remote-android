@@ -22,7 +22,7 @@ public class Source
             listener.sourcesChanged();
 
         if (!setRemotely)
-            server.new SendPacketTask().execute(
+            new RNetServer.SendPacketTask(server).execute(
                     new PacketC2SSourceName(sourceId, name));
     }
 
