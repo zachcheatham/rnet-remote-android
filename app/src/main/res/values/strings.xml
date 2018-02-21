@@ -6,6 +6,7 @@
     <string name="action_power_all">All On/Off</string>
     <string name="action_enter_ip">Manually enter address…</string>
     <string name="dialog_change_server">Select Controller</string>
+    <string name="dialog_enter_server">Enter Controller Address</string>
     <string name="notice_connecting">Connecting</string>
     <string name="notice_connecting_long">Unable to connect. Retrying…</string>
     <string name="notice_searching_links">Scanning for controllers…</string>
@@ -24,6 +25,7 @@
     <string name="label_loudness">Loudness</string>
     <string name="label_party_mode">Party Mode</string>
     <string name="label_do_not_disturb">Do Not Disturb</string>
+    <string name="label_ip_address">Address</string>
     <string name="format_zone_id">Controller #%1$d Zone #%2$d</string>
     <string name="default_zone_slider_value">0</string>
     <string name="action_delete_zone">Delete Zone</string>
@@ -46,6 +48,9 @@
     <string name="error_empty_controller_id">Enter controller #</string>
     <string name="error_zone_exists">A zone with that ID already exists.</string>
     <string name="error_source_exists">A source with that ID already exists.</string>
+    <string name="error_invalid_hostname_port">Invalid hostname:port</string>
+    <string name="error_invalid_hostname">Hostname not found</string>
+    <string name="error_invalid_port">Invalid port</string>
     <string name="label_turn_on_volume">Turn On Volume</string>
     <string name="action_manage_sources">Manage Sources</string>
     <string name="activity_name_manage_sources">Manage Sources</string>
@@ -78,4 +83,5 @@
     <string name="notification_channel_activity">Background Activity</string>
     <string name="notification_channel_activity_desc">Notification of operations running in the background.</string>
     <string name="notification_sending_command">Sending command…</string>
+    <string name="error_connect">Couldn\'t connect to controller.</string>
 </resources>

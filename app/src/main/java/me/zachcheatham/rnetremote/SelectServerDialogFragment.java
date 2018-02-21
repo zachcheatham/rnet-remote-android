@@ -1,6 +1,8 @@
 package me.zachcheatham.rnetremote;
 
-import android.app.AlertDialog;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.net.nsd.NsdManager;
@@ -16,11 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.net.InetAddress;
-
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class SelectServerDialogFragment extends DialogFragment
         implements ServersAdapter.ItemClickListener
-
 {
     private SelectServerListener listener;
 
@@ -28,7 +28,6 @@ public class SelectServerDialogFragment extends DialogFragment
     private NsdManager.DiscoveryListener discoveryListener;
 
     private ServersAdapter adapter = new ServersAdapter(this);
-    private RecyclerView recyclerView;
     private View searchingIndicator;
 
     @Override
@@ -63,8 +62,6 @@ public class SelectServerDialogFragment extends DialogFragment
 
         adapter.clearServers();
         searchingIndicator.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.GONE);
-
     }
 
     @NonNull
@@ -73,13 +70,12 @@ public class SelectServerDialogFragment extends DialogFragment
     {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(
-                new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
         builder.setTitle(R.string.dialog_change_server);
 
         View view = inflater.inflate(R.layout.dialog_fragment_select_server, null);
 
-        recyclerView = view.findViewById(R.id.list_servers);
+        RecyclerView recyclerView = view.findViewById(R.id.list_servers);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         recyclerView.setAdapter(adapter);
 
@@ -96,14 +92,6 @@ public class SelectServerDialogFragment extends DialogFragment
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) recyclerView
                     .getLayoutParams();
             params.setMargins(0, 0, 0, (int) getResources().getDimension(R.dimen.dialog_padding));
-
-            params = (ViewGroup.MarginLayoutParams) searchingIndicator.getLayoutParams();
-            params.setMargins(
-                    (int) getResources().getDimension(R.dimen.dialog_padding),
-                    0,
-                    (int) getResources().getDimension(R.dimen.dialog_padding),
-                    (int) getResources().getDimension(R.dimen.dialog_padding)
-            );
         }
 
         builder.setCancelable(false);
@@ -136,7 +124,6 @@ public class SelectServerDialogFragment extends DialogFragment
                         {
                             adapter.clearServers();
                             searchingIndicator.setVisibility(View.VISIBLE);
-                            recyclerView.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -153,10 +140,9 @@ public class SelectServerDialogFragment extends DialogFragment
             {
                 adapter.removeServer(nsdServiceInfo.getHost(), nsdServiceInfo.getPort());
 
-                if (adapter.getItemCount() < 1)
+                if (adapter.getItemCount() < 2)
                 {
                     searchingIndicator.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
                 }
             }
         };
@@ -164,7 +150,8 @@ public class SelectServerDialogFragment extends DialogFragment
 
     private NsdManager.ResolveListener createResolveListener()
     {
-        NsdManager.ResolveListener resolveListener = new NsdManager.ResolveListener()
+
+        return new NsdManager.ResolveListener()
         {
 
             @Override
@@ -185,25 +172,26 @@ public class SelectServerDialogFragment extends DialogFragment
                         );
 
                         searchingIndicator.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
                     }
                 });
             }
         };
-
-        return resolveListener;
     }
 
     @Override
     public void onItemClick(int position)
     {
-        ServersAdapter.RNetServer server = adapter.getServer(position);
-        listener.serverSelected(server.name, server.host, server.port);
-        dismiss();
-    }
-
-    interface SelectServerListener
-    {
-        void serverSelected(String name, InetAddress address, int port);
+        if (position == (adapter.getItemCount() - 1))
+        {
+            EnterServerDialogFragment dialog = new EnterServerDialogFragment();
+            dialog.setCancelable(true);
+            dialog.show(getFragmentManager(), "EnterServerDialogFragment");
+        }
+        else
+        {
+            ServersAdapter.RNetServer server = adapter.getServer(position);
+            listener.serverSelected(server.name, server.host, server.port);
+            dismiss();
+        }
     }
 }

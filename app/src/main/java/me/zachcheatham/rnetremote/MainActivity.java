@@ -36,8 +36,7 @@ import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SMute;
 import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
 
-public class MainActivity extends AppCompatActivity
-        implements SelectServerDialogFragment.SelectServerListener,
+public class MainActivity extends AppCompatActivity implements SelectServerListener,
         RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
         PopupMenu.OnMenuItemClickListener
 {

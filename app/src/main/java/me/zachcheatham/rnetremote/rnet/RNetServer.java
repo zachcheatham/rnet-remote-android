@@ -54,19 +54,19 @@ public class RNetServer
     private List<StateListener> stateListeners = new ArrayList<>();
     private List<ZonesListener> zonesListeners = new ArrayList<>();
 
-    RNetServer(int intent)
+    public RNetServer(int intent)
     {
         pendingBuffer.order(ByteOrder.LITTLE_ENDIAN);
         this.intent = intent;
     }
 
-    void setConnectionInfo(InetAddress address, int port)
+    public void setConnectionInfo(InetAddress address, int port)
     {
         this.address = address;
         this.port = port;
     }
 
-    void disconnect()
+    public void disconnect()
     {
         run = false;
         try
@@ -178,6 +178,16 @@ public class RNetServer
         return true;
     }
 
+    public InetAddress getAddress()
+    {
+        return address;
+    }
+
+    public int getPort()
+    {
+        return port;
+    }
+
     public SparseArray<SparseArray<Zone>> getZones()
     {
         return zones;
@@ -222,7 +232,7 @@ public class RNetServer
         zonesListeners.remove(listener);
     }
 
-    public void run()
+    void run()
     {
         if (channel != null)
         {
@@ -519,7 +529,7 @@ public class RNetServer
         }
     }
 
-    public void sendPacket(RNetPacket packet)
+    void sendPacket(RNetPacket packet)
     {
         if (channel != null)
         {
@@ -583,7 +593,7 @@ public class RNetServer
         void cleared();
     }
 
-    class ServerRunnable implements Runnable
+    public class ServerRunnable implements Runnable
     {
         @Override
         public void run()

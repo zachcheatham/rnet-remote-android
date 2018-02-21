@@ -32,27 +32,26 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        RNetServer rNetServer = servers.get(position);
-        holder.textView.setText(rNetServer.name);
-
-        final int finalPosition = position;
-        holder.itemView.setOnClickListener(new View.OnClickListener()
+        if (position == servers.size())
         {
-            @Override
-            public void onClick(View view)
-            {
-                clickListener.onItemClick(finalPosition);
-            }
-        });
+            holder.textView.setText(R.string.action_enter_ip);
+            holder.imageView.setImageResource(R.drawable.ic_keyboard_white_24dp);
+        }
+        else
+        {
+            RNetServer rNetServer = servers.get(position);
+            holder.textView.setText(rNetServer.name);
+            holder.imageView.setImageResource(R.drawable.ic_wifi_white_24dp);
+        }
     }
 
     @Override
     public int getItemCount()
     {
-        return servers.size();
+        return servers.size() + 1;
     }
 
-    public void addServer(String name, InetAddress host, int port)
+    void addServer(String name, InetAddress host, int port)
     {
         RNetServer rNetServer = new RNetServer();
         rNetServer.name = name;
@@ -61,13 +60,13 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
 
         servers.add(rNetServer);
 
-        if (getItemCount() > 1)
-            notifyItemInserted(getItemCount());
+        if (getItemCount() > 2)
+            notifyItemInserted(servers.size() - 1);
         else
             notifyDataSetChanged();
     }
 
-    public void removeServer(InetAddress host, int port)
+    void removeServer(InetAddress host, int port)
     {
         for (int i = 0; i < servers.size(); i++)
         {
@@ -76,7 +75,7 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
             {
                 servers.remove(i);
 
-                if (getItemCount() < 1)
+                if (getItemCount() < 2)
                     notifyDataSetChanged();
                 else
                     notifyItemRemoved(i);
@@ -107,7 +106,7 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
         InetAddress host;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView textView;
         ImageView imageView;
@@ -117,6 +116,14 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
             super(itemView);
             textView = itemView.findViewById(R.id.name);
             imageView = itemView.findViewById(R.id.icon);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            clickListener.onItemClick(getAdapterPosition());
         }
     }
 }
