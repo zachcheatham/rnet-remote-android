@@ -88,4 +88,5 @@
     <string name="description_select_source">Select Source</string>
     <string name="description_zone_settings">Zone Settings</string>
     <string name="description_toggle_power">Toggle Zone Power</string>
+    <string name="notice_verifying_server">Verifying controller...</string>
 </resources>

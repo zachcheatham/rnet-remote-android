@@ -40,7 +40,10 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
     private final RNetServer server = new RNetServer(RNetServer.INTENT_SUBSCRIBE);
 
     private SelectServerListener listener;
+
     private TextInputLayout addressInputLayout;
+    private View verifying;
+    private boolean cancelable;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -82,25 +85,31 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                 .inflate(R.layout.dialog_fragment_enter_server, null);
 
         addressInputLayout = view.findViewById(R.id.input_layout_address);
+        verifying = view.findViewById(R.id.verifying);
 
         builder.setView(view);
         builder.setPositiveButton(android.R.string.ok, null);
 
         if (isCancelable())
+        {
             builder.setNegativeButton(android.R.string.cancel, null);
+            cancelable = true;
+        }
         builder.setCancelable(false);
 
         final EnterServerDialogFragment self = this;
 
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener()
         {
             @Override
             public void onShow(DialogInterface dialogInterface)
             {
-                Button button = ((AlertDialog) dialogInterface)
+                final Button positiveButton = ((AlertDialog) dialogInterface)
                         .getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener()
+                final Button negativeButton = ((AlertDialog) dialogInterface)
+                        .getButton(AlertDialog.BUTTON_NEGATIVE);
+                positiveButton.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View view)
@@ -124,6 +133,14 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                         }
                         else
                         {
+                            addressInputLayout.setVisibility(View.GONE);
+                            verifying.setVisibility(View.VISIBLE);
+                            if (cancelable)
+                                setCancelable(false);
+                            positiveButton.setEnabled(false);
+                            if (negativeButton != null)
+                                negativeButton.setEnabled(false);
+
                             new TestServerTask(self).execute();
                         }
                     }
@@ -170,6 +187,14 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                 public void run()
                 {
                     addressInputLayout.setError(getString(R.string.error_connect));
+                    verifying.setVisibility(View.GONE);
+                    addressInputLayout.setVisibility(View.VISIBLE);
+                    ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    Button button = ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE);
+                    if (button != null)
+                        button.setEnabled(true);
+                    if (cancelable)
+                        setCancelable(true);
                 }
             });
         }
@@ -178,8 +203,6 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
     @Override
     public void ready()
     {
-
-
         server.disconnect();
 
         Activity activity = getActivity();
@@ -257,6 +280,14 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                         {
                             dialog.addressInputLayout
                                     .setError(dialog.getString(R.string.error_invalid_hostname));
+                            dialog.verifying.setVisibility(View.GONE);
+                            dialog.addressInputLayout.setVisibility(View.VISIBLE);
+                            ((AlertDialog) dialog.getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                            Button button = ((AlertDialog) dialog.getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE);
+                            if (button != null)
+                                button.setEnabled(true);
+                            if (dialog.cancelable)
+                                dialog.setCancelable(true);
                         }
                     });
 
