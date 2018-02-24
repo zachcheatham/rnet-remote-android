@@ -1,5 +1,6 @@
 package me.zachcheatham.rnetremote;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.net.nsd.NsdManager;
@@ -161,20 +162,22 @@ public class SelectServerDialogFragment extends DialogFragment
             @Override
             public void onServiceResolved(final NsdServiceInfo nsdServiceInfo)
             {
-                getActivity().runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
+                Activity activity = getActivity();
+                if (activity != null)
+                    activity.runOnUiThread(new Runnable()
                     {
-                        adapter.addServer(
-                                nsdServiceInfo.getServiceName(),
-                                nsdServiceInfo.getHost(),
-                                nsdServiceInfo.getPort()
-                        );
+                        @Override
+                        public void run()
+                        {
+                            adapter.addServer(
+                                    nsdServiceInfo.getServiceName(),
+                                    nsdServiceInfo.getHost(),
+                                    nsdServiceInfo.getPort()
+                            );
 
-                        searchingIndicator.setVisibility(View.GONE);
-                    }
-                });
+                            searchingIndicator.setVisibility(View.GONE);
+                        }
+                    });
             }
         };
     }
