@@ -77,12 +77,8 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     public void onDestroy()
     {
         started = false;
-
-        if (server.isRunning())
-            server.disconnect();
-
+        server.disconnect();
         handler.removeCallbacks(delayedReconnect);
-
         Log.d(LOG_TAG, "Service destroyed.");
     }
 
@@ -172,8 +168,7 @@ public class RNetServerService extends Service implements RNetServer.StateListen
 
     public void stopServerConnection()
     {
-        if (server.isConnected())
-            server.disconnect();
+        server.disconnect();
     }
 
     public RNetServer getServer()

@@ -70,13 +70,16 @@ public class RNetServer
     public void disconnect()
     {
         run = false;
-        try
+        if (channel != null)
         {
-            channel.close();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            try
+            {
+                channel.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -283,8 +286,9 @@ public class RNetServer
         }
         catch (IOException e)
         {
-            for (StateListener listener : stateListeners)
-                listener.connectError();
+            if (run)
+                for (StateListener listener : stateListeners)
+                    listener.connectError();
         }
 
         receivedIndex = false;
