@@ -70,13 +70,16 @@ public class RNetServer
     public void disconnect()
     {
         run = false;
-        try
+        if (channel != null)
         {
-            channel.close();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            try
+            {
+                channel.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -172,8 +172,7 @@ public class RNetServerService extends Service implements RNetServer.StateListen
 
     public void stopServerConnection()
     {
-        if (server.isConnected())
-            server.disconnect();
+        server.disconnect();
     }
 
     public RNetServer getServer()
