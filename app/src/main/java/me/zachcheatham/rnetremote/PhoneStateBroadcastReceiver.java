@@ -24,7 +24,7 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
 
         SharedPreferences settings = context.getSharedPreferences(PREFS, 0);
 
-        String wifiNetwork = settings.getString("server_wifi_ssid", null);
+        int networkId = settings.getInt("server_network", -1);
         boolean muteOnRing = settings.getBoolean("mute_on_ring", false);
         boolean muteOnCall = settings.getBoolean("mute_on_call", false);
         //int muteTime = settings.getInt("mute_fade_time", 0);
@@ -32,7 +32,7 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
         String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
         if (state.equals(TelephonyManager.EXTRA_STATE_RINGING))
         {
-            if (muteOnRing && onNetwork(context, wifiNetwork))
+            if (muteOnRing && onNetwork(context, networkId))
             {
                 serviceIntent = new Intent(context, ActionService.class);
                 serviceIntent.setAction("me.zachcheatham.rnetremote.action.MUTE");
@@ -43,7 +43,7 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
         {
             if (muteOnCall)
             {
-                if (onNetwork(context, wifiNetwork))
+                if (onNetwork(context, networkId))
                 {
                     serviceIntent = new Intent(context, ActionService.class);
                     serviceIntent.setAction("me.zachcheatham.rnetremote.action.MUTE");
@@ -51,7 +51,7 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
                     serviceIntent.putExtra(ActionService.EXTRA_MUTE_TIME, (short) 1000);
                 }
             }
-            else if (muteOnRing && onNetwork(context, wifiNetwork))
+            else if (muteOnRing && onNetwork(context, networkId))
             {
                 serviceIntent = new Intent(context, ActionService.class);
                 serviceIntent.setAction("me.zachcheatham.rnetremote.action.MUTE");
@@ -59,7 +59,7 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
                 serviceIntent.putExtra(ActionService.EXTRA_MUTE_TIME, (short) 1000);
             }
         }
-        else if ((muteOnCall || muteOnRing) && onNetwork(context, wifiNetwork))
+        else if ((muteOnCall || muteOnRing) && onNetwork(context, networkId))
         {
             serviceIntent = new Intent(context, ActionService.class);
             serviceIntent.setAction("me.zachcheatham.rnetremote.action.MUTE");
@@ -81,7 +81,7 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
         }
     }
 
-    private boolean onNetwork(Context context, String targetNetwork)
+    private boolean onNetwork(Context context, int targetNetwork)
     {
         ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -91,7 +91,7 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
                 networkInfo.getType() == ConnectivityManager.TYPE_WIFI ||
                 networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET))
         {
-            if (networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET || targetNetwork == null)
+            if (networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET || targetNetwork == -1)
             {
                 return true;
             }
@@ -102,7 +102,7 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
                                                                        Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
-                return (wifiInfo != null && targetNetwork.equals(wifiInfo.getSSID()));
+                return (wifiInfo != null && targetNetwork == wifiInfo.getNetworkId());
             }
         }
         else

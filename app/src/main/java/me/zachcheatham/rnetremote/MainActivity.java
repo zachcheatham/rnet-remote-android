@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                     .getSystemService(Context.WIFI_SERVICE);
             assert wifiManager != null;
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            editor.putString("server_wifi_ssid", wifiInfo.getSSID());
+            editor.putInt("server_network", wifiInfo.getNetworkId());
         }
 
         editor.putInt("server_port", port);
