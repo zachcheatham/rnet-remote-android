@@ -24,6 +24,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextThemeWrapper;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     private Snackbar serialConnectionSnackbar;
 
     private boolean boundToServerService = false;
+    private boolean useVolumeKeys = false;
     private RNetServer server;
     private RNetServerService serverService;
     private ServiceConnection serviceConnection = new ServiceConnection()
@@ -139,6 +141,15 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     }
 
     @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        SharedPreferences settings = getSharedPreferences(PREFS, 0);
+        useVolumeKeys = settings.getBoolean("use_volume_keys", false);
+    }
+
+    @Override
     protected void onStop()
     {
         super.onStop();
@@ -167,10 +178,27 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         menu.findItem(R.id.action_manage_sources).setVisible(connected);
         menu.findItem(R.id.action_toggle_mute).setVisible(connected);
 
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
-            menu.findItem(R.id.settings).setVisible(false);
-
         return true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if (useVolumeKeys && boundToServerService && server.isReady())
+        {
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_UP)
+            {
+                server.volumeUp();
+                return true;
+            }
+            else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+            {
+                server.volumeDown();
+                return true;
+            }
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

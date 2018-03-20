@@ -77,6 +77,8 @@
     <string name="setting_mute_during_call_desc">Mute entire system during a phone call</string>
     <string name="setting_mute_on_ring">Mute on ring</string>
     <string name="setting_mute_on_ring_desc">Mute entire system when the phone is ringing</string>
+    <string name="setting_volume_keys">Use volume keys</string>
+    <string name="setting_volume_keys_desc">Use volume keys to control the volume of all zones while in the app</string>
 
     <string name="explanation_phone">In order to mute RNet when you make or receive calls, you will have to permit this app to see your phone\'s current call state.</string>
     <string name="permission_error_phone">Since you\'ve denied this app\'s access to your phone\'s call state, automatically muting RNet when you make or receive calls is not possible.</string>
@@ -89,4 +91,5 @@
     <string name="description_zone_settings">Zone Settings</string>
     <string name="description_toggle_power">Toggle Zone Power</string>
     <string name="notice_verifying_server">Verifying controller...</string>
+    <string name="settings_category_phone">Phone Calls</string>
 </resources>

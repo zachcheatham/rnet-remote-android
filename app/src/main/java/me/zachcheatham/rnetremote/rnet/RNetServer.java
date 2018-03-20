@@ -182,6 +182,36 @@ public class RNetServer
         return true;
     }
 
+    public void volumeDown()
+    {
+        for (int i = 0; i < zones.size(); i++)
+        {
+            int ctrllrId = zones.keyAt(i);
+            for (int c = 0; c < zones.get(ctrllrId).size(); c++)
+            {
+                int zoneId = zones.get(ctrllrId).keyAt(c);
+                Zone zone = zones.get(ctrllrId).get(zoneId);
+                if (zone.getPowered())
+                    zone.volumeDown();
+            }
+        }
+    }
+
+    public void volumeUp()
+    {
+        for (int i = 0; i < zones.size(); i++)
+        {
+            int ctrllrId = zones.keyAt(i);
+            for (int c = 0; c < zones.get(ctrllrId).size(); c++)
+            {
+                int zoneId = zones.get(ctrllrId).keyAt(c);
+                Zone zone = zones.get(ctrllrId).get(zoneId);
+                if (zone.getPowered())
+                    zone.volumeUp();
+            }
+        }
+    }
+
     public InetAddress getAddress()
     {
         return address;

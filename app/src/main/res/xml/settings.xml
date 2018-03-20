@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
-        android:title="@string/setting_mute_on_ring"
-        android:summary="@string/setting_mute_on_ring_desc"
-        android:key="mute_on_ring" />
+        android:title="@string/setting_volume_keys"
+        android:summary="@string/setting_volume_keys_desc"
+        android:key="use_volume_keys" />
 
-    <SwitchPreference
-        android:title="@string/setting_mute_during_call"
-        android:summary="@string/setting_mute_during_call_desc"
-        android:key="mute_on_call" />
+    <PreferenceCategory
+        android:title="@string/settings_category_phone"
+        >
+
+        <SwitchPreference
+            android:title="@string/setting_mute_on_ring"
+            android:summary="@string/setting_mute_on_ring_desc"
+            android:key="mute_on_ring" />
+
+        <SwitchPreference
+            android:title="@string/setting_mute_during_call"
+            android:summary="@string/setting_mute_during_call_desc"
+            android:key="mute_on_call" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

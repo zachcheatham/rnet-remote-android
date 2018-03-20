@@ -39,6 +39,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private ItemTouchHelper itemTouchHelper;
     private RNetServer server;
     private ArrayAdapter<String> sourcesAdapter;
+    private RecyclerView recyclerView;
 
     ZonesAdapter(Activity a)
     {
@@ -100,12 +101,14 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     {
         super.onAttachedToRecyclerView(recyclerView);
         itemTouchHelper.attachToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
     }
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView)
     {
         itemTouchHelper.attachToRecyclerView(null);
+        this.recyclerView = null;
     }
 
     @Override
@@ -287,10 +290,9 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void zoneChanged(final Zone zone, boolean setRemotely, RNetServer.ZoneChangeType type)
+    public void zoneChanged(final Zone zone, boolean setRemotely, final RNetServer.ZoneChangeType type)
     {
-        if (type != RNetServer.ZoneChangeType.PARAMETER &&
-            (setRemotely || type != RNetServer.ZoneChangeType.VOLUME))
+        if (type != RNetServer.ZoneChangeType.PARAMETER)
         {
             activity.runOnUiThread(new Runnable()
             {
@@ -302,7 +304,14 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                         if (zoneIndex.get(i)[0] == zone.getControllerId() &&
                             zoneIndex.get(i)[1] == zone.getZoneId())
                         {
-                            notifyItemChanged(i);
+                            if (type == RNetServer.ZoneChangeType.VOLUME && recyclerView != null)
+                            {
+                                ViewHolder holder = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+                                if (holder != null && holder.seekBar != null && !holder.seekBar.isPressed())
+                                    holder.seekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
+                            }
+                            else
+                                notifyItemChanged(i);
                             break;
                         }
                     }

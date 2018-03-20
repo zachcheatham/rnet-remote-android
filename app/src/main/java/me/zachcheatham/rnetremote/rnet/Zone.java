@@ -129,6 +129,18 @@ public class Zone
         }
     }
 
+    public void volumeUp()
+    {
+        if (volume < maxVolume)
+            this.setVolume(volume + 2, false);
+    }
+
+    public void volumeDown()
+    {
+        if (volume > 0)
+            this.setVolume(volume - 2, false);
+    }
+
     public int getVolume()
     {
         return volume;
