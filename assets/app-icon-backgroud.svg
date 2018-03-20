@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="app-icon-backgroud.svg"
+   viewBox="0 0 129 128.90909"
+   height="128.90909"
+   width="129"
+   id="svg64"
+   version="1.1"
+   inkscape:export-filename="/home/zachcheatham/Developer/RNETRemote/app/src/main/res/mipmap-hdpi/app_icon.png"
+   inkscape:export-xdpi="36"
+   inkscape:export-ydpi="36"
+   inkscape:label="wireless_shadow">
+  <sodipodi:namedview
+     showguides="true"
+     inkscape:current-layer="svg64"
+     inkscape:window-maximized="1"
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:cy="28.852569"
+     inkscape:cx="111.72706"
+     inkscape:zoom="4.0000001"
+     showgrid="false"
+     id="namedview66"
+     inkscape:window-height="1017"
+     inkscape:window-width="1920"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-bbox-midpoints="false"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-center="true"
+     inkscape:snap-midpoints="false"
+     inkscape:snap-smooth-nodes="false"
+     inkscape:snap-intersection-paths="false"
+     inkscape:object-paths="false"
+     inkscape:snap-text-baseline="true"
+     inkscape:snap-nodes="true"
+     inkscape:snap-others="false"
+     inkscape:object-nodes="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid8269"
+       originx="-118.96838"
+       originy="-457.44312" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata70">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs68">
+    <filter
+       style="color-interpolation-filters:sRGB"
+       inkscape:label="Drop Shadow"
+       id="filter6025"
+       x="-0.033149172"
+       width="1.0662982"
+       y="-0.033149172"
+       height="1.0662982">
+      <feFlood
+         flood-opacity="0.2"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood6015" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite6017" />
+      <feOffset
+         dx="0"
+         dy="4"
+         result="offset"
+         id="feOffset6021" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite6023" />
+    </filter>
+  </defs>
+  <rect
+     clip-path="none"
+     inkscape:label="background"
+     id="rect74"
+     width="128.90909"
+     height="128.90909"
+     x="1.2153321e-006"
+     y="0"
+     style="opacity:1;fill:#193144;fill-opacity:1;stroke-width:0.32254189"
+     ry="0" />
+  <path
+     style="opacity:0.33600003;fill:#11212e;fill-opacity:1;stroke-width:0.32254189"
+     clip-path="none"
+     d="M 0,64.454542 1e-6,128.90908 H 128.90908 c 0.20455,-19.97281 1e-5,-46.588588 1e-5,-64.454538 z"
+     id="rect1556"
+     inkscape:label="background_score"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccc" />
+</svg>
