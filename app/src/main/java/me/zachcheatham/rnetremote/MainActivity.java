@@ -2,6 +2,7 @@ package me.zachcheatham.rnetremote;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -17,6 +18,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -172,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     {
         boolean connected = boundToServerService && server.isReady();
 
+        menu.findItem(R.id.action_update).setVisible(connected & server.updateAvailable());
         menu.findItem(R.id.action_power_all).setVisible(connected);
         menu.findItem(R.id.action_change_server).setVisible(connected);
         menu.findItem(R.id.action_add_zone).setVisible(connected);
@@ -250,6 +253,28 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
             return true;
         }
+        case R.id.action_update:
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay));
+            builder.setTitle(R.string.proxy_update_available);
+            builder.setMessage(String.format(getString(R.string.proxy_update_available_desc), server.getNewVersion()));
+            builder.setPositiveButton(getString(R.string.action_update),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            if (boundToServerService)
+                            {
+                                server.update();
+                                notifyUpdating();
+                            }
+                        }
+                    });
+            builder.setNegativeButton(getString(android.R.string.cancel), null);
+            builder.create().show();
+            return true;
+        }
         }
 
         return super.onOptionsItemSelected(item);
@@ -294,6 +319,16 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
         dialog.setCancelable(cancelable);
         dialog.show(getSupportFragmentManager(), "SelectServerDialogFragment");
+    }
+
+    private void notifyUpdating()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay));
+        builder.setTitle(R.string.proxy_update_started);
+        builder.setMessage(R.string.proxy_update_started_desc);
+        builder.setPositiveButton(getString(android.R.string.ok), null);
+        builder.create().show();
     }
 
     @Override
@@ -431,6 +466,12 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             serialConnectionSnackbar.dismiss();
             serialConnectionSnackbar = null;
         }
+    }
+
+    @Override
+    public void updateAvailable()
+    {
+        invalidateOptionsMenu();
     }
 
     @Override

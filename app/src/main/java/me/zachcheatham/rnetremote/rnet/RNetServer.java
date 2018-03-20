@@ -18,10 +18,13 @@ import java.util.List;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SDeleteSource;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SDeleteZone;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SIntent;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SUpdate;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CRNetStatus;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceName;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CUpdateAvailable;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CVersion;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneIndex;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneMaxVolume;
@@ -48,6 +51,8 @@ public class RNetServer
 
     private boolean run;
     private boolean receivedIndex = false;
+    private String version = "<unknown>";
+    private String newVersion = null;
     private boolean serialConnected = false;
     private SparseArray<Source> sources = new SparseArray<>();
     private SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
@@ -143,6 +148,21 @@ public class RNetServer
     public boolean isReady()
     {
         return receivedIndex || (intent == INTENT_ACTION && isConnected());
+    }
+
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public boolean updateAvailable()
+    {
+        return newVersion != null;
+    }
+
+    public String getNewVersion()
+    {
+        return newVersion;
     }
 
     /*public boolean isSerialConnected()
@@ -264,6 +284,11 @@ public class RNetServer
     public void removeZoneListener(ZonesListener listener)
     {
         zonesListeners.remove(listener);
+    }
+
+    public void update()
+    {
+        new SendPacketTask(this).execute(new PacketC2SUpdate());
     }
 
     void run()
@@ -526,6 +551,19 @@ public class RNetServer
 
                 break;
             }
+            case PacketS2CVersion.ID:
+            {
+                PacketS2CVersion packet = new PacketS2CVersion(buffer);
+                version = packet.getVersion();
+                break;
+            }
+            case PacketS2CUpdateAvailable.ID:
+            {
+                PacketS2CUpdateAvailable packet = new PacketS2CUpdateAvailable(buffer);
+                newVersion = packet.getNewVersion();
+                for (StateListener listener : stateListeners)
+                    listener.updateAvailable();
+            }
             default:
                 Log.w(LOG_TAG, String.format("Received invalid packet %d", packetType));
             }
@@ -590,6 +628,8 @@ public class RNetServer
         sources.clear();
         serialConnected = false;
         receivedIndex = false;
+        version = "<unknown>";
+        newVersion = null;
 
         for (ZonesListener listener : zonesListeners)
             listener.cleared();
@@ -609,6 +649,8 @@ public class RNetServer
         void ready();
 
         void serialStateChanged(boolean connected);
+
+        void updateAvailable();
 
         void disconnected(boolean unexpected);
     }

@@ -131,6 +131,9 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     public void serialStateChanged(boolean connected) {}
 
     @Override
+    public void updateAvailable() {}
+
+    @Override
     public void disconnected(boolean unexpected)
     {
         Log.d(LOG_TAG, "Server disconnected.");

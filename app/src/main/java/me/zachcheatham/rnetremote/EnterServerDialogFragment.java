@@ -235,6 +235,9 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
     public void serialStateChanged(boolean connected) {}
 
     @Override
+    public void updateAvailable() {}
+
+    @Override
     public void disconnected(boolean unexpected) {}
 
     private enum ValidateAddressResult

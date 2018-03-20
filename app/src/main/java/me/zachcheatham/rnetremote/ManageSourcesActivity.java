@@ -151,6 +151,9 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
     public void serialStateChanged(boolean connected) {}
 
     @Override
+    public void updateAvailable() {}
+
+    @Override
     public void disconnected(boolean unexpected)
     {
         runOnUiThread(new Runnable()

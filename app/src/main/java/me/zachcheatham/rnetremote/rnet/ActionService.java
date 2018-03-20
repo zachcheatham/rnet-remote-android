@@ -164,6 +164,9 @@ public class ActionService extends IntentService implements RNetServer.StateList
     public void serialStateChanged(boolean connected) {}
 
     @Override
+    public void updateAvailable() {}
+
+    @Override
     public void disconnected(boolean unexpected)
     {
         if (foreground)
