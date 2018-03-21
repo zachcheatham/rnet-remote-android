@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
     private boolean boundToServerService = false;
     private boolean useVolumeKeys = false;
+    private boolean serverPromptOpened = false;
     private RNetServer server;
     private RNetServerService serverService;
     private ServiceConnection serviceConnection = new ServiceConnection()
@@ -72,7 +73,10 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             boundToServerService = true;
 
             if (!serverService.hasServerInfo())
-                promptSelectServer(false);
+            {
+                if (!serverPromptOpened)
+                    promptSelectServer(false);
+            }
             else
             {
                 //noinspection ConstantConditions
@@ -319,6 +323,9 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
         dialog.setCancelable(cancelable);
         dialog.show(getSupportFragmentManager(), "SelectServerDialogFragment");
+
+        if (!cancelable)
+            serverPromptOpened = true;
     }
 
     private void notifyUpdating()
