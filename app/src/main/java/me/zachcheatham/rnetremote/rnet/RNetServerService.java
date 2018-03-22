@@ -145,9 +145,14 @@ public class RNetServerService extends Service implements RNetServer.StateListen
         }
     }
 
-    public String getServerName()
+    public String getSavedServerName()
     {
         return name;
+    }
+
+    public void setSavedServerName(String name)
+    {
+        this.name = name;
     }
 
     public boolean hasServerInfo()

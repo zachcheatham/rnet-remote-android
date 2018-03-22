@@ -135,6 +135,18 @@ public class SettingsActivity extends AppCompatActivity
                 getPreferenceScreen().removePreference(findPreference("phone_calls"));
             }
 
+            findPreference("controller_name").setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener()
+                    {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue)
+                        {
+                            if (server != null && server.isReady())
+                                server.setName((String) newValue);
+
+                            return true;
+                        }
+                    });
             findPreference("application_version").setSummary(BuildConfig.VERSION_NAME);
         }
 

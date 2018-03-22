@@ -58,6 +58,7 @@ public class RNetServer
     private boolean receivedIndex = false;
     private SparseArray<Source> sources = new SparseArray<>();
     private SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
+    private String name = "<unknown>";
     private String version = "<unknown>";
     private String newVersion = null;
     //private boolean serialConnected = false;
@@ -153,6 +154,17 @@ public class RNetServer
     public boolean isReady()
     {
         return receivedIndex || (intent == INTENT_ACTION && isConnected());
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        if (!name.equals(this.name))
+            new SendPacketTask(this).execute(new PacketC2SProperty(PROPERTY_NAME, name));
     }
 
     public String getVersion()
@@ -432,6 +444,9 @@ public class RNetServer
 
                 switch (packet.getPropertyID())
                 {
+                case PROPERTY_NAME:
+                    name = (String) packet.getValue();
+                    break;
                 case PROPERTY_VERSION:
                     version = (String) packet.getValue();
                     break;

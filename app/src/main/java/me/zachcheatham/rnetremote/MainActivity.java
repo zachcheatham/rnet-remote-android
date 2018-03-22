@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -80,12 +79,18 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             else
             {
                 //noinspection ConstantConditions
-                getSupportActionBar().setTitle(serverService.getServerName());
+                getSupportActionBar().setTitle(serverService.getSavedServerName());
 
                 if (!server.isRunning())
+                {
                     serverService.startServerConnection();
+                }
                 else
+                {
                     setConnectingVisible(!server.isReady());
+                    if (server.isReady())
+                        propertyChanged(RNetServer.PROPERTY_NAME, server.getName());
+                }
             }
 
             server.addStateListener(MainActivity.this);
@@ -425,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             @Override
             public void run()
             {
-                getSupportActionBar().setTitle(serverService.getServerName());
+                getSupportActionBar().setTitle(serverService.getSavedServerName());
                 setConnectingVisible(true);
             }
         });
@@ -480,6 +485,28 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             {
                 serialConnectionSnackbar.dismiss();
                 serialConnectionSnackbar = null;
+            }
+        }
+        else if (prop == RNetServer.PROPERTY_NAME)
+        {
+            final String name = (String) value;
+            if (!name.equals(serverService.getSavedServerName()))
+            {
+                serverService.setSavedServerName(name);
+
+                SharedPreferences settings = getSharedPreferences(PREFS, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("server_name", name);
+                editor.apply();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        //noinspection ConstantConditions
+                        getSupportActionBar().setTitle(name);
+                    }
+                });
             }
         }
     }
