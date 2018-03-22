@@ -7,6 +7,7 @@
 
     <PreferenceCategory
         android:title="@string/settings_category_phone"
+        android:key="phone_calls"
         >
 
         <SwitchPreference
@@ -19,6 +20,43 @@
             android:summary="@string/setting_mute_during_call_desc"
             android:key="mute_on_call" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_category_controller"
+        >
+
+        <EditTextPreference
+            android:title="@string/settings_controller_name"
+            android:persistent="false"
+            android:enabled="false"
+            android:selectAllOnFocus="true"
+            android:key="controller_name"/>
+
+        <!--<SwitchPreference
+            android:title="@string/setting_controller_web_server"
+            android:summary="@string/setting_controller_web_server_desc"
+            android:persistent="false"
+            android:enabled="false"
+            android:key="controller_web_server"/>-->
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/about"
+        >
+        <Preference
+            android:title="@string/setting_about_app_version"
+            android:key="application_version"
+            android:persistent="false"/>
+        <Preference
+            android:title="@string/setting_about_server_version"
+            android:persistent="false"
+            android:key="controller_version"/>
+        <Preference
+            android:title="@string/setting_about_server_address"
+            android:persistent="false"
+            android:key="controller_address"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

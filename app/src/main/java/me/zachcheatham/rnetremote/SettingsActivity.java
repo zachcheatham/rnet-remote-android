@@ -1,10 +1,17 @@
 package me.zachcheatham.rnetremote;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.EditTextPreference;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,8 +21,20 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextThemeWrapper;
 
+import me.zachcheatham.rnetremote.rnet.RNetServer;
+import me.zachcheatham.rnetremote.rnet.RNetServerService;
+
 public class SettingsActivity extends AppCompatActivity
 {
+    private ServiceConnection serviceConnection = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {}
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {}
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -23,6 +42,22 @@ public class SettingsActivity extends AppCompatActivity
 
         getFragmentManager().beginTransaction()
                             .replace(android.R.id.content, new SettingsFragment()).commit();
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+
+        Intent intent = new Intent(this, RNetServerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        unbindService(serviceConnection);
     }
 
     @Override
@@ -53,8 +88,40 @@ public class SettingsActivity extends AppCompatActivity
     }
 
     public static class SettingsFragment extends PreferenceFragment
-            implements SharedPreferences.OnSharedPreferenceChangeListener
+            implements SharedPreferences.OnSharedPreferenceChangeListener, RNetServer.StateListener
     {
+        private RNetServer server;
+        private RNetServerService serverService;
+        private ServiceConnection serviceConnection = new ServiceConnection()
+        {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+            {
+                RNetServerService.LocalBinder binder = (RNetServerService.LocalBinder) iBinder;
+
+                serverService = binder.getService();
+                server = serverService.getServer();
+
+                if (serverService.hasServerInfo() && !server.isRunning())
+                {
+                    serverService.startServerConnection();
+                }
+
+                server.addStateListener(SettingsFragment.this);
+                applyControllerSettings();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName)
+            {
+                server.removeStateListener(SettingsFragment.this);
+                applyControllerSettings();
+
+                serverService = null;
+                server = null;
+            }
+        };
+
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState)
         {
@@ -65,9 +132,27 @@ public class SettingsActivity extends AppCompatActivity
             if (!getActivity().getPackageManager()
                               .hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
             {
-                getPreferenceScreen().removePreference(findPreference("mute_on_call"));
-                getPreferenceScreen().removePreference(findPreference("mute_on_ring"));
+                getPreferenceScreen().removePreference(findPreference("phone_calls"));
             }
+
+            findPreference("application_version").setSummary(BuildConfig.VERSION_NAME);
+        }
+
+        @Override
+        public void onStart()
+        {
+            super.onStart();
+
+            Intent intent = new Intent(getActivity(), RNetServerService.class);
+            getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+
+        @Override
+        public void onResume()
+        {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences()
+                                  .registerOnSharedPreferenceChangeListener(this);
         }
 
         @Override
@@ -79,11 +164,16 @@ public class SettingsActivity extends AppCompatActivity
         }
 
         @Override
-        public void onResume()
+        public void onStop()
         {
-            super.onResume();
-            getPreferenceManager().getSharedPreferences()
-                                  .registerOnSharedPreferenceChangeListener(this);
+            super.onStop();
+
+            getActivity().unbindService(serviceConnection);
+            if (server != null)
+            {
+                server.removeStateListener(this);
+            }
+            applyControllerSettings();
         }
 
         @Override
@@ -123,6 +213,81 @@ public class SettingsActivity extends AppCompatActivity
                     }
                 }
             }
+        }
+
+        private void applyControllerSettings()
+        {
+            Preference versionPreference = findPreference("controller_version");
+            Preference addressPreference = findPreference("controller_address");
+            EditTextPreference namePreference = (EditTextPreference) findPreference("controller_name");
+            //Preference webServerPreference = findPreference("controller_web_server");
+
+            if (server != null && server.isReady())
+            {
+                versionPreference.setSummary(server.getVersion());
+                versionPreference.setEnabled(true);
+                addressPreference.setSummary(server.getAddress().getHostAddress() + ":" + server.getPort());
+                addressPreference.setEnabled(true);
+                namePreference.setSummary(server.getName());
+                namePreference.setText(server.getName());
+                namePreference.setEnabled(true);
+                //webServerPreference.setEnabled(true);
+            }
+            else
+            {
+                versionPreference.setSummary(getString(R.string.pref_disconnected));
+                versionPreference.setEnabled(false);
+                addressPreference.setSummary(getString(R.string.pref_disconnected));
+                addressPreference.setEnabled(false);
+                namePreference.setSummary(getString(R.string.pref_disconnected));
+                namePreference.setEnabled(false);
+                //webServerPreference.setEnabled(false);
+            }
+        }
+
+        @Override
+        public void connectionInitiated() {}
+
+        @Override
+        public void connectError() {}
+
+        @Override
+        public void ready()
+        {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    applyControllerSettings();
+                }
+            });
+        }
+
+        @Override
+        public void updateAvailable() {}
+
+        @Override
+        public void propertyChanged(int prop, Object value)
+        {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    applyControllerSettings();
+                }
+            });
+        }
+
+        @Override
+        public void disconnected(boolean unexpected)
+        {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    applyControllerSettings();
+                }
+            });
         }
     }
 }
