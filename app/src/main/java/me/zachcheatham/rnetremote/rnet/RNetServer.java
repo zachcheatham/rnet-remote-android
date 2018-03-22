@@ -18,13 +18,13 @@ import java.util.List;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SDeleteSource;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SDeleteZone;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SIntent;
+import me.zachcheatham.rnetremote.rnet.packet.PacketC2SProperty;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SUpdate;
 import me.zachcheatham.rnetremote.rnet.packet.PacketC2SZoneName;
-import me.zachcheatham.rnetremote.rnet.packet.PacketS2CRNetStatus;
+import me.zachcheatham.rnetremote.rnet.packet.PacketS2CProperty;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CSourceName;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CUpdateAvailable;
-import me.zachcheatham.rnetremote.rnet.packet.PacketS2CVersion;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneDeleted;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneIndex;
 import me.zachcheatham.rnetremote.rnet.packet.PacketS2CZoneMaxVolume;
@@ -40,6 +40,11 @@ public class RNetServer
     public static final int INTENT_ACTION = 0x01;
     public static final int INTENT_SUBSCRIBE = 0x02;
 
+    public static final int PROPERTY_NAME = 1;
+    public static final int PROPERTY_VERSION = 2;
+    public static final int PROPERTY_SERIAL_CONNECTED = 3;
+    public static final int PROPERTY_WEB_SERVER_ENABLED = 4;
+
     private static final String LOG_TAG = "RNetServer";
     private final ByteBuffer pendingBuffer = ByteBuffer.allocate(255);
     private SocketChannel channel;
@@ -51,11 +56,11 @@ public class RNetServer
 
     private boolean run;
     private boolean receivedIndex = false;
-    private String version = "<unknown>";
-    private String newVersion = null;
-    private boolean serialConnected = false;
     private SparseArray<Source> sources = new SparseArray<>();
     private SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
+    private String version = "<unknown>";
+    private String newVersion = null;
+    //private boolean serialConnected = false;
 
     private List<StateListener> stateListeners = new ArrayList<>();
     private List<ZonesListener> zonesListeners = new ArrayList<>();
@@ -346,10 +351,9 @@ public class RNetServer
                     listener.connectError();
         }
 
-        receivedIndex = false;
-        serialConnected = false;
         channel = null;
         run = false;
+        cleanUp();
 
         Log.d(LOG_TAG, "Server run ended.");
     }
@@ -422,12 +426,19 @@ public class RNetServer
         {
             switch (packetType)
             {
-            case PacketS2CRNetStatus.ID:
+            case PacketS2CProperty.ID:
             {
-                PacketS2CRNetStatus packet = new PacketS2CRNetStatus(buffer);
-                serialConnected = packet.getRNetConnected();
+                PacketS2CProperty packet = new PacketS2CProperty(buffer);
+
+                switch (packet.getPropertyID())
+                {
+                case PROPERTY_VERSION:
+                    version = (String) packet.getValue();
+                    break;
+                }
+
                 for (StateListener listener : stateListeners)
-                    listener.serialStateChanged(packet.getRNetConnected());
+                    listener.propertyChanged(packet.getPropertyID(), packet.getValue());
                 break;
             }
             case PacketS2CSourceDeleted.ID:
@@ -551,12 +562,6 @@ public class RNetServer
 
                 break;
             }
-            case PacketS2CVersion.ID:
-            {
-                PacketS2CVersion packet = new PacketS2CVersion(buffer);
-                version = packet.getVersion();
-                break;
-            }
             case PacketS2CUpdateAvailable.ID:
             {
                 PacketS2CUpdateAvailable packet = new PacketS2CUpdateAvailable(buffer);
@@ -626,7 +631,7 @@ public class RNetServer
         }
         zones.clear();
         sources.clear();
-        serialConnected = false;
+        //serialConnected = false;
         receivedIndex = false;
         version = "<unknown>";
         newVersion = null;
@@ -648,9 +653,9 @@ public class RNetServer
 
         void ready();
 
-        void serialStateChanged(boolean connected);
-
         void updateAvailable();
+
+        void propertyChanged(int prop, Object value);
 
         void disconnected(boolean unexpected);
     }

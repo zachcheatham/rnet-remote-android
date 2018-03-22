@@ -365,16 +365,13 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     public void connectError() {}
 
     @Override
-    public void ready()
-    {
-
-    }
-
-    @Override
-    public void serialStateChanged(boolean connected) {}
+    public void ready() {}
 
     @Override
     public void updateAvailable() {}
+
+    @Override
+    public void propertyChanged(int prop, Object value) {}
 
     @Override
     public void disconnected(boolean unexpected)

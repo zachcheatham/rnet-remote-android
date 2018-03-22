@@ -128,10 +128,10 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     public void ready() {}
 
     @Override
-    public void serialStateChanged(boolean connected) {}
+    public void updateAvailable() {}
 
     @Override
-    public void updateAvailable() {}
+    public void propertyChanged(int prop, Object value) {}
 
     @Override
     public void disconnected(boolean unexpected)

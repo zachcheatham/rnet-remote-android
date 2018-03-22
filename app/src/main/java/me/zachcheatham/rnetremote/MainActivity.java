@@ -460,25 +460,28 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     }
 
     @Override
-    public void serialStateChanged(boolean connected)
-    {
-        if (!connected)
-        {
-            serialConnectionSnackbar = Snackbar.make(findViewById(R.id.main_content),
-                    R.string.notice_serial_disconnected, Snackbar.LENGTH_INDEFINITE);
-            serialConnectionSnackbar.show();
-        }
-        else if (serialConnectionSnackbar != null && serialConnectionSnackbar.isShown())
-        {
-            serialConnectionSnackbar.dismiss();
-            serialConnectionSnackbar = null;
-        }
-    }
-
-    @Override
     public void updateAvailable()
     {
         invalidateOptionsMenu();
+    }
+
+    @Override
+    public void propertyChanged(int prop, Object value)
+    {
+        if (prop == RNetServer.PROPERTY_SERIAL_CONNECTED)
+        {
+            if (!((boolean) value))
+            {
+                serialConnectionSnackbar = Snackbar.make(findViewById(R.id.main_content),
+                        R.string.notice_serial_disconnected, Snackbar.LENGTH_INDEFINITE);
+                serialConnectionSnackbar.show();
+            }
+            else if (serialConnectionSnackbar != null && serialConnectionSnackbar.isShown())
+            {
+                serialConnectionSnackbar.dismiss();
+                serialConnectionSnackbar = null;
+            }
+        }
     }
 
     @Override
