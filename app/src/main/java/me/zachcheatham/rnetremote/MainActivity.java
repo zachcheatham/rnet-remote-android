@@ -524,6 +524,12 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                 setConnectingVisible(true);
 
                 invalidateOptionsMenu();
+
+                if (serialConnectionSnackbar != null && serialConnectionSnackbar.isShown())
+                {
+                    serialConnectionSnackbar.dismiss();
+                    serialConnectionSnackbar = null;
+                }
             }
         });
 
