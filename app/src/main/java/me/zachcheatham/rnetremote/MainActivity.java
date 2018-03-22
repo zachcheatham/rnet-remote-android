@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        boolean connected = boundToServerService && server.isReady();
+        boolean connected = boundToServerService && server != null && server.isReady();
 
         menu.findItem(R.id.action_update).setVisible(connected & server.updateAvailable());
         menu.findItem(R.id.action_power_all).setVisible(connected);
