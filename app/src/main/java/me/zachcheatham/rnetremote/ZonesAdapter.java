@@ -22,10 +22,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.zachcheatham.rnetremote.rnet.RNetServer;
-import me.zachcheatham.rnetremote.rnet.Zone;
 import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
 import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
+import me.zachcheatham.rnetremotecommon.rnet.Zone;
 
 class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         implements RNetServer.ZonesListener, ItemTouchHelperAdapter

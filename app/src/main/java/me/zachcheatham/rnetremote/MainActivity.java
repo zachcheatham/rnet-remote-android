@@ -34,11 +34,11 @@ import android.widget.TextView;
 
 import java.net.InetAddress;
 
-import me.zachcheatham.rnetremote.rnet.RNetServer;
-import me.zachcheatham.rnetremote.rnet.RNetServerService;
-import me.zachcheatham.rnetremote.rnet.packet.PacketC2SAllPower;
-import me.zachcheatham.rnetremote.rnet.packet.PacketC2SMute;
 import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SAllPower;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SMute;
 
 public class MainActivity extends AppCompatActivity implements SelectServerListener,
         RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,

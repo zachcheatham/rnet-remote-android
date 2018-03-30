@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_header_height"
+    android:fontFamily="sans-serif-condensed"
+    android:gravity="bottom"
+    android:paddingBottom="@dimen/list_header_padding_bottom"
+    android:text="@string/dialog_change_server"
+    android:textAlignment="center"
+    android:textColor="@color/white"
+    android:textSize="@dimen/title_text_size"/>

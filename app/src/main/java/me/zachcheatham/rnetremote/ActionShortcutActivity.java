@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import me.zachcheatham.rnetremote.rnet.ActionService;
+import me.zachcheatham.rnetremote.service.ActionService;
 
 public class ActionShortcutActivity extends Activity
 {

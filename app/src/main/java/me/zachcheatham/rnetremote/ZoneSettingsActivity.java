@@ -24,9 +24,9 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import me.zachcheatham.rnetremote.rnet.RNetServer;
-import me.zachcheatham.rnetremote.rnet.RNetServerService;
-import me.zachcheatham.rnetremote.rnet.Zone;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
+import me.zachcheatham.rnetremotecommon.rnet.Zone;
 
 public class ZoneSettingsActivity extends AppCompatActivity implements View.OnClickListener,
         SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener,

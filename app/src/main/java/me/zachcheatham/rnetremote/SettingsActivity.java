@@ -21,8 +21,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextThemeWrapper;
 
-import me.zachcheatham.rnetremote.rnet.RNetServer;
-import me.zachcheatham.rnetremote.rnet.RNetServerService;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 
 public class SettingsActivity extends AppCompatActivity
 {

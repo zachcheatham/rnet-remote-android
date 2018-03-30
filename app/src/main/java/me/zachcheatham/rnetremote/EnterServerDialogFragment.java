@@ -25,7 +25,7 @@ import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import me.zachcheatham.rnetremote.rnet.RNetServer;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 
 public class EnterServerDialogFragment extends DialogFragment implements RNetServer.StateListener
 {

@@ -57,11 +57,11 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <service
-            android:name=".rnet.RNetServerService"
+            android:name="me.zachcheatham.rnetremotecommon.rnet.RNetServerService"
             android:enabled="true"
             android:exported="false"/>
         <service
-            android:name=".rnet.ActionService"
+            android:name=".service.ActionService"
             android:enabled="true"
             android:exported="false"/>
 

@@ -18,11 +18,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import me.zachcheatham.rnetremote.rnet.RNetServer;
-import me.zachcheatham.rnetremote.rnet.RNetServerService;
-import me.zachcheatham.rnetremote.rnet.Source;
-import me.zachcheatham.rnetremote.rnet.Zone;
 import me.zachcheatham.rnetremote.ui.SimpleDividerItemDecoration;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
+import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
+import me.zachcheatham.rnetremotecommon.rnet.Source;
+import me.zachcheatham.rnetremotecommon.rnet.Zone;
 
 public class ManageSourcesActivity extends AppCompatActivity implements RNetServer.StateListener,
         RNetServer.ZonesListener, AddSourceDialogFragment.AddSourceListener

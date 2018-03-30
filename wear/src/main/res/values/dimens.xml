@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="box_inset_layout_padding">0dp</dimen>
+    <dimen name="inner_frame_layout_padding">5dp</dimen>
+
+    <dimen name="list_padding">5dp</dimen>
+    <dimen name="title_text_size">18sp</dimen>
+    <dimen name="list_header_height">41dp</dimen>
+    <dimen name="list_header_padding_bottom">8dp</dimen>
+    <dimen name="list_footer_height">5dp</dimen>
+    <dimen name="list_item_spacing">10dp</dimen>
+    <dimen name="list_item_height">56dp</dimen>
+    <dimen name="list_item_text_size">16sp</dimen>
+    <dimen name="list_item_padding">10dp</dimen>
+    <dimen name="placeholder_spacing_group">5dp</dimen>
+
+</resources>

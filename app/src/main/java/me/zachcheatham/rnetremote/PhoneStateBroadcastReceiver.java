@@ -11,7 +11,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
-import me.zachcheatham.rnetremote.rnet.ActionService;
+import me.zachcheatham.rnetremote.service.ActionService;
 
 public class PhoneStateBroadcastReceiver extends BroadcastReceiver
 {
