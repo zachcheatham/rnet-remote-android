@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     {
         boolean connected = boundToServerService && server != null && server.isReady();
 
-        menu.findItem(R.id.action_update).setVisible(connected & server.updateAvailable());
+        menu.findItem(R.id.action_update).setVisible(connected && server.updateAvailable());
         menu.findItem(R.id.action_power_all).setVisible(connected);
         menu.findItem(R.id.action_change_server).setVisible(connected);
         menu.findItem(R.id.action_add_zone).setVisible(connected);
