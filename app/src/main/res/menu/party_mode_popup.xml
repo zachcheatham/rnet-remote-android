@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/party_mode_off"
-          android:title="@string/option_value_off" />
-    <item android:id="@+id/party_mode_on"
-          android:title="@string/option_value_on" />
-    <item android:id="@+id/party_mode_master"
-          android:title="@string/option_value_master" />
+    <item
+        android:id="@+id/party_mode_off"
+        android:title="@string/option_value_off"/>
+    <item
+        android:id="@+id/party_mode_on"
+        android:title="@string/option_value_on"/>
+    <item
+        android:id="@+id/party_mode_master"
+        android:title="@string/option_value_master"/>
 </menu>

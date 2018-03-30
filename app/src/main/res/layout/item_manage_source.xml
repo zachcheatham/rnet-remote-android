@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="@dimen/list_single_line_height"
-              android:paddingStart="@dimen/list_horizontal_padding"
-              android:paddingLeft="@dimen/list_horizontal_padding"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
               android:paddingEnd="@dimen/list_horizontal_padding"
+              android:paddingLeft="@dimen/list_horizontal_padding"
               android:paddingRight="@dimen/list_horizontal_padding"
-              android:gravity="center_vertical">
+              android:paddingStart="@dimen/list_horizontal_padding">
 
     <TextView
         android:id="@+id/text_id"

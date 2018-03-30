@@ -1,5 +1,7 @@
 package me.zachcheatham.rnetremote;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,13 +46,16 @@ public class AddSourceDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        Activity activity = getActivity();
+        assert activity != null;
+        LayoutInflater inflater = activity.getLayoutInflater();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
         builder.setTitle(R.string.action_add_source);
 
-        View view = inflater.inflate(R.layout.dialog_fragment_add_source, null);
+        @SuppressLint("InflateParams") View view = inflater
+                .inflate(R.layout.dialog_fragment_add_source, null);
 
         sourceNameInputLayout = view.findViewById(R.id.text_input_layout_source_name);
         sourceNameEditText = view.findViewById(R.id.edit_text_source_name);

@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--suppress AndroidUnknownAttribute -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:api24="http://schemas.android.com/apk/res/android"
         android:width="108dp"
         android:height="108dp"
-        android:viewportWidth="129"
-        android:viewportHeight="129.00002">
+        android:viewportHeight="129.00002"
+        android:viewportWidth="129">
     <group android:translateY="0.045455005">
         <path
-            android:pathData="M0.0000012153321 0L128.90909 0l0 128.90909 -128.9090887846679 0z"
-            android:fillColor="#193144" />
+            android:fillColor="#193144"
+            android:pathData="M0.0000012153321 0L128.90909 0l0 128.90909 -128.9090887846679 0z"/>
         <path
-            android:pathData="M0 64.454542l0.000001 64.454538 128.909079 0c0.20455 -19.97281 0.00001 -46.588588 0.00001 -64.454538z"
+            android:fillAlpha="0.336"
             android:fillColor="#11212e"
-            android:fillAlpha="0.336" />
+            android:pathData="M0 64.454542l0.000001 64.454538 128.909079 0c0.20455 -19.97281 0.00001 -46.588588 0.00001 -64.454538z"/>
     </group>
 </vector>

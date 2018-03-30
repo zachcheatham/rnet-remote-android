@@ -1,5 +1,6 @@
 package me.zachcheatham.rnetremote;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,9 +38,12 @@ public class SelectServerDialogFragment extends DialogFragment
     {
         super.onCreate(savedInstanceState);
 
-        nsdManager = (NsdManager) getContext().getSystemService(Context.NSD_SERVICE);
-        createNSDListener();
-        createResolveListener();
+        Context c = getContext();
+        if (c != null)
+        {
+            nsdManager = (NsdManager) getContext().getSystemService(Context.NSD_SERVICE);
+            createNSDListener();
+        }
     }
 
     @Override
@@ -69,13 +74,16 @@ public class SelectServerDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
+        Activity activity = getActivity();
+        assert activity != null;
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 new ContextThemeWrapper(getContext(), R.style.AppTheme_DialogOverlay));
         builder.setTitle(R.string.dialog_change_server);
 
-        View view = inflater.inflate(R.layout.dialog_fragment_select_server, null);
+        @SuppressLint("InflateParams") View view = inflater
+                .inflate(R.layout.dialog_fragment_select_server, null);
 
         RecyclerView recyclerView = view.findViewById(R.id.list_servers);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
@@ -187,9 +195,13 @@ public class SelectServerDialogFragment extends DialogFragment
     {
         if (position == (adapter.getItemCount() - 1))
         {
-            EnterServerDialogFragment dialog = new EnterServerDialogFragment();
-            dialog.setCancelable(true);
-            dialog.show(getFragmentManager(), "EnterServerDialogFragment");
+            FragmentManager fm = getFragmentManager();
+            if (fm != null)
+            {
+                EnterServerDialogFragment dialog = new EnterServerDialogFragment();
+                dialog.setCancelable(true);
+                dialog.show(fm, "EnterServerDialogFragment");
+            }
         }
         else
         {

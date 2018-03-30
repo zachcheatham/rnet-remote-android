@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_all_on"
-          android:title="@string/action_all_on" />
-    <item android:id="@+id/action_all_off"
-          android:title="@string/action_all_off" />
+    <item
+        android:id="@+id/action_all_on"
+        android:title="@string/action_all_on"/>
+    <item
+        android:id="@+id/action_all_off"
+        android:title="@string/action_all_off"/>
 </menu>

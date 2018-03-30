@@ -1,37 +1,44 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="me.zachcheatham.rnetremote.MainActivity" >
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="me.zachcheatham.rnetremote.MainActivity">
 
-    <item android:id="@+id/action_update"
-          android:icon="@drawable/ic_new_releases_white_24dp"
-          android:title="@string/proxy_update_available"
-          app:showAsAction="always" />
+    <item
+        android:id="@+id/action_update"
+        android:icon="@drawable/ic_new_releases_white_24dp"
+        android:title="@string/proxy_update_available"
+        app:showAsAction="always"/>
 
-    <item android:id="@+id/action_toggle_mute"
-          android:icon="@drawable/ic_volume_off_white_24dp"
-          android:title="@string/action_toggle_mute"
-          app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/action_toggle_mute"
+        android:icon="@drawable/ic_volume_off_white_24dp"
+        android:title="@string/action_toggle_mute"
+        app:showAsAction="ifRoom|withText"/>
 
-    <item android:id="@+id/action_power_all"
-          android:icon="@drawable/ic_power_settings_white_24dp"
-          android:title="@string/action_power_all"
-          app:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/action_power_all"
+        android:icon="@drawable/ic_power_settings_white_24dp"
+        android:title="@string/action_power_all"
+        app:showAsAction="ifRoom|withText"/>
 
-    <item android:id="@+id/action_add_zone"
-          android:title="@string/action_add_zone"
-          app:showAsAction="never" />
+    <item
+        android:id="@+id/action_add_zone"
+        android:title="@string/action_add_zone"
+        app:showAsAction="never"/>
 
-    <item android:id="@+id/action_manage_sources"
-          android:title="@string/action_manage_sources"
-          app:showAsAction="never" />
+    <item
+        android:id="@+id/action_manage_sources"
+        android:title="@string/action_manage_sources"
+        app:showAsAction="never"/>
 
-    <item android:id="@+id/action_change_server"
+    <item
+        android:id="@+id/action_change_server"
         android:title="@string/action_change_server"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 
-    <item android:id="@+id/settings"
-          android:title="@string/settings"
-          app:showAsAction="never" />
+    <item
+        android:id="@+id/settings"
+        android:title="@string/settings"
+        app:showAsAction="never"/>
 
 </menu>

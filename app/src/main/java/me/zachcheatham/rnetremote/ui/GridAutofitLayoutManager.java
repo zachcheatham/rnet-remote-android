@@ -16,12 +16,12 @@ public class GridAutofitLayoutManager extends GridLayoutManager
         setColumnWidth(checkedColumnWidth(context, columnWidth));
     }
 
-    public GridAutofitLayoutManager(Context context, int columnWidth, int orientation,
+    /*public GridAutofitLayoutManager(Context context, int columnWidth, int orientation,
             boolean reverseLayout)
     {
         super(context, 1, orientation, reverseLayout);
         setColumnWidth(checkedColumnWidth(context, columnWidth));
-    }
+    }*/
 
     private int checkedColumnWidth(Context context, int columnWidth)
     {
@@ -33,7 +33,7 @@ public class GridAutofitLayoutManager extends GridLayoutManager
         return columnWidth;
     }
 
-    public void setColumnWidth(int newColumnWidth)
+    private void setColumnWidth(int newColumnWidth)
     {
         if (newColumnWidth > 0 && newColumnWidth != mColumnWidth)
         {

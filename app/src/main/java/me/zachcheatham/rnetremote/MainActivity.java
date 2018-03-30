@@ -267,9 +267,11 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             AlertDialog.Builder builder = new AlertDialog.Builder(
                     new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay));
             builder.setTitle(R.string.proxy_update_available);
-            builder.setMessage(String.format(getString(R.string.proxy_update_available_desc), server.getNewVersion()));
+            builder.setMessage(String.format(getString(R.string.proxy_update_available_desc),
+                    server.getNewVersion()));
             builder.setPositiveButton(getString(R.string.action_update),
-                    new DialogInterface.OnClickListener() {
+                    new DialogInterface.OnClickListener()
+                    {
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
@@ -499,7 +501,8 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                 editor.putString("server_name", name);
                 editor.apply();
 
-                runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable()
+                {
                     @Override
                     public void run()
                     {

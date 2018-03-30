@@ -27,18 +27,14 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts"/>
         </activity>
-
         <activity
             android:name=".ZoneSettingsActivity"
             android:label="@string/activity_name_zone_settings"
             android:theme="@style/AppTheme.NoActionBar"/>
-
         <activity
             android:name=".ManageSourcesActivity"
             android:label="@string/activity_name_manage_sources"
             android:theme="@style/AppTheme.NoActionBar"/>
-
-
         <activity
             android:name=".SettingsActivity"
             android:label="@string/settings"
@@ -48,13 +44,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="me.zachcheatham.rnetremote.MainActivity"/>
         </activity>
-
         <activity
             android:name=".ActionShortcutActivity"
             android:clearTaskOnLaunch="true"
             android:excludeFromRecents="true"
             android:hardwareAccelerated="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <service
             android:name="me.zachcheatham.rnetremotecommon.rnet.RNetServerService"
@@ -71,12 +66,26 @@
             </intent-filter>
         </receiver>
 
-        <meta-data android:name="com.lge.support.SPLIT_WINDOW" android:value="true" />
-        <uses-library android:required="false" android:name="com.sec.android.app.multiwindow" />
-        <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />
-        <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W" android:value="632.0dip" />
-        <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H" android:value="598.0dip" />
-        <meta-data android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable" android:value="true" />
+        <meta-data
+            android:name="com.lge.support.SPLIT_WINDOW"
+            android:value="true"/>
+
+        <uses-library
+            android:name="com.sec.android.app.multiwindow"
+            android:required="false"/>
+
+        <meta-data
+            android:name="com.sec.android.support.multiwindow"
+            android:value="true"/>
+        <meta-data
+            android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W"
+            android:value="632.0dip"/>
+        <meta-data
+            android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H"
+            android:value="598.0dip"/>
+        <meta-data
+            android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable"
+            android:value="true"/>
     </application>
 
 </manifest>

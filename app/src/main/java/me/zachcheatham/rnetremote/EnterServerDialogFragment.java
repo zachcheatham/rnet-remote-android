@@ -115,8 +115,10 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                     public void onClick(View view)
                     {
 
+                        EditText editText = addressInputLayout.getEditText();
+                        assert editText != null;
                         ValidateAddressResult addressResult = validate(
-                                addressInputLayout.getEditText().getText().toString());
+                                editText.getText().toString());
 
                         if (addressResult != ValidateAddressResult.OK)
                         {
@@ -189,8 +191,10 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                     addressInputLayout.setError(getString(R.string.error_connect));
                     verifying.setVisibility(View.GONE);
                     addressInputLayout.setVisibility(View.VISIBLE);
-                    ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                    Button button = ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE);
+                    ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE)
+                                               .setEnabled(true);
+                    Button button = ((AlertDialog) getDialog())
+                            .getButton(AlertDialog.BUTTON_NEGATIVE);
                     if (button != null)
                         button.setEnabled(true);
                     if (cancelable)
@@ -285,8 +289,10 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
                                     .setError(dialog.getString(R.string.error_invalid_hostname));
                             dialog.verifying.setVisibility(View.GONE);
                             dialog.addressInputLayout.setVisibility(View.VISIBLE);
-                            ((AlertDialog) dialog.getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                            Button button = ((AlertDialog) dialog.getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE);
+                            ((AlertDialog) dialog.getDialog())
+                                    .getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                            Button button = ((AlertDialog) dialog.getDialog())
+                                    .getButton(AlertDialog.BUTTON_NEGATIVE);
                             if (button != null)
                                 button.setEnabled(true);
                             if (dialog.cancelable)

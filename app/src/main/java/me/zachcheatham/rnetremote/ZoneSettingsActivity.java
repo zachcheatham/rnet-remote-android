@@ -17,6 +17,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -97,7 +98,7 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zone_settings);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -106,24 +107,24 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         controllerId = getIntent().getIntExtra("cid", 0);
         zoneId = getIntent().getIntExtra("zid", 0);
 
-        TextView zoneIdText = (TextView) findViewById(R.id.text_zone_id);
+        TextView zoneIdText = findViewById(R.id.text_zone_id);
         View zoneNameItem = findViewById(R.id.item_name);
-        this.zoneNameText = (TextView) findViewById(R.id.text_name);
-        this.balanceSlider = (SeekBar) findViewById(R.id.seek_bar_balance);
-        this.balanceText = (TextView) findViewById(R.id.text_balance);
-        this.bassSlider = (SeekBar) findViewById(R.id.seek_bar_bass);
-        this.bassText = (TextView) findViewById(R.id.text_bass);
-        this.trebleSlider = (SeekBar) findViewById(R.id.seek_bar_treble);
-        this.trebleText = (TextView) findViewById(R.id.text_treble);
-        this.loudnessSwitch = (Switch) findViewById(R.id.switch_loudness);
+        this.zoneNameText = findViewById(R.id.text_name);
+        this.balanceSlider = findViewById(R.id.seek_bar_balance);
+        this.balanceText = findViewById(R.id.text_balance);
+        this.bassSlider = findViewById(R.id.seek_bar_bass);
+        this.bassText = findViewById(R.id.text_bass);
+        this.trebleSlider = findViewById(R.id.seek_bar_treble);
+        this.trebleText = findViewById(R.id.text_treble);
+        this.loudnessSwitch = findViewById(R.id.switch_loudness);
         View partyModeItem = findViewById(R.id.item_party_mode);
-        this.partyModeText = (TextView) findViewById(R.id.text_party_mode);
-        this.doNotDisturbSwitch = (Switch) findViewById(R.id.switch_do_not_disturb);
+        this.partyModeText = findViewById(R.id.text_party_mode);
+        this.doNotDisturbSwitch = findViewById(R.id.switch_do_not_disturb);
         View deleteItem = findViewById(R.id.item_delete_zone);
-        this.turnOnVolumeText = (TextView) findViewById(R.id.text_turn_on_volume);
-        this.turnOnVolumeSlider = (SeekBar) findViewById(R.id.seek_bar_turn_on_volume);
-        this.maxVolumeText = (TextView) findViewById(R.id.text_max_volume);
-        this.maxVolumeSlider = (SeekBar) findViewById(R.id.seek_bar_max_volume);
+        this.turnOnVolumeText = findViewById(R.id.text_turn_on_volume);
+        this.turnOnVolumeSlider = findViewById(R.id.seek_bar_turn_on_volume);
+        this.maxVolumeText = findViewById(R.id.text_max_volume);
+        this.maxVolumeSlider = findViewById(R.id.seek_bar_max_volume);
 
         zoneIdText.setText(
                 getResources().getString(R.string.format_zone_id, controllerId + 1, zoneId + 1));
@@ -249,8 +250,11 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
                     })
                     .setNegativeButton(android.R.string.cancel, null)
                     .create();
-            dialog.getWindow()
-                  .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+            Window w = dialog.getWindow();
+            if (w != null)
+                dialog.getWindow()
+                      .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             dialog.show();
 
             input.requestFocus();

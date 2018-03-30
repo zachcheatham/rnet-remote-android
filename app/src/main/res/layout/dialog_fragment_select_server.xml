@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:orientation="vertical"
               android:paddingTop="@dimen/dialog_title_bottom_margin">
 
     <LinearLayout
         android:id="@+id/searching"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_single_line_height"
-        android:paddingStart="@dimen/dialog_padding"
+        android:baselineAligned="false"
         android:paddingEnd="@dimen/dialog_padding"
-        android:baselineAligned="false">
+        android:paddingStart="@dimen/dialog_padding">
 
         <ProgressBar
             style="?android:attr/progressBarStyle"
@@ -26,9 +26,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:text="@string/notice_searching_links"
             android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:textColor="?android:textColorSecondary"
-            android:text="@string/notice_searching_links"/>
+            android:textColor="?android:textColorSecondary"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

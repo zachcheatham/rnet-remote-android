@@ -231,14 +231,16 @@ public class SettingsActivity extends AppCompatActivity
         {
             Preference versionPreference = findPreference("controller_version");
             Preference addressPreference = findPreference("controller_address");
-            EditTextPreference namePreference = (EditTextPreference) findPreference("controller_name");
+            EditTextPreference namePreference = (EditTextPreference) findPreference(
+                    "controller_name");
             //Preference webServerPreference = findPreference("controller_web_server");
 
             if (server != null && server.isReady())
             {
                 versionPreference.setSummary(server.getVersion());
                 versionPreference.setEnabled(true);
-                addressPreference.setSummary(server.getAddress().getHostAddress() + ":" + server.getPort());
+                addressPreference
+                        .setSummary(server.getAddress().getHostAddress() + ":" + server.getPort());
                 addressPreference.setEnabled(true);
                 namePreference.setSummary(server.getName());
                 namePreference.setText(server.getName());
@@ -266,7 +268,8 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void ready()
         {
-            getActivity().runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable()
+            {
                 @Override
                 public void run()
                 {
@@ -281,7 +284,8 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void propertyChanged(int prop, Object value)
         {
-            getActivity().runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable()
+            {
                 @Override
                 public void run()
                 {
@@ -293,7 +297,8 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void disconnected(boolean unexpected)
         {
-            getActivity().runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable()
+            {
                 @Override
                 public void run()
                 {

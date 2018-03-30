@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
-        android:title="@string/setting_volume_keys"
+        android:key="use_volume_keys"
         android:summary="@string/setting_volume_keys_desc"
-        android:key="use_volume_keys" />
+        android:title="@string/setting_volume_keys"/>
 
     <PreferenceCategory
-        android:title="@string/settings_category_phone"
         android:key="phone_calls"
+        android:title="@string/settings_category_phone"
         >
 
         <SwitchPreference
-            android:title="@string/setting_mute_on_ring"
+            android:key="mute_on_ring"
             android:summary="@string/setting_mute_on_ring_desc"
-            android:key="mute_on_ring" />
+            android:title="@string/setting_mute_on_ring"/>
 
         <SwitchPreference
-            android:title="@string/setting_mute_during_call"
+            android:key="mute_on_call"
             android:summary="@string/setting_mute_during_call_desc"
-            android:key="mute_on_call" />
+            android:title="@string/setting_mute_during_call"/>
 
     </PreferenceCategory>
 
@@ -27,11 +27,11 @@
         >
 
         <EditTextPreference
-            android:title="@string/settings_controller_name"
-            android:persistent="false"
             android:enabled="false"
+            android:key="controller_name"
+            android:persistent="false"
             android:selectAllOnFocus="true"
-            android:key="controller_name"/>
+            android:title="@string/settings_controller_name"/>
 
         <!--<SwitchPreference
             android:title="@string/setting_controller_web_server"
@@ -46,17 +46,17 @@
         android:title="@string/about"
         >
         <Preference
-            android:title="@string/setting_about_app_version"
             android:key="application_version"
-            android:persistent="false"/>
-        <Preference
-            android:title="@string/setting_about_server_version"
             android:persistent="false"
-            android:key="controller_version"/>
+            android:title="@string/setting_about_app_version"/>
         <Preference
-            android:title="@string/setting_about_server_address"
+            android:key="controller_version"
             android:persistent="false"
-            android:key="controller_address"/>
+            android:title="@string/setting_about_server_version"/>
+        <Preference
+            android:key="controller_address"
+            android:persistent="false"
+            android:title="@string/setting_about_server_address"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

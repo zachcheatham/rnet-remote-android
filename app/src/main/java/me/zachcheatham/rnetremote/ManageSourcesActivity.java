@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import java.util.Locale;
 
 import me.zachcheatham.rnetremote.ui.SimpleDividerItemDecoration;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
@@ -69,13 +72,13 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_zones);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        RecyclerView sourceList = (RecyclerView) findViewById(R.id.sources);
+        RecyclerView sourceList = findViewById(R.id.sources);
         sourceList.setLayoutManager(new LinearLayoutManager(this));
         sourceList.addItemDecoration(new SimpleDividerItemDecoration(this));
         sourceList.setAdapter(sourcesAdapter);
@@ -215,8 +218,9 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
 
     private class SourcesAdapter extends RecyclerView.Adapter<SourceViewHolder>
     {
+        @NonNull
         @Override
-        public SourceViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+        public SourceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
         {
             View view = LayoutInflater.from(parent.getContext())
                                       .inflate(R.layout.item_manage_source, parent, false);
@@ -224,12 +228,12 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
         }
 
         @Override
-        public void onBindViewHolder(SourceViewHolder holder, int position)
+        public void onBindViewHolder(@NonNull SourceViewHolder holder, int position)
         {
             int sourceId = server.getSources().keyAt(position);
             Source source = server.getSources().get(sourceId);
 
-            holder.sourceId.setText(String.format("%02d", sourceId + 1));
+            holder.sourceId.setText(String.format(Locale.getDefault(), "%02d", sourceId + 1));
             holder.name.setText(source.getName());
         }
 

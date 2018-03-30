@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -97,7 +98,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView)
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView)
     {
         super.onAttachedToRecyclerView(recyclerView);
         itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -105,14 +106,15 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView)
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView)
     {
         itemTouchHelper.attachToRecyclerView(null);
         this.recyclerView = null;
     }
 
+    @NonNull
     @Override
-    public ZonesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    public ZonesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(parent.getContext())
                                   .inflate(R.layout.item_zone, parent, false);
@@ -121,7 +123,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(ZonesAdapter.ViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull ZonesAdapter.ViewHolder holder, int position)
     {
         int[] zoneInfo = zoneIndex.get(position);
         Zone zone = server.getZone(zoneInfo[0], zoneInfo[1]);
@@ -162,7 +164,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public boolean onItemMove(int fromPosition, int toPosition)
+    public void onItemMove(int fromPosition, int toPosition)
     {
         int[] i = zoneIndex.get(fromPosition);
         zoneIndex.remove(fromPosition);
@@ -170,7 +172,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
         notifyItemMoved(fromPosition, toPosition);
         saveIndex();
-        return true;
     }
 
     private void handleIndex()
@@ -290,7 +291,8 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void zoneChanged(final Zone zone, boolean setRemotely, final RNetServer.ZoneChangeType type)
+    public void zoneChanged(final Zone zone, boolean setRemotely,
+            final RNetServer.ZoneChangeType type)
     {
         if (type != RNetServer.ZoneChangeType.PARAMETER)
         {
@@ -306,9 +308,12 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                         {
                             if (type == RNetServer.ZoneChangeType.VOLUME && recyclerView != null)
                             {
-                                ViewHolder holder = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
-                                if (holder != null && holder.seekBar != null && !holder.seekBar.isPressed())
-                                    holder.seekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
+                                ViewHolder holder = (ViewHolder) recyclerView
+                                        .findViewHolderForAdapterPosition(i);
+                                if (holder != null && holder.seekBar != null &&
+                                    !holder.seekBar.isPressed())
+                                    holder.seekBar
+                                            .setProgress((int) Math.floor(zone.getVolume() / 2));
                             }
                             else
                                 notifyItemChanged(i);

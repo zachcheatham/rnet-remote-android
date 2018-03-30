@@ -1,5 +1,6 @@
 package me.zachcheatham.rnetremote;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +22,9 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
         this.clickListener = clickListener;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(parent.getContext())
                                   .inflate(R.layout.item_server, parent, false);
@@ -30,7 +32,7 @@ class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
     {
         if (position == servers.size())
         {
