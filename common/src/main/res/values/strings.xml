@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RNet Common</string>
+    <string name="description_toggle_power">Toggle Zone Power</string>
     <string name="notice_connecting">Connecting</string>
     <string name="notice_connecting_long">Unable to connect. Retrying…</string>
 </resources>

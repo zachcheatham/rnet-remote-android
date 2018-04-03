@@ -8,4 +8,7 @@
     <string name="title_activity_select_server">SelectServerActivity</string>
     <string name="notice_searching_links">Searching...</string>
     <string name="dialog_change_server">Select Controller</string>
+    <string name="notice_wifi_required">WiFi Required</string>
+    <string name="description_volume_down">Volume down</string>
+    <string name="description_volume_up">Volume Up</string>
 </resources>

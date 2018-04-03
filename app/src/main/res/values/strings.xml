@@ -97,7 +97,6 @@
     <string name="error_connect">Couldn\'t connect to controller.</string>
     <string name="description_select_source">Select Source</string>
     <string name="description_zone_settings">Zone Settings</string>
-    <string name="description_toggle_power">Toggle Zone Power</string>
     <string name="notice_verifying_server">Verifying controller…</string>
     <string name="proxy_update_available">Controller Update Available</string>
     <string name="proxy_update_available_desc">Version %s is available for the controller you are currently connected to.</string>

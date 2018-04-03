@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.net.InetAddress;
@@ -82,7 +81,6 @@ public class RNetServerService extends Service implements RNetServer.StateListen
         Log.d(LOG_TAG, "Service destroyed.");
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent)
     {

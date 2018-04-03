@@ -9,16 +9,18 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
+import android.support.v7.widget.SnapHelper;
+import android.support.wear.widget.WearableRecyclerView;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import java.lang.ref.WeakReference;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
@@ -27,11 +29,16 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
 {
     private static final String PREFS = "rnet_remote";
 
+    private final Handler handler = new Handler();
+
     private View connectingPlaceholder;
     private TextView connectingPlaceholderText;
+    private View wifiNotice;
+    private WearableRecyclerView zoneList;
+    private ZonesAdapter zoneAdapter;
 
     private ConnectivityManager connectivityManager;
-    private boolean connectedToNetwork = false;
+    private boolean networkConnected = false;
     private boolean boundToServerService = false;
     private RNetServer server;
     private RNetServerService serverService;
@@ -45,11 +52,30 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
             server = serverService.getServer();
             boundToServerService = true;
 
+            server.addStateListener(MainActivity.this);
+            zoneAdapter.setServer(server);
+
+            Bundle extras = getIntent().getExtras();
+            if (extras != null)
+            {
+                String serverName = extras.getString("server_name", null);
+                if (serverName != null)
+                {
+                    InetAddress address = (InetAddress) extras.getSerializable("server_host");
+                    int port = extras.getInt("server_port");
+
+                    assert address != null;
+                    serverSelected(serverName, address, port);
+
+                    return;
+                }
+            }
+
             if (serverService.hasServerInfo())
             {
                 if (!server.isRunning())
                 {
-                    if (connectedToNetwork)
+                    if (networkConnected)
                         serverService.startServerConnection();
                 }
                 else
@@ -63,20 +89,122 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
             {
                 promptSelectServer(false);
             }
-
-            server.addStateListener(MainActivity.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name)
         {
             server.removeStateListener(MainActivity.this);
+            zoneAdapter.setServer(null);
 
             boundToServerService = false;
             serverService = null;
             server = null;
         }
     };
+
+    private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback()
+    {
+        @Override
+        public void onAvailable(Network network)
+        {
+            if (connectivityManager.bindProcessToNetwork(network))
+            {
+                networkConnected = true;
+                if (boundToServerService && serverService.hasServerInfo() && !server.isRunning())
+                {
+                    serverService.startServerConnection();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        wifiNotice.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onLost(Network network)
+        {
+            super.onLost(network);
+            networkConnected = false;
+        }
+    };
+    private Runnable checkNetworkConnected = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (!networkConnected)
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        wifiNotice.setVisibility(View.VISIBLE);
+                        setConnectingVisible(false);
+                    }
+                });
+
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        zoneAdapter = new ZonesAdapter(this);
+
+        setContentView(R.layout.activity_main);
+
+        connectingPlaceholder = findViewById(R.id.connecting_placeholder);
+        connectingPlaceholderText = findViewById(R.id.text_view_connecting_placeholder_notice);
+        wifiNotice = findViewById(R.id.text_view_wifi_notice);
+        zoneList = findViewById(R.id.list_zones);
+        zoneList.setLayoutManager(new LinearLayoutManager(this));
+        zoneList.setAdapter(zoneAdapter);
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(zoneList);
+
+        // Enables Always-on
+        //setAmbientEnabled();
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+
+        NetworkRequest request = new NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .build();
+
+        connectivityManager.requestNetwork(request, networkCallback);
+        handler.postDelayed(checkNetworkConnected, 5000);
+
+        Intent intent = new Intent(this, RNetServerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        unbindService(serviceConnection);
+
+        if (server != null)
+            server.removeStateListener(this);
+        zoneAdapter.setServer(null);
+
+        connectivityManager.bindProcessToNetwork(null);
+        connectivityManager.unregisterNetworkCallback(networkCallback);
+        handler.removeCallbacks(checkNetworkConnected);
+        networkConnected = false;
+    }
 
     private void promptSelectServer(boolean cancelable)
     {
@@ -94,43 +222,26 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
         }
     }
 
-    private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback()
+    private void serverSelected(String name, InetAddress address, int port)
     {
-        @Override
-        public void onAvailable(Network network)
-        {
-            if (connectivityManager.bindProcessToNetwork(network))
-            {
-                connectedToNetwork = true;
-                if (boundToServerService && serverService.hasServerInfo() && !server.isRunning())
-                {
-                    serverService.startServerConnection();
-                }
-            }
-        }
+        setConnectingError(false);
 
-        @Override
-        public void onLost(Network network)
-        {
-            super.onLost(network);
-            connectedToNetwork = false;
-        }
-    };
+        SharedPreferences settings = getSharedPreferences(PREFS, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("server_name", name);
+        editor.putString("server_address", address.getHostAddress());
+        editor.putInt("server_port", port);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
+        editor.clear();
+        editor.apply();
 
-        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        serverService.stopServerConnection();
+        while (!serverService.getServer().canStartConnection())
+            try {Thread.sleep(500);}
+            catch (InterruptedException e) {break;}
 
-        setContentView(R.layout.activity_main);
-
-        connectingPlaceholder = findViewById(R.id.connecting_placeholder);
-        connectingPlaceholderText = findViewById(R.id.text_view_connecting_placeholder_notice);
-
-        // Enables Always-on
-        setAmbientEnabled();
+        serverService.setConnectionInfo(name, address, port);
+        serverService.startServerConnection();
     }
 
     private void setConnectingVisible(boolean visible)
@@ -138,12 +249,12 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
         if (visible)
         {
             connectingPlaceholder.setVisibility(View.VISIBLE);
-            //zoneList.setVisibility(View.GONE);
+            zoneList.setVisibility(View.GONE);
         }
         else
         {
             connectingPlaceholder.setVisibility(View.GONE);
-            //zoneList.setVisibility(View.VISIBLE);
+            zoneList.setVisibility(View.VISIBLE);
         }
     }
 
@@ -157,34 +268,6 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
         {
             connectingPlaceholderText.setVisibility(View.GONE);
         }
-    }
-
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-
-        NetworkRequest request = new NetworkRequest.Builder()
-                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                .build();
-
-        connectivityManager.requestNetwork(request, networkCallback);
-
-        Intent intent = new Intent(this, RNetServerService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-        unbindService(serviceConnection);
-
-        if (server != null)
-            server.removeStateListener(this);
-
-        connectivityManager.bindProcessToNetwork(null);
-        connectivityManager.unregisterNetworkCallback(networkCallback);
     }
 
     @Override
@@ -247,57 +330,5 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
                 setConnectingVisible(true);
             }
         });
-    }
-
-    private static class SetServerInfoTask extends AsyncTask<String, Void, Void>
-    {
-        private final WeakReference<RNetServerService> serverServiceReference;
-        private final WeakReference<SharedPreferences> preferencesReference;
-
-        SetServerInfoTask(RNetServerService service, SharedPreferences preferences)
-        {
-            serverServiceReference = new WeakReference<>(service);
-            preferencesReference = new WeakReference<>(preferences);
-        }
-
-        @Override
-        protected Void doInBackground(String... serverInfo)
-        {
-            String name = serverInfo[0];
-            InetAddress address;
-            try
-            {
-                address = InetAddress.getByName(serverInfo[1]);
-            }
-            catch (UnknownHostException e)
-            {
-                return null;
-            }
-            int port = Integer.parseInt(serverInfo[2]);
-
-            SharedPreferences settings = preferencesReference.get();
-            if (settings != null)
-            {
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString("server_name", name);
-                editor.putString("server_address", address.getHostAddress());
-                editor.putInt("server_port", port);
-                editor.apply();
-            }
-
-            RNetServerService serverService = serverServiceReference.get();
-            if (serverService != null)
-            {
-                serverService.stopServerConnection();
-                while (!serverService.getServer().canStartConnection())
-                    try {Thread.sleep(500);}
-                    catch (InterruptedException e) {break;}
-
-                serverService.setConnectionInfo(name, address, port);
-                serverService.startServerConnection();
-            }
-
-            return null;
-        }
     }
 }

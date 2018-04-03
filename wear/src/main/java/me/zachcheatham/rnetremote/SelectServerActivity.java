@@ -9,10 +9,10 @@ import android.net.NetworkRequest;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.wear.widget.WearableRecyclerView;
 import android.support.wearable.activity.WearableActivity;
-import android.util.Log;
 import android.view.View;
 
 public class SelectServerActivity extends WearableActivity implements ServersAdapter.ItemClickListener
@@ -20,13 +20,14 @@ public class SelectServerActivity extends WearableActivity implements ServersAda
     private NsdManager nsdManager;
     private NsdManager.DiscoveryListener discoveryListener;
 
+    private final Handler handler = new Handler();
     private ServersAdapter adapter;
     private View searchingIndicator;
+    private View wifiNotice;
     private boolean cancelable = true;
 
     private ConnectivityManager connectivityManager;
-    private boolean connectedToNetwork = false;
-
+    private boolean networkConnected = false;
     private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback()
     {
         @Override
@@ -34,27 +35,49 @@ public class SelectServerActivity extends WearableActivity implements ServersAda
         {
             if (connectivityManager.bindProcessToNetwork(network))
             {
-                connectedToNetwork = true;
                 nsdManager.discoverServices("_rnet._tcp", NsdManager.PROTOCOL_DNS_SD, discoveryListener);
+                networkConnected = true;
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        wifiNotice.setVisibility(View.GONE);
+                    }
+                });
             }
-
-            Log.d("SelectServer", "NETWORK AVAILABLE");
-        }
-
-        @Override
-        public void onUnavailable()
-        {
-            super.onUnavailable();
-            Log.d("SelectServer", "NETWORK UNAVAILABLE");
         }
 
         @Override
         public void onLost(Network network)
         {
             super.onLost(network);
-            connectedToNetwork = false;
             nsdManager.stopServiceDiscovery(discoveryListener);
-            Log.d("SelectServer", "NETWORK LOST");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    wifiNotice.setVisibility(View.VISIBLE);
+                    searchingIndicator.setVisibility(View.GONE);
+                }
+            });
+        }
+    };
+    private Runnable checkNetworkConnected = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (!networkConnected)
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        wifiNotice.setVisibility(View.VISIBLE);
+                        searchingIndicator.setVisibility(View.GONE);
+                    }
+                });
+
         }
     };
 
@@ -72,8 +95,6 @@ public class SelectServerActivity extends WearableActivity implements ServersAda
 
         nsdManager = (NsdManager) getSystemService(Context.NSD_SERVICE);
         createNSDListener();
-        //noinspection ResultOfMethodCallIgnored
-        createResolveListener();
 
         setContentView(R.layout.activity_select_server);
 
@@ -84,6 +105,7 @@ public class SelectServerActivity extends WearableActivity implements ServersAda
         recyclerView.setAdapter(adapter);
 
         searchingIndicator = findViewById(R.id.searching);
+        wifiNotice = findViewById(R.id.text_view_wifi_notice);
     }
 
     @Override
@@ -95,6 +117,8 @@ public class SelectServerActivity extends WearableActivity implements ServersAda
                 .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
                 .build();
         connectivityManager.requestNetwork(request, networkCallback);
+        handler.postDelayed(checkNetworkConnected, 5000);
+
     }
 
     @Override
@@ -103,6 +127,7 @@ public class SelectServerActivity extends WearableActivity implements ServersAda
         super.onStop();
         connectivityManager.bindProcessToNetwork(null);
         connectivityManager.unregisterNetworkCallback(networkCallback);
+        handler.removeCallbacks(checkNetworkConnected);
 
         nsdManager.stopServiceDiscovery(discoveryListener);
 
@@ -193,8 +218,6 @@ public class SelectServerActivity extends WearableActivity implements ServersAda
             intent.putExtra("port", server.port);
             intent.putExtra("name", server.name);
             setResult(1, intent);
-
-            Log.d("SSA", "FINISH WITH RESULT");
         }
         else
         {
@@ -204,8 +227,6 @@ public class SelectServerActivity extends WearableActivity implements ServersAda
             intent.putExtra("server_port", server.port);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-
-            Log.d("SSA", "FINISH START ACT");
         }
 
         finish();

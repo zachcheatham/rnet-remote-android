@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wear.widget.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingEnd="@dimen/inner_frame_layout_padding"
+        android:paddingStart="@dimen/inner_frame_layout_padding"
+        app:boxedEdges="top|bottom">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Basement"/>
+
+        <TextView
+            android:id="@+id/volume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name"
+            android:textAlignment="center"
+            android:textColor="@color/textColorPrimary"
+            tools:text="Inactive"/>
+
+        <ImageButton
+            android:id="@+id/power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/description_toggle_power"
+            android:padding="@dimen/button_padding"
+            android:src="@drawable/ic_power_settings_white_24dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:tint="@color/colorButton"/>
+
+        <ImageButton
+            android:id="@+id/volume_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/description_volume_down"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="@dimen/button_padding"
+            android:src="@drawable/ic_volume_down_white_24dp"
+            android:tint="@color/colorButton"/>
+
+        <ImageButton
+            android:id="@+id/volume_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/description_volume_up"
+            android:padding="@dimen/button_padding"
+            android:src="@drawable/ic_volume_up_white_24dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:tint="@color/colorButton"/>
+
+        <ImageButton
+            android:id="@+id/source_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:contentDescription="@string/description_volume_up"
+            android:padding="@dimen/button_padding"
+            android:src="@drawable/ic_input_white_24dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:tint="@color/colorButton"/>
+
+    </RelativeLayout>
+
+</android.support.wear.widget.BoxInsetLayout>

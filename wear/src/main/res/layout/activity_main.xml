@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_grey"
+    android:background="@color/colorPrimary"
     android:padding="@dimen/box_inset_layout_padding"
     tools:context="me.zachcheatham.rnetremote.MainActivity"
     tools:deviceIds="wear">
@@ -32,11 +32,27 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/placeholder_spacing_group"
             android:text="@string/notice_connecting_long"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textAlignment="center"
             android:visibility="gone"/>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_view_wifi_notice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:drawableTop="@drawable/ic_signal_wifi_off_white_24dp"
+        android:text="@string/notice_wifi_required"
+        />
+
+    <android.support.wear.widget.WearableRecyclerView
+        android:id="@+id/list_zones"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:scrollbars="vertical"
+        />
 
 </RelativeLayout>
 
