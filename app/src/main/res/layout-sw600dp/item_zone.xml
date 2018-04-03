@@ -97,7 +97,8 @@
                     android:contentDescription="@string/description_zone_settings"
                     android:padding="@dimen/card_icon_button_padding"
                     android:tint="@color/colorCardButton"
-                    card_view:srcCompat="@drawable/ic_tune_black_24dp"/>
+                    card_view:srcCompat="@drawable/ic_tune_black_24dp"
+                    app:srcCompat="@drawable/ic_tune_white_24dp"/>
 
             </LinearLayout>
 
@@ -117,7 +118,7 @@
                 android:layout_marginStart="@dimen/card_content_padding"
                 android:contentDescription="@null"
                 android:tint="@color/textColorSecondary"
-                app:srcCompat="@drawable/ic_volume_up_black_24dp"/>
+                app:srcCompat="@drawable/ic_volume_up_white_24dp"/>
 
             <SeekBar
                 android:id="@+id/volume"
