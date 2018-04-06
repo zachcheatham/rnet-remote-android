@@ -97,7 +97,7 @@
                     android:contentDescription="@string/description_zone_settings"
                     android:padding="@dimen/card_icon_button_padding"
                     android:tint="@color/colorCardButton"
-                    card_view:srcCompat="@drawable/ic_tune_black_24dp"
+                    card_view:srcCompat="@drawable/ic_tune_white_24dp"
                     app:srcCompat="@drawable/ic_tune_white_24dp"/>
 
             </LinearLayout>
