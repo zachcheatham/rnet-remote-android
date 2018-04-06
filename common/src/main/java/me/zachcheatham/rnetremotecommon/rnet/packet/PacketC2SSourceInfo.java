@@ -1,14 +1,15 @@
 package me.zachcheatham.rnetremotecommon.rnet.packet;
 
-public class PacketC2SSourceName extends RNetPacket
+public class PacketC2SSourceInfo extends RNetPacket
 {
     private static final byte ID = 0x06;
 
-    public PacketC2SSourceName(int sourceId, String name)
+    public PacketC2SSourceInfo(int sourceId, String name, byte type)
     {
         super();
         writeUnsignedByte(sourceId);
         writeNTString(name);
+        writeUnsignedByte(type);
     }
 
     @Override

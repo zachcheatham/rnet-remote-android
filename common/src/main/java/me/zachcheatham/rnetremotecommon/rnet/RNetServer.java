@@ -23,7 +23,7 @@ import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SUpdate;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CProperty;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDeleted;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceName;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceInfo;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CUpdateAvailable;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneDeleted;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneIndex;
@@ -467,9 +467,9 @@ public class RNetServer
                     listener.sourcesChanged();
                 break;
             }
-            case PacketS2CSourceName.ID:
+            case PacketS2CSourceInfo.ID:
             {
-                PacketS2CSourceName packet = new PacketS2CSourceName(buffer);
+                PacketS2CSourceInfo packet = new PacketS2CSourceInfo(buffer);
                 Source source = sources.get(packet.getSourceId());
                 if (source == null)
                 {

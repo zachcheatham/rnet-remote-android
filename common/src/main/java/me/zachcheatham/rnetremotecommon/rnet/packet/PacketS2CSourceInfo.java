@@ -2,14 +2,15 @@ package me.zachcheatham.rnetremotecommon.rnet.packet;
 
 import java.nio.ByteBuffer;
 
-public class PacketS2CSourceName extends RNetPacket
+public class PacketS2CSourceInfo extends RNetPacket
 {
     public static final byte ID = 0x06;
 
     private int sourceID;
     private String sourceName;
+    private int type;
 
-    public PacketS2CSourceName(ByteBuffer buffer)
+    public PacketS2CSourceInfo(ByteBuffer buffer)
     {
         super(buffer);
     }
@@ -35,5 +36,10 @@ public class PacketS2CSourceName extends RNetPacket
     public String getSourceName()
     {
         return sourceName;
+    }
+
+    public int getType()
+    {
+        return type;
     }
 }
