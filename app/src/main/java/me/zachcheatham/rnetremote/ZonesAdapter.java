@@ -425,17 +425,24 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             switch (view.getId())
             {
             case R.id.header:
+            {
+                Intent intent = new Intent(activity, ZoneActivity.class);
+                activity.startActivity(intent);
+                activity.overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
                 break;
+            }
             case R.id.power:
                 zone.setPower(!zone.getPowered(), false);
                 break;
             case R.id.settings:
+            {
                 Intent intent = new Intent(activity, ZoneSettingsActivity.class);
                 intent.putExtra("cid", zone.getControllerId());
                 intent.putExtra("zid", zone.getZoneId());
                 activity.startActivity(intent);
                 activity.overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
                 break;
+            }
             case R.id.source_select:
                 new AlertDialog.Builder(
                         new ContextThemeWrapper(activity, R.style.AppTheme_DialogOverlay))

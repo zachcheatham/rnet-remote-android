@@ -32,6 +32,10 @@
             android:label="@string/activity_name_zone_settings"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
+            android:name=".ZoneActivity"
+            android:label="@string/activity_name_zone"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
             android:name=".ManageSourcesActivity"
             android:label="@string/activity_name_manage_sources"
             android:theme="@style/AppTheme.NoActionBar"/>

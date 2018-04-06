@@ -16,4 +16,5 @@
     <color name="colorPlaceholderText">#889097</color>
 
     <color name="colorError">#F44336</color>
+    <color name="colorPlaceholderAlbum">#FFFFFFFF</color>
 </resources>

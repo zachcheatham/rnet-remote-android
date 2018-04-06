@@ -103,5 +103,6 @@
     <string name="action_update">Update</string>
     <string name="proxy_update_started">Update Started</string>
     <string name="proxy_update_started_desc">The controller proxy will restart when the update has completed.</string>
+    <string name="activity_name_zone">Zone</string>
 
 </resources>
