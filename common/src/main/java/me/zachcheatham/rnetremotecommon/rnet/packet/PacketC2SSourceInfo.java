@@ -4,7 +4,7 @@ public class PacketC2SSourceInfo extends RNetPacket
 {
     private static final byte ID = 0x06;
 
-    public PacketC2SSourceInfo(int sourceId, String name, byte type)
+    public PacketC2SSourceInfo(int sourceId, String name, int type)
     {
         super();
         writeUnsignedByte(sourceId);
