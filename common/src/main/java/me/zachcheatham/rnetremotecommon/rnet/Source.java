@@ -43,9 +43,11 @@ public class Source
     private boolean autoOff = false;
     private List<int[]> autoOnZones = new ArrayList<>();
 
-    Source(int sourceId, RNetServer server)
+    Source(int id, String name, int type, RNetServer server)
     {
-        this.sourceId = sourceId;
+        this.sourceId = id;
+        this.name = name;
+        this.type = type;
         this.server = server;
     }
 

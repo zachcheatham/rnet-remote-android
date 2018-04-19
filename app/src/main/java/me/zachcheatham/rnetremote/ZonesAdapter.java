@@ -369,16 +369,20 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     public void sourceChanged(Source source, boolean setRemotely,
             RNetServer.SourceChangeType type)
     {
-        final int index = server.getSources().indexOfValue(source);
-        sourcesAdapter.remove(sourcesAdapter.getItem(index));
-        sourcesAdapter.insert(source.getName(), index);
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run()
+        if (type == RNetServer.SourceChangeType.NAME)
+        {
+            final int index = server.getSources().indexOfValue(source);
+            sourcesAdapter.remove(sourcesAdapter.getItem(index));
+            sourcesAdapter.insert(source.getName(), index);
+            activity.runOnUiThread(new Runnable()
             {
-                notifyItemChanged(index);
-            }
-        });
+                @Override
+                public void run()
+                {
+                    notifyItemChanged(index);
+                }
+            });
+        }
     }
 
     @Override

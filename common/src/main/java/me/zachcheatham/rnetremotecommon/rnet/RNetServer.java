@@ -19,6 +19,7 @@ import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SDeleteSource;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SDeleteZone;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SIntent;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SProperty;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceInfo;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SUpdate;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CMediaMetadata;
@@ -128,9 +129,10 @@ public class RNetServer
 
     public void createSource(int sourceId, String sourceName)
     {
-        Source source = new Source(sourceId, this);
-        source.setName(sourceName, false);
+        Source source = new Source(sourceId, sourceName, Source.TYPE_GENERIC, this);
         sources.put(sourceId, source);
+
+        new SendPacketTask(this).execute(new PacketC2SSourceInfo(sourceId, sourceName, Source.TYPE_GENERIC));
     }
 
     public void deleteSource(int sourceId)
@@ -520,9 +522,7 @@ public class RNetServer
                 Source source = getSource(packet.getSourceId());
                 if (source == null)
                 {
-                    source = new Source(packet.getSourceId(), this);
-                    source.setName(packet.getSourceName(), true);
-                    source.setType(packet.getType(), true);
+                    source = new Source(packet.getSourceId(), packet.getSourceName(), packet.getType(), this);
                     sources.put(packet.getSourceId(), source);
 
                     Log.i(LOG_TAG, String.format("Source #%d created", packet.getSourceId()));
