@@ -36,6 +36,7 @@ public class Source
     private final RNetServer server;
     private String name = "";
     private int type = 0;
+    private String descriptiveText = null;
     private String title = null;
     private String artist = null;
     private String artworkUrl = null;
@@ -83,6 +84,19 @@ public class Source
         if (!setRemotely)
             new RNetServer.SendPacketTask(server).execute(
                     new PacketC2SSourceInfo(sourceId, name, type));
+    }
+
+    public String getPermanentDescriptiveText()
+    {
+        return this.descriptiveText;
+    }
+
+    public void setPermanentDescriptiveText(String text)
+    {
+        this.descriptiveText = text;
+
+        for (RNetServer.SourcesListener listener : server.sourcesListeners)
+            listener.descriptiveText(this, text, 0);
     }
 
     public String getMediaTitle()

@@ -24,6 +24,7 @@ import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CMediaMetadata;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CProperty;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDeleted;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDescriptiveText;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceInfo;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceProperty;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CUpdateAvailable;
@@ -490,6 +491,19 @@ public class RNetServer
                 for (SourcesListener listener : sourcesListeners)
                     listener.sourceRemoved(packet.getSourceId());
                 break;
+            }
+            case PacketS2CSourceDescriptiveText.ID:
+            {
+                PacketS2CSourceDescriptiveText packet = new PacketS2CSourceDescriptiveText(buffer);
+                Source source = getSource(packet.getSourceId());
+                if (source != null)
+                {
+                    if (packet.getDisplayTime() == 0)
+                        source.setPermanentDescriptiveText(packet.getText());
+                    else
+                        for (SourcesListener listener : sourcesListeners)
+                            listener.descriptiveText(source, packet.getText(), packet.getDisplayTime());
+                }
             }
             case PacketS2CMediaMetadata.ID:
             {

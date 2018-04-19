@@ -51,6 +51,11 @@ public abstract class RNetPacket
         return (buffer.get() & 0xff);
     }
 
+    int readUnsignedShort()
+    {
+        return (buffer.get() & 0xffff);
+    }
+
     void writeNTString(String s)
     {
 
