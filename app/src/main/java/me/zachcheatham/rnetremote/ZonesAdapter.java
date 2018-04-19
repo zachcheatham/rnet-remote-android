@@ -356,13 +356,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     {
         final int index = server.getSources().indexOfValue(source);
         sourcesAdapter.insert(source.getName(), index);
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run()
-            {
-                notifyItemInserted(index);
-            }
-        });
     }
 
     @Override
@@ -374,14 +367,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             final int index = server.getSources().indexOfValue(source);
             sourcesAdapter.remove(sourcesAdapter.getItem(index));
             sourcesAdapter.insert(source.getName(), index);
-            activity.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    notifyItemChanged(index);
-                }
-            });
         }
     }
 
