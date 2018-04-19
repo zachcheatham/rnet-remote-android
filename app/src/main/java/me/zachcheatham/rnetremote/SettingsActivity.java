@@ -205,7 +205,7 @@ public class SettingsActivity extends AppCompatActivity
                     {
                         new AlertDialog.Builder(new ContextThemeWrapper(getActivity(),
                                 R.style.AppTheme_DialogOverlay))
-                                .setMessage(R.string.explanation_phone)
+                                .setMessage(R.string.permission_explanation_phone)
                                 .setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener()
                                         {
@@ -252,11 +252,11 @@ public class SettingsActivity extends AppCompatActivity
             }
             else
             {
-                versionPreference.setSummary(getString(R.string.pref_disconnected));
+                versionPreference.setSummary(getString(R.string.label_preference_disconnected));
                 versionPreference.setEnabled(false);
-                addressPreference.setSummary(getString(R.string.pref_disconnected));
+                addressPreference.setSummary(getString(R.string.label_preference_disconnected));
                 addressPreference.setEnabled(false);
-                namePreference.setSummary(getString(R.string.pref_disconnected));
+                namePreference.setSummary(getString(R.string.label_preference_disconnected));
                 namePreference.setEnabled(false);
                 //webServerPreference.setEnabled(false);
             }

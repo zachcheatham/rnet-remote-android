@@ -208,13 +208,13 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
                 switch ((int) zone.getParameter(Zone.PARAMETER_PARTY_MODE))
                 {
                 case Zone.PARAMETER_PARTY_MODE_OFF:
-                    partyModeText.setText(R.string.option_value_off);
+                    partyModeText.setText(R.string.setting_value_off);
                     break;
                 case Zone.PARAMETER_PARTY_MODE_ON:
-                    partyModeText.setText(R.string.option_value_on);
+                    partyModeText.setText(R.string.setting_value_on);
                     break;
                 case Zone.PARAMETER_PARTY_MODE_MASTER:
-                    partyModeText.setText(R.string.option_value_master);
+                    partyModeText.setText(R.string.setting_value_master);
                     break;
                 }
             }
@@ -346,15 +346,15 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         switch (item.getItemId())
         {
         case R.id.party_mode_off:
-            partyModeText.setText(R.string.option_value_off);
+            partyModeText.setText(R.string.setting_value_off);
             zone.setParameter(Zone.PARAMETER_PARTY_MODE, Zone.PARAMETER_PARTY_MODE_OFF, false);
             break;
         case R.id.party_mode_on:
-            partyModeText.setText(R.string.option_value_on);
+            partyModeText.setText(R.string.setting_value_on);
             zone.setParameter(Zone.PARAMETER_PARTY_MODE, Zone.PARAMETER_PARTY_MODE_ON, false);
             break;
         case R.id.party_mode_master:
-            partyModeText.setText(R.string.option_value_master);
+            partyModeText.setText(R.string.setting_value_master);
             zone.setParameter(Zone.PARAMETER_PARTY_MODE, Zone.PARAMETER_PARTY_MODE_MASTER, false);
             break;
         }

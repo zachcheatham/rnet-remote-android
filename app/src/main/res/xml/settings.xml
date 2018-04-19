@@ -43,7 +43,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/about"
+        android:title="@string/label_about"
         >
         <Preference
             android:key="application_version"

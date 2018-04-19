@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/label_source_num"
+            android:hint="@string/label_source_id"
             android:inputType="number"
             android:maxLines="1"/>
 
