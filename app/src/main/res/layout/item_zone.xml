@@ -64,7 +64,7 @@
                 android:contentDescription="@string/description_select_source"
                 android:padding="@dimen/card_icon_button_padding"
                 android:tint="@color/colorCardButton"
-                app:srcCompat="@drawable/ic_tune_white_24dp"
+                app:srcCompat="@drawable/ic_input_white_24dp"
                 tools:visible="false"/>
 
             <ImageButton

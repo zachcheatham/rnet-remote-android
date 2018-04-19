@@ -134,7 +134,6 @@
                         android:id="@+id/text_bass"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/default_zone_slider_value"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/list_line_text_secondary_size"/>
 
@@ -181,7 +180,6 @@
                         android:id="@+id/text_treble"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/default_zone_slider_value"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/list_line_text_secondary_size"/>
 
@@ -229,7 +227,6 @@
                         android:id="@+id/text_balance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/default_zone_slider_value"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/list_line_text_secondary_size"/>
 
@@ -277,7 +274,6 @@
                         android:id="@+id/text_turn_on_volume"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/default_zone_slider_value"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/list_line_text_secondary_size"/>
 
@@ -323,7 +319,6 @@
                         android:id="@+id/text_max_volume"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/default_zone_slider_value"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="@dimen/list_line_text_secondary_size"/>
 
