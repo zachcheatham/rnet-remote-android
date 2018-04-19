@@ -36,6 +36,9 @@ public class Source
     private final RNetServer server;
     private String name = "";
     private int type = 0;
+    private String title = null;
+    private String artist = null;
+    private String artworkUrl = null;
     private boolean autoOff = false;
     private List<int[]> autoOnZones = new ArrayList<>();
 
@@ -82,7 +85,30 @@ public class Source
                     new PacketC2SSourceInfo(sourceId, name, type));
     }
 
+    public String getMediaTitle()
     {
+        return title;
+    }
+
+    public String getMediaArtist()
+    {
+        return artist;
+    }
+
+    public String getMediaArtworkUrl()
+    {
+        return artworkUrl;
+    }
+
+    public void setMediaMetadata(String title, String artist, String artworkUrl)
+    {
+        this.title = title;
+        this.artist = artist;
+        this.artworkUrl = artworkUrl;
+
+        for (RNetServer.SourcesListener listener : server.sourcesListeners)
+            listener.sourceChanged(this, false, RNetServer.SourceChangeType.METADATA);
+    }
 
     private boolean getAutoOff()
     {

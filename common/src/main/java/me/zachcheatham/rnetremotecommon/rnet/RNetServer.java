@@ -21,6 +21,7 @@ import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SIntent;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SProperty;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SUpdate;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneName;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CMediaMetadata;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CProperty;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDeleted;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceInfo;
@@ -489,6 +490,15 @@ public class RNetServer
                 for (SourcesListener listener : sourcesListeners)
                     listener.sourceRemoved(packet.getSourceId());
                 break;
+            }
+            case PacketS2CMediaMetadata.ID:
+            {
+                PacketS2CMediaMetadata packet = new PacketS2CMediaMetadata(buffer);
+                Source source = getSource(packet.getSourceId());
+                if (source != null)
+                {
+                    source.setMediaMetadata(packet.getTitle(), packet.getArtist(), packet.getArtworkUrl());
+                }
             }
             case PacketS2CSourceInfo.ID:
             {
