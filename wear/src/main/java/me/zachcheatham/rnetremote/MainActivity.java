@@ -25,7 +25,7 @@ import java.net.InetAddress;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 
-public class MainActivity extends WearableActivity implements RNetServer.StateListener
+public class MainActivity extends WearableActivity implements RNetServer.ConnectivityListener
 {
     private static final String PREFS = "rnet_remote";
 
@@ -52,7 +52,8 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
             server = serverService.getServer();
             boundToServerService = true;
 
-            server.addStateListener(MainActivity.this);
+            server.addConnectivityListener(MainActivity.this);
+
             zoneAdapter.setServer(server);
 
             Bundle extras = getIntent().getExtras();
@@ -81,8 +82,6 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
                 else
                 {
                     setConnectingVisible(!server.isReady());
-                    if (server.isReady())
-                        propertyChanged(RNetServer.PROPERTY_NAME, server.getName());
                 }
             }
             else
@@ -94,7 +93,7 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
         @Override
         public void onServiceDisconnected(ComponentName name)
         {
-            server.removeStateListener(MainActivity.this);
+            server.removeConnectivityListener(MainActivity.this);
             zoneAdapter.setServer(null);
 
             boundToServerService = false;
@@ -197,7 +196,7 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
         unbindService(serviceConnection);
 
         if (server != null)
-            server.removeStateListener(this);
+            server.removeConnectivityListener(this);
         zoneAdapter.setServer(null);
 
         connectivityManager.bindProcessToNetwork(null);
@@ -310,12 +309,6 @@ public class MainActivity extends WearableActivity implements RNetServer.StateLi
             }
         });
     }
-
-    @Override
-    public void updateAvailable() {}
-
-    @Override
-    public void propertyChanged(int prop, Object value) {}
 
     @Override
     public void disconnected(final boolean unexpected)

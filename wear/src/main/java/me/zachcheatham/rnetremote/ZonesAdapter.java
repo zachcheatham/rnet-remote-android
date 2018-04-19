@@ -37,14 +37,14 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     {
         if (this.server != null)
         {
-            this.server.removeZoneListener(this);
+            this.server.removeZonesListener(this);
         }
 
         this.server = server;
 
         if (server != null)
         {
-            server.addZoneListener(this);
+            server.addZonesListener(this);
             if (server.isReady())
             {
                 indexReceived();
@@ -205,9 +205,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             }
         });
     }
-
-    @Override
-    public void sourcesChanged() {}
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {

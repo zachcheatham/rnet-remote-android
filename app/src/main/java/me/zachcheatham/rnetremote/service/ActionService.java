@@ -23,7 +23,7 @@ import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SAllPower;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SMute;
 import me.zachcheatham.rnetremotecommon.rnet.packet.RNetPacket;
 
-public class ActionService extends IntentService implements RNetServer.StateListener
+public class ActionService extends IntentService implements RNetServer.ConnectivityListener
 {
     public static final String EXTRA_SILENT = "silent";
     public static final String EXTRA_MUTED = "mute";
@@ -139,7 +139,7 @@ public class ActionService extends IntentService implements RNetServer.StateList
 
         silent = intent.getBooleanExtra(EXTRA_SILENT, false);
 
-        server.addStateListener(this);
+        server.addConnectivityListener(this);
         server.run();
     }
 
@@ -159,14 +159,8 @@ public class ActionService extends IntentService implements RNetServer.StateList
         if (!silent)
             sendToast(completeMessage);
         server.disconnect();
-        server.removeStateListener(this);
+        server.removeConnectivityListener(this);
     }
-
-    @Override
-    public void updateAvailable() {}
-
-    @Override
-    public void propertyChanged(int prop, Object value) {}
 
     @Override
     public void disconnected(boolean unexpected)

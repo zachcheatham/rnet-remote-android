@@ -27,8 +27,8 @@ import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
 import me.zachcheatham.rnetremotecommon.rnet.Zone;
 
-public class ManageSourcesActivity extends AppCompatActivity implements RNetServer.StateListener,
-        RNetServer.ZonesListener, AddSourceDialogFragment.AddSourceListener
+public class ManageSourcesActivity extends AppCompatActivity implements
+        RNetServer.ConnectivityListener, AddSourceDialogFragment.AddSourceListener, RNetServer.SourcesListener
 {
     private final SourcesAdapter sourcesAdapter = new SourcesAdapter();
     private RNetServer server;
@@ -45,8 +45,8 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
             serverService = binder.getService();
             server = serverService.getServer();
 
-            server.addStateListener(ManageSourcesActivity.this);
-            server.addZoneListener(ManageSourcesActivity.this);
+            server.addConnectivityListener(ManageSourcesActivity.this);
+            server.addSourcesListener(ManageSourcesActivity.this);
 
             if (server.isReady())
                 sourcesAdapter.notifyDataSetChanged();
@@ -57,8 +57,8 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
         @Override
         public void onServiceDisconnected(ComponentName componentName)
         {
-            server.removeStateListener(ManageSourcesActivity.this);
-            server.removeZoneListener(ManageSourcesActivity.this);
+            server.removeConnectivityListener(ManageSourcesActivity.this);
+            server.removeSourcesListener(ManageSourcesActivity.this);
 
             serverService = null;
             server = null;
@@ -100,8 +100,8 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
         unbindService(serviceConnection);
         if (server != null)
         {
-            server.removeStateListener(this);
-            server.removeZoneListener(this);
+            server.removeConnectivityListener(this);
+            server.removeSourcesListener(this);
         }
     }
 
@@ -151,12 +151,6 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
     public void ready() {}
 
     @Override
-    public void updateAvailable() {}
-
-    @Override
-    public void propertyChanged(int prop, Object value) {}
-
-    @Override
     public void disconnected(boolean unexpected)
     {
         runOnUiThread(new Runnable()
@@ -170,36 +164,50 @@ public class ManageSourcesActivity extends AppCompatActivity implements RNetServ
     }
 
     @Override
-    public void indexReceived() {}
-
-    @Override
-    public void sourcesChanged()
+    public void sourceAdded(Source source)
     {
-        if (!ignoreNextUpdate)
+        // TODO
+        runOnUiThread(new Runnable()
         {
-            runOnUiThread(new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    sourcesAdapter.notifyDataSetChanged();
-                }
-            });
-        }
-        else
-        {
-            ignoreNextUpdate = false;
-        }
+                sourcesAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
-    public void zoneAdded(Zone zone) {}
+    public void sourceChanged(Source source, boolean setRemotely,
+            RNetServer.SourceChangeType metadata)
+    {
+        // TODO
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                sourcesAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 
     @Override
-    public void zoneChanged(Zone zone, boolean setRemotely, RNetServer.ZoneChangeType type) {}
+    public void descriptiveText(Source source, String text, int length) {}
 
     @Override
-    public void zoneRemoved(int controllerId, int zoneId) {}
+    public void sourceRemoved(int sourceId)
+    {
+        // TODO
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                sourcesAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 
     @Override
     public void cleared() {}

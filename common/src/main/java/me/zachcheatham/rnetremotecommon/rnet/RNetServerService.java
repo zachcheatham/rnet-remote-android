@@ -11,7 +11,7 @@ import android.util.Log;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class RNetServerService extends Service implements RNetServer.StateListener
+public class RNetServerService extends Service implements RNetServer.ConnectivityListener
 {
     private static final String PREFS = "rnet_remote";
     private static final String LOG_TAG = "RNetServerService";
@@ -49,7 +49,7 @@ public class RNetServerService extends Service implements RNetServer.StateListen
     {
         super.onCreate();
         server = new RNetServer(RNetServer.INTENT_SUBSCRIBE);
-        server.addStateListener(this);
+        server.addConnectivityListener(this);
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
         String name = settings.getString("server_name", "");
@@ -124,12 +124,6 @@ public class RNetServerService extends Service implements RNetServer.StateListen
 
     @Override
     public void ready() {}
-
-    @Override
-    public void updateAvailable() {}
-
-    @Override
-    public void propertyChanged(int prop, Object value) {}
 
     @Override
     public void disconnected(boolean unexpected)

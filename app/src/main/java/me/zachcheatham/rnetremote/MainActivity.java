@@ -41,8 +41,8 @@ import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SAllPower;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SMute;
 
 public class MainActivity extends AppCompatActivity implements SelectServerListener,
-        RNetServer.StateListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
-        PopupMenu.OnMenuItemClickListener
+        RNetServer.ConnectivityListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
+        PopupMenu.OnMenuItemClickListener, RNetServer.ControllerListener
 {
     private static final String PREFS = "rnet_remote";
     private static final String PREFS_ORDER = "rnet_remote_zone_order";
@@ -93,14 +93,16 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                 }
             }
 
-            server.addStateListener(MainActivity.this);
+            server.addConnectivityListener(MainActivity.this);
+            server.addControllerListener(MainActivity.this);
             zoneAdapter.setServer(server);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName)
         {
-            server.removeStateListener(MainActivity.this);
+            server.removeConnectivityListener(MainActivity.this);
+            server.removeControllerListener(MainActivity.this);
             zoneAdapter.setServer(null);
 
             boundToServerService = false;
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         unbindService(serviceConnection);
 
         if (server != null)
-            server.removeStateListener(this);
+            server.removeConnectivityListener(this);
         zoneAdapter.setServer(null);
     }
 

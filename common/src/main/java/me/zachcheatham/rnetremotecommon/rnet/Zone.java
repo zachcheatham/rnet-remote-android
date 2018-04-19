@@ -69,12 +69,12 @@ public class Zone
         {
             this.name = name;
 
-            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            for (RNetServer.ZonesListener listener : server.zonesListeners)
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
 
             Log.i(LOG_TAG, String.format("Zone #%d-%d renamed to %s", controllerId, zoneId, name));
 
-            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            for (RNetServer.ZonesListener listener : server.zonesListeners)
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
 
             if (!setRemotely)
@@ -97,7 +97,7 @@ public class Zone
             Log.i(LOG_TAG, String.format("Zone #%d-%d power set %s", controllerId, zoneId,
                     power ? "on" : "off"));
 
-            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            for (RNetServer.ZonesListener listener : server.zonesListeners)
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.POWER);
 
             if (!setRemotely)
@@ -120,7 +120,7 @@ public class Zone
             Log.i(LOG_TAG,
                     String.format("Zone #%d-%d volume set to %d", controllerId, zoneId, volume));
 
-            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            for (RNetServer.ZonesListener listener : server.zonesListeners)
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.VOLUME);
 
             if (!setRemotely)
@@ -155,7 +155,7 @@ public class Zone
             Log.i(LOG_TAG, String.format("Zone #%d-%d max volume set to %d", controllerId, zoneId,
                     maxVolume));
 
-            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            for (RNetServer.ZonesListener listener : server.zonesListeners)
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.MAX_VOLUME);
 
             if (!setRemotely)
@@ -178,7 +178,7 @@ public class Zone
             Log.i(LOG_TAG,
                     String.format("Zone #%d-%d source set to #%d", controllerId, zoneId, sourceId));
 
-            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            for (RNetServer.ZonesListener listener : server.zonesListeners)
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.SOURCE);
 
             if (!setRemotely)
@@ -222,7 +222,7 @@ public class Zone
                     String.format("Zone #%d-%d parameter #%d set to %s", controllerId, zoneId,
                             parameterId, value));
 
-            for (RNetServer.ZonesListener listener : server.getZonesListeners())
+            for (RNetServer.ZonesListener listener : server.zonesListeners)
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.PARAMETER);
 
             if (!setRemotely)

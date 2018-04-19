@@ -40,8 +40,8 @@ public class Source
     {
         this.name = name;
 
-        for (RNetServer.ZonesListener listener : server.getZonesListeners())
-            listener.sourcesChanged();
+            for (RNetServer.SourcesListener listener : server.sourcesListeners)
+                listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.NAME);
 
         if (!setRemotely)
             new RNetServer.SendPacketTask(server).execute(

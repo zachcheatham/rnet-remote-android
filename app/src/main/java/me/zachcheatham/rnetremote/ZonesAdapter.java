@@ -26,10 +26,11 @@ import java.util.List;
 import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
 import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
+import me.zachcheatham.rnetremotecommon.rnet.Source;
 import me.zachcheatham.rnetremotecommon.rnet.Zone;
 
 class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
-        implements RNetServer.ZonesListener, ItemTouchHelperAdapter
+        implements RNetServer.ZonesListener, ItemTouchHelperAdapter, RNetServer.SourcesListener
 {
     @SuppressWarnings("unused")
     private static final String LOG_TAG = "ZonesAdapter";
@@ -66,14 +67,16 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     {
         if (this.server != null)
         {
-            this.server.removeZoneListener(this);
+            this.server.removeZonesListener(this);
+            this.server.removeSourcesListener(this);
         }
 
         this.server = server;
 
         if (server != null)
         {
-            server.addZoneListener(this);
+            server.addZonesListener(this);
+            server.addSourcesListener(this);
             if (server.isReady())
             {
                 sourcesAdapter.clear();
@@ -349,7 +352,40 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void sourcesChanged()
+    public void sourceAdded(Source source)
+    {
+        final int index = server.getSources().indexOfValue(source);
+        sourcesAdapter.insert(source.getName(), index);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                notifyItemInserted(index);
+            }
+        });
+    }
+
+    @Override
+    public void sourceChanged(Source source, boolean setRemotely,
+            RNetServer.SourceChangeType type)
+    {
+        final int index = server.getSources().indexOfValue(source);
+        sourcesAdapter.remove(sourcesAdapter.getItem(index));
+        sourcesAdapter.insert(source.getName(), index);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                notifyItemChanged(index);
+            }
+        });
+    }
+
+    @Override
+    public void descriptiveText(Source source, String text, int length) {}
+
+    @Override
+    public void sourceRemoved(int sourceId)
     {
         activity.runOnUiThread(new Runnable()
         {

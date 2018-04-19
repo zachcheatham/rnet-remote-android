@@ -31,7 +31,7 @@ import me.zachcheatham.rnetremotecommon.rnet.Zone;
 
 public class ZoneSettingsActivity extends AppCompatActivity implements View.OnClickListener,
         SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener,
-        PopupMenu.OnMenuItemClickListener, RNetServer.ZonesListener, RNetServer.StateListener
+        PopupMenu.OnMenuItemClickListener, RNetServer.ZonesListener, RNetServer.ConnectivityListener
 
 {
     @SuppressWarnings("unused")
@@ -67,8 +67,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
             serverService = binder.getService();
             server = serverService.getServer();
 
-            server.addStateListener(ZoneSettingsActivity.this);
-            server.addZoneListener(ZoneSettingsActivity.this);
+            server.addConnectivityListener(ZoneSettingsActivity.this);
+            server.addZonesListener(ZoneSettingsActivity.this);
 
             zone = server.getZone(controllerId, zoneId);
             if (zone == null)
@@ -83,8 +83,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         @Override
         public void onServiceDisconnected(ComponentName componentName)
         {
-            server.removeStateListener(ZoneSettingsActivity.this);
-            server.removeZoneListener(ZoneSettingsActivity.this);
+            server.removeConnectivityListener(ZoneSettingsActivity.this);
+            server.removeZonesListener(ZoneSettingsActivity.this);
 
             serverService = null;
             server = null;
@@ -156,8 +156,8 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
         unbindService(serviceConnection);
         if (server != null)
         {
-            server.removeStateListener(this);
-            server.removeZoneListener(this);
+            server.removeConnectivityListener(this);
+            server.removeZonesListener(this);
         }
     }
 
@@ -372,12 +372,6 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     public void ready() {}
 
     @Override
-    public void updateAvailable() {}
-
-    @Override
-    public void propertyChanged(int prop, Object value) {}
-
-    @Override
     public void disconnected(boolean unexpected)
     {
         runOnUiThread(new Runnable()
@@ -436,7 +430,4 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
     {
 
     }
-
-    @Override
-    public void sourcesChanged() {}
 }

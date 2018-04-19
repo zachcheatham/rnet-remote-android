@@ -27,7 +27,7 @@ import java.net.UnknownHostException;
 
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 
-public class EnterServerDialogFragment extends DialogFragment implements RNetServer.StateListener
+public class EnterServerDialogFragment extends DialogFragment implements RNetServer.ConnectivityListener
 {
     private final static String IP_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9" +
                                            "]|25[0-5])\\.){3}" +
@@ -49,7 +49,7 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        server.addStateListener(this);
+        server.addConnectivityListener(this);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
     @Override
     public void onDestroy()
     {
-        server.removeStateListener(this);
+        server.removeConnectivityListener(this);
         super.onDestroy();
     }
 
@@ -234,12 +234,6 @@ public class EnterServerDialogFragment extends DialogFragment implements RNetSer
             });
         }
     }
-
-    @Override
-    public void updateAvailable() {}
-
-    @Override
-    public void propertyChanged(int prop, Object value) {}
 
     @Override
     public void disconnected(boolean unexpected) {}

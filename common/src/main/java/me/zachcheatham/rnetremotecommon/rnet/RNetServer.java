@@ -63,8 +63,10 @@ public class RNetServer
     private String newVersion = null;
     //private boolean serialConnected = false;
 
-    private List<StateListener> stateListeners = new ArrayList<>();
-    private List<ZonesListener> zonesListeners = new ArrayList<>();
+    private List<ConnectivityListener> connectivityListeners = new ArrayList<>();
+    private List<ControllerListener> controllerListeners = new ArrayList<>();
+    List<ZonesListener> zonesListeners = new ArrayList<>();
+    List<SourcesListener> sourcesListeners = new ArrayList<>();
 
     public RNetServer(int intent)
     {
@@ -278,29 +280,49 @@ public class RNetServer
         return sources;
     }
 
-    public void addStateListener(StateListener listener)
+    public Source getSource(int sourceId)
     {
-        stateListeners.add(listener);
+        return sources.get(sourceId);
     }
 
-    public void removeStateListener(StateListener listener)
+    public void addConnectivityListener(ConnectivityListener listener)
     {
-        stateListeners.remove(listener);
+        connectivityListeners.add(listener);
     }
 
-    public void addZoneListener(ZonesListener listener)
+    public void removeConnectivityListener(ConnectivityListener listener)
+    {
+        connectivityListeners.remove(listener);
+    }
+
+    public void addControllerListener(ControllerListener listener)
+    {
+        controllerListeners.add(listener);
+    }
+
+    public void removeControllerListener(ControllerListener listener)
+    {
+        controllerListeners.remove(listener);
+    }
+
+    public void addZonesListener(ZonesListener listener)
     {
         zonesListeners.add(listener);
     }
 
-    List<ZonesListener> getZonesListeners()
-    {
-        return zonesListeners;
-    }
-
-    public void removeZoneListener(ZonesListener listener)
+    public void removeZonesListener(ZonesListener listener)
     {
         zonesListeners.remove(listener);
+    }
+
+    public void addSourcesListener(SourcesListener listener)
+    {
+        sourcesListeners.add(listener);
+    }
+
+    public void removeSourcesListener(SourcesListener listener)
+    {
+        sourcesListeners.remove(listener);
     }
 
     public void update()
@@ -326,7 +348,7 @@ public class RNetServer
 
         run = true;
 
-        for (StateListener listener : stateListeners)
+        for (ConnectivityListener listener : connectivityListeners)
             listener.connectionInitiated();
 
         try
@@ -338,7 +360,7 @@ public class RNetServer
 
             sendPacket(new PacketC2SIntent(intent));
             if (intent == INTENT_ACTION)
-                for (StateListener listener : stateListeners)
+                for (ConnectivityListener listener : connectivityListeners)
                     listener.ready();
 
             readChannel();
@@ -350,16 +372,16 @@ public class RNetServer
             catch (IOException ignored) {}
 
             if (isReady())
-                for (StateListener listener : stateListeners)
+                for (ConnectivityListener listener : connectivityListeners)
                     listener.disconnected(run);
             else if (run) // Don't notify an error if we wanted to disconnect
-                for (StateListener listener : stateListeners)
+                for (ConnectivityListener listener : connectivityListeners)
                     listener.connectError();
         }
         catch (IOException e)
         {
             if (run)
-                for (StateListener listener : stateListeners)
+                for (ConnectivityListener listener : connectivityListeners)
                     listener.connectError();
         }
 
@@ -452,7 +474,7 @@ public class RNetServer
                     break;
                 }
 
-                for (StateListener listener : stateListeners)
+                for (ControllerListener listener : controllerListeners)
                     listener.propertyChanged(packet.getPropertyID(), packet.getValue());
                 break;
             }
@@ -463,26 +485,31 @@ public class RNetServer
 
                 Log.i(LOG_TAG, String.format("Source #%d deleted.", packet.getSourceId()));
 
-                for (ZonesListener listener : zonesListeners)
-                    listener.sourcesChanged();
+                for (SourcesListener listener : sourcesListeners)
+                    listener.sourceRemoved(packet.getSourceId());
                 break;
             }
             case PacketS2CSourceInfo.ID:
             {
                 PacketS2CSourceInfo packet = new PacketS2CSourceInfo(buffer);
-                Source source = sources.get(packet.getSourceId());
+                Source source = getSource(packet.getSourceId());
                 if (source == null)
                 {
                     source = new Source(packet.getSourceId(), this);
+                    source.setName(packet.getSourceName(), true);
+                    source.setType(packet.getType(), true);
                     sources.put(packet.getSourceId(), source);
 
                     Log.i(LOG_TAG, String.format("Source #%d created", packet.getSourceId()));
+
+                    for (SourcesListener listener : sourcesListeners)
+                        listener.sourceAdded(source);
                 }
-                source.setName(packet.getSourceName(), true);
-                Log.i(LOG_TAG, String.format("Source #%d renamed to %s", packet.getSourceId(),
-                        packet.getSourceName()));
-                for (ZonesListener listener : zonesListeners)
-                    listener.sourcesChanged();
+                else
+                {
+                    source.setName(packet.getSourceName(), true);
+                    source.setType(packet.getType(), true);
+                }
                 break;
             }
             case PacketS2CZoneName.ID:
@@ -581,7 +608,7 @@ public class RNetServer
             {
                 PacketS2CUpdateAvailable packet = new PacketS2CUpdateAvailable(buffer);
                 newVersion = packet.getNewVersion();
-                for (StateListener listener : stateListeners)
+                for (ControllerListener listener : controllerListeners)
                     listener.updateAvailable();
             }
             default:
@@ -615,7 +642,7 @@ public class RNetServer
                 listener.indexReceived();
 
             if (!receivedIndex && intent == INTENT_SUBSCRIBE)
-                for (StateListener listener : stateListeners)
+                for (ConnectivityListener listener : connectivityListeners)
                     listener.ready();
 
             receivedIndex = true;
@@ -653,6 +680,8 @@ public class RNetServer
 
         for (ZonesListener listener : zonesListeners)
             listener.cleared();
+        for (SourcesListener listener : sourcesListeners)
+            listener.cleared();
     }
 
     public enum ZoneChangeType
@@ -660,33 +689,41 @@ public class RNetServer
         NAME, POWER, VOLUME, SOURCE, MAX_VOLUME, PARAMETER
     }
 
-    public interface StateListener
+    public enum SourceChangeType
+    {
+        NAME, TYPE, METADATA, AUTO_ON, AUTO_OFF
+    }
+
+    public interface ConnectivityListener
     {
         void connectionInitiated();
-
         void connectError();
-
         void ready();
-
-        void updateAvailable();
-
-        void propertyChanged(int prop, Object value);
-
         void disconnected(boolean unexpected);
+    }
+
+    public interface ControllerListener
+    {
+        void updateAvailable();
+        void propertyChanged(int prop, Object value);
     }
 
     public interface ZonesListener
     {
         void indexReceived();
-
-        void sourcesChanged();
-
         void zoneAdded(Zone zone);
-
         void zoneChanged(Zone zone, boolean setRemotely, ZoneChangeType type);
-
         void zoneRemoved(int controllerId, int zoneId);
+        void cleared();
+    }
 
+    public interface SourcesListener
+    {
+        void sourceAdded(Source source);
+        void sourceChanged(Source source, boolean setRemotely,
+                SourceChangeType type);
+        void descriptiveText(Source source, String text, int length);
+        void sourceRemoved(int sourceId);
         void cleared();
     }
 

@@ -88,7 +88,8 @@ public class SettingsActivity extends AppCompatActivity
     }
 
     public static class SettingsFragment extends PreferenceFragment
-            implements SharedPreferences.OnSharedPreferenceChangeListener, RNetServer.StateListener
+            implements SharedPreferences.OnSharedPreferenceChangeListener, RNetServer.ControllerListener,
+            RNetServer.ConnectivityListener
     {
         private RNetServer server;
         private RNetServerService serverService;
@@ -107,14 +108,16 @@ public class SettingsActivity extends AppCompatActivity
                     serverService.startServerConnection();
                 }
 
-                server.addStateListener(SettingsFragment.this);
+                server.addConnectivityListener(SettingsFragment.this);
+                server.addControllerListener(SettingsFragment.this);
                 applyControllerSettings();
             }
 
             @Override
             public void onServiceDisconnected(ComponentName componentName)
             {
-                server.removeStateListener(SettingsFragment.this);
+                server.removeConnectivityListener(SettingsFragment.this);
+                server.removeControllerListener(SettingsFragment.this);
                 applyControllerSettings();
 
                 serverService = null;
@@ -183,7 +186,7 @@ public class SettingsActivity extends AppCompatActivity
             getActivity().unbindService(serviceConnection);
             if (server != null)
             {
-                server.removeStateListener(this);
+                server.removeConnectivityListener(this);
             }
             applyControllerSettings();
         }
