@@ -1,6 +1,11 @@
 package me.zachcheatham.rnetremotecommon.rnet;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceInfo;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceProperty;
 
 public class Source
 {
@@ -24,11 +29,15 @@ public class Source
     private final byte TYPE_SONOS = 17;
     private final byte TYPE_CASSETTE = 18;
     private final byte TYPE_VCR = 19;
+    public static final byte PROPERTY_AUTO_OFF = 0;
+    public static final byte PROPERTY_AUTO_ON_ZONES = 1;
 
     private final int sourceId;
     private final RNetServer server;
-    private String name;
-    private byte type;
+    private String name = "";
+    private int type = 0;
+    private boolean autoOff = false;
+    private List<int[]> autoOnZones = new ArrayList<>();
 
     Source(int sourceId, RNetServer server)
     {
@@ -36,37 +45,88 @@ public class Source
         this.server = server;
     }
 
-    void setName(String name, boolean setRemotely)
-    {
-        this.name = name;
-
-            for (RNetServer.SourcesListener listener : server.sourcesListeners)
-                listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.NAME);
-
-        if (!setRemotely)
-            new RNetServer.SendPacketTask(server).execute(
-                    new PacketC2SSourceInfo(sourceId, name, type));
-    }
-
-    void setType(byte type, boolean setRemotely)
-    {
-        this.type = type;
-
-        for (RNetServer.ZonesListener listener : server.getZonesListeners())
-            listener.sourcesChanged();
-
-        if (!setRemotely)
-            new RNetServer.SendPacketTask(server).execute(
-                    new PacketC2SSourceInfo(sourceId, name, type));
-    }
-
     public String getName()
     {
         return name;
     }
 
-    public byte getType()
+    void setName(String name, boolean setRemotely)
+    {
+        if (!name.equals(this.name))
+        {
+            this.name = name;
+
+            for (RNetServer.SourcesListener listener : server.sourcesListeners)
+                listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.NAME);
+
+            if (!setRemotely)
+                new RNetServer.SendPacketTask(server).execute(
+                        new PacketC2SSourceInfo(sourceId, name, type));
+        }
+    }
+
+    public int getType()
     {
         return type;
+    }
+
+    void setType(int type, boolean setRemotely)
+    {
+        this.type = type;
+
+        for (RNetServer.SourcesListener listener : server.sourcesListeners)
+            listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.TYPE);
+
+        if (!setRemotely)
+            new RNetServer.SendPacketTask(server).execute(
+                    new PacketC2SSourceInfo(sourceId, name, type));
+    }
+
+    {
+
+    private boolean getAutoOff()
+    {
+        return autoOff;
+    }
+
+    public void setAutoOff(boolean autoOff, boolean setRemotely)
+    {
+        this.autoOff = autoOff;
+
+        for (RNetServer.SourcesListener listener : server.sourcesListeners)
+            listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.AUTO_OFF);
+
+        if (!setRemotely)
+            new RNetServer.SendPacketTask(server).execute(
+                    new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_OFF, setRemotely));
+    }
+
+    public int[][] getAutoOnZones()
+    {
+        return autoOnZones.toArray(new int[autoOnZones.size()][2]);
+    }
+
+    public void setAutoOnZones(int[][] autoOnZones, boolean setRemotely)
+    {
+        this.autoOnZones.clear();
+        this.autoOnZones.addAll(Arrays.asList(autoOnZones));
+
+        if (!setRemotely)
+            new RNetServer.SendPacketTask(server).execute(
+                    new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_ON_ZONES, autoOnZones));
+    }
+
+    public void removeAutoOnZone(int ctrllrId, int sourceId)
+    {
+        for (int i = 0; i < autoOnZones.size(); i++)
+        {
+            int[] zone = autoOnZones.get(i);
+            if (zone[0] == ctrllrId && zone[1] == sourceId)
+            {
+                autoOnZones.remove(i);
+                break;
+            }
+        }
+    }
     }
 }

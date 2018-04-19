@@ -24,6 +24,7 @@ import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneName;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CProperty;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDeleted;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceInfo;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceProperty;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CUpdateAvailable;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneDeleted;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneIndex;
@@ -511,6 +512,23 @@ public class RNetServer
                     source.setType(packet.getType(), true);
                 }
                 break;
+            }
+            case PacketS2CSourceProperty.ID:
+            {
+                PacketS2CSourceProperty packet = new PacketS2CSourceProperty(buffer);
+                Source source = getSource(packet.getSourceId());
+                if (source != null)
+                {
+                    switch (packet.getPropertyID())
+                    {
+                    case Source.PROPERTY_AUTO_OFF:
+                        source.setAutoOff((Boolean) packet.getPropertyValue(), true);
+                        break;
+                    case Source.PROPERTY_AUTO_ON_ZONES:
+                        source.setAutoOnZones((int[][]) packet.getPropertyValue(), true);
+                        break;
+                    }
+                }
             }
             case PacketS2CZoneName.ID:
             {
