@@ -71,7 +71,10 @@ public abstract class RNetPacket
         int nullPosition = -1;
         for (int i = 0; i < remaining.length; i++)
             if (remaining[i] == 0x00)
+            {
                 nullPosition = i;
+                break;
+            }
 
         if (nullPosition == -1)
             return null;
