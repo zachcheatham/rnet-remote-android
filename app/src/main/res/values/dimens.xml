@@ -31,6 +31,7 @@
 
     <dimen name="input_spacing_vert_dense">4dp</dimen>
     <dimen name="input_spacing_horz_half">6dp</dimen>
+    <dimen name="input_min_height">52dp</dimen>
 
     <dimen name="placeholder_spacing_group">32dp</dimen>
     <dimen name="fab_size">56dp</dimen>

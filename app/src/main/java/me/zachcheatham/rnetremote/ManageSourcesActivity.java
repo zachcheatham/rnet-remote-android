@@ -213,9 +213,9 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     public void cleared() {}
 
     @Override
-    public void addSource(String sourceName, int sourceId)
+    public void addSource(String sourceName, int sourceId, int sourceType)
     {
-        server.createSource(sourceId, sourceName);
+        server.createSource(sourceId, sourceName, sourceType);
     }
 
     @Override

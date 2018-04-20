@@ -127,12 +127,12 @@ public class RNetServer
         }
     }
 
-    public void createSource(int sourceId, String sourceName)
+    public void createSource(int sourceId, String sourceName, int sourceType)
     {
-        Source source = new Source(sourceId, sourceName, Source.TYPE_GENERIC, this);
+        Source source = new Source(sourceId, sourceName, sourceType, this);
         sources.put(sourceId, source);
 
-        new SendPacketTask(this).execute(new PacketC2SSourceInfo(sourceId, sourceName, Source.TYPE_GENERIC));
+        new SendPacketTask(this).execute(new PacketC2SSourceInfo(sourceId, sourceName, sourceType));
     }
 
     public void deleteSource(int sourceId)

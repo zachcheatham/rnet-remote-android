@@ -15,7 +15,9 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 public class AddSourceDialogFragment extends DialogFragment
@@ -25,6 +27,7 @@ public class AddSourceDialogFragment extends DialogFragment
     private TextInputEditText sourceNameEditText;
     private TextInputLayout sourceIdInputLayout;
     private TextInputEditText sourceIdEditText;
+    private Spinner sourceTypeSpinner;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -61,6 +64,13 @@ public class AddSourceDialogFragment extends DialogFragment
         sourceNameEditText = view.findViewById(R.id.edit_text_source_name);
         sourceIdInputLayout = view.findViewById(R.id.text_input_layout_source_id);
         sourceIdEditText = view.findViewById(R.id.edit_text_source_id);
+        sourceTypeSpinner = view.findViewById(R.id.spinner_source_type);
+
+        ArrayAdapter adapter = ArrayAdapter
+                .createFromResource(activity, R.array.source_type, R.layout.item_spinner_edit_text);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sourceTypeSpinner.setAdapter(adapter);
+        // TODO take focus away from edittext when touched
 
         builder.setView(view);
         builder.setNegativeButton(android.R.string.cancel, null);
@@ -89,7 +99,7 @@ public class AddSourceDialogFragment extends DialogFragment
                             {
                                 dialog.dismiss();
                                 listener.addSource(sourceNameEditText.getText().toString(),
-                                        sourceId);
+                                        sourceId, sourceTypeSpinner.getSelectedItemPosition());
                             }
                             else
                             {
@@ -150,7 +160,7 @@ public class AddSourceDialogFragment extends DialogFragment
 
     interface AddSourceListener
     {
-        void addSource(String sourceName, int sourceId);
+        void addSource(String sourceName, int sourceId, int sourceType);
 
         boolean sourceExists(int sourceId);
     }
