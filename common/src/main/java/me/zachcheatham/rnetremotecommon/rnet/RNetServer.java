@@ -525,7 +525,7 @@ public class RNetServer
                     source = new Source(packet.getSourceId(), packet.getSourceName(), packet.getType(), this);
                     sources.put(packet.getSourceId(), source);
 
-                    Log.i(LOG_TAG, String.format("Source #%d created", packet.getSourceId()));
+                    Log.i(LOG_TAG, String.format("Source #%d created (Type #%d)", packet.getSourceId(), packet.getType()));
 
                     for (SourcesListener listener : sourcesListeners)
                         listener.sourceAdded(source);
