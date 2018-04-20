@@ -72,6 +72,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         }
 
         this.server = server;
+        sourcesAdapter.clear();
 
         if (server != null)
         {
@@ -79,7 +80,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             server.addSourcesListener(this);
             if (server.isReady())
             {
-                sourcesAdapter.clear();
                 for (int i = 0; i < server.getSources().size(); i++)
                 {
                     int key = server.getSources().keyAt(i);
@@ -259,6 +259,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             @Override
             public void run()
             {
+                sourcesAdapter.clear();
                 notifyDataSetChanged();
             }
         });
@@ -355,7 +356,14 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     public void sourceAdded(Source source)
     {
         final int index = server.getSources().indexOfValue(source);
-        sourcesAdapter.insert(source.getName(), index);
+        final String name = source.getName();
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                sourcesAdapter.insert(name, index);
+            }
+        });
     }
 
     @Override
@@ -365,8 +373,16 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         if (type == RNetServer.SourceChangeType.NAME)
         {
             final int index = server.getSources().indexOfValue(source);
-            sourcesAdapter.remove(sourcesAdapter.getItem(index));
-            sourcesAdapter.insert(source.getName(), index);
+            final String name = source.getName();
+            activity.runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    sourcesAdapter.remove(sourcesAdapter.getItem(index));
+                    sourcesAdapter.insert(name, index);
+                }
+            });
         }
     }
 
