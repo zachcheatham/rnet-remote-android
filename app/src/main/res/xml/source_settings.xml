@@ -28,7 +28,7 @@
         android:entryValues="@array/source_type"
         tools:summary="Google Cast"/>
 
-    <MultiSelectListPreference
+    <me.zachcheatham.rnetremote.ui.MultiZoneSelectListPreference
         android:key="auto_on"
         android:persistent="false"
         android:title="@string/label_auto_on"

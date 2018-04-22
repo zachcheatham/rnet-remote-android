@@ -12,11 +12,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
-import android.util.SparseArray;
+import me.zachcheatham.rnetremote.ui.MultiZoneSelectListPreference;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
-import me.zachcheatham.rnetremotecommon.rnet.Zone;
 
 import java.util.*;
 
@@ -81,7 +80,7 @@ public class SourceSettingsActivity extends AppCompatActivity
         private Preference sourceIdPreference;
         private EditTextPreference sourceNamePreference;
         private ListPreference sourceTypePreference;
-        private MultiSelectListPreference autoOnPreference;
+        private MultiZoneSelectListPreference autoOnPreference;
         private SwitchPreference autoOffPreference;
 
         private RNetServer server;
@@ -121,32 +120,14 @@ public class SourceSettingsActivity extends AppCompatActivity
                     sourceTypePreference.setSummary(sourceTypes.get(source.getType()));
                     sourceTypePreference.setValueIndex(source.getType());
 
-                    List<String> entries = new ArrayList<>();
-                    List<String> entryValues = new ArrayList<>();
-                    SparseArray<SparseArray<Zone>> zones = server.getZones();
-                    for (int i = 0; i < zones.size(); i++)
-                    {
-                        int ctrllrId = zones.keyAt(i);
-                        for (int c = 0; c < zones.get(ctrllrId).size(); c++)
-                        {
-                            int zoneId = zones.get(ctrllrId).keyAt(c);
-                            entries.add(zones.get(ctrllrId).get(zoneId).getName());
-                            entryValues.add(String.format("%d.%d", ctrllrId, zoneId));
-                        }
-                    }
-
-                    autoOnPreference.setEntries(entries.toArray(new String[entries.size()]));
-                    autoOnPreference.setEntryValues(entryValues.toArray(new String[entryValues.size()]));
+                    autoOnPreference.setZones(server.getZones());
 
                     if (source.getType() == Source.TYPE_GOOGLE_CAST)
                     {
                         if (source.getAutoOnZones().length > 0)
                         {
                             autoOnPreference.setSummary(getString(R.string.active));
-                            Set<String> selectedZones = new HashSet<>();
-                            for (int[] autoOnZone : source.getAutoOnZones())
-                                selectedZones.add(String.format("%d.%d", autoOnZone[0], autoOnZone[1]));
-                            autoOnPreference.setValues(selectedZones);
+                            autoOnPreference.setSelected(source.getAutoOnZones());
                         }
                         else
                             autoOnPreference.setSummary(R.string.disabled);
@@ -190,7 +171,7 @@ public class SourceSettingsActivity extends AppCompatActivity
             sourceNamePreference = (EditTextPreference) findPreference("source_name");
             sourceTypePreference = (ListPreference) findPreference("source_type");
             autoOffPreference = (SwitchPreference) findPreference("auto_off");
-            autoOnPreference = (MultiSelectListPreference) findPreference("auto_on");
+            autoOnPreference = (MultiZoneSelectListPreference) findPreference("auto_on");
 
             sourceNamePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
             {
@@ -218,22 +199,13 @@ public class SourceSettingsActivity extends AppCompatActivity
 
             autoOnPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
             {
-                @SuppressWarnings("unchecked")
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue)
                 {
                     Source source = server.getSource(sourceId);
                     if (source != null)
                     {
-                        Set<String> newAutoOnZones = (Set) newValue;
-                        int[][] autoOnZones = new int[newAutoOnZones.size()][2];
-                        int i = 0;
-                        for (String autoOnZone : newAutoOnZones)
-                        {
-                            String[] s = autoOnZone.split("\\.");
-                            autoOnZones[i][0] = Integer.parseInt(s[0]);
-                            autoOnZones[i++][1] = Integer.parseInt(s[1]);
-                        }
+                        int[][] autoOnZones = (int[][]) newValue;
                         source.setAutoOnZones(autoOnZones, false);
                     }
 
@@ -382,16 +354,13 @@ public class SourceSettingsActivity extends AppCompatActivity
                 if (source.getType() == Source.TYPE_GOOGLE_CAST)
                 {
                     final int[][] autoOnZones = source.getAutoOnZones();
-                    final Set<String> selectedZones = new HashSet<>();
-                    for (int[] autoOnZone : autoOnZones)
-                        selectedZones.add(String.format("%d.%d", autoOnZone[0], autoOnZone[1]));
 
                     getActivity().runOnUiThread(new Runnable()
                     {
                         @Override
                         public void run()
                         {
-                            autoOnPreference.setValues(selectedZones);
+                            autoOnPreference.setSelected(autoOnZones);
 
                             if (autoOnZones.length > 0)
                                 autoOnPreference.setSummary(getString(R.string.active));
