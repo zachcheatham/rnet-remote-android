@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools">
+    <Preference
+        android:key="source_id"
+        android:persistent="false"
+        android:title="@string/label_source_id"
+        tools:summary="Source 01"/>
+
+    <EditTextPreference
+        android:key="source_name"
+        android:persistent="false"
+        android:title="@string/label_source_name"
+        android:selectAllOnFocus="true"
+        tools:summary="Bedroom"/>
+
+    <!--<SwitchPreference
+        android:key="source_name_override"
+        android:persistent="false"
+        android:title="@string/label_source_name_override"
+        android:summary="@string/label_source_name_override_desc"/>-->
+
+    <ListPreference
+        android:key="source_type"
+        android:persistent="false"
+        android:title="@string/label_source_type"
+        android:entries="@array/source_type"
+        android:entryValues="@array/source_type"
+        tools:summary="Google Cast"/>
+
+    <MultiSelectListPreference
+        android:key="auto_on"
+        android:persistent="false"
+        android:title="@string/label_auto_on"
+        tools:summary="Disabled"/>
+
+    <SwitchPreference
+        android:key="auto_off"
+        android:persistent="false"
+        android:title="@string/label_auto_off"
+        android:summary="@string/label_auto_off_desc"/>
+
+    <Preference
+            android:key="delete_source"
+            android:persistent="false"
+            android:title="@string/action_delete_source"/>
+
+</PreferenceScreen>

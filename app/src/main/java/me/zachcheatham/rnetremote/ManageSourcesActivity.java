@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.Locale;
@@ -25,14 +24,12 @@ import me.zachcheatham.rnetremote.ui.SimpleDividerItemDecoration;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
-import me.zachcheatham.rnetremotecommon.rnet.Zone;
 
 public class ManageSourcesActivity extends AppCompatActivity implements
         RNetServer.ConnectivityListener, AddSourceDialogFragment.AddSourceListener, RNetServer.SourcesListener
 {
     private final SourcesAdapter sourcesAdapter = new SourcesAdapter();
     private RNetServer server;
-    private boolean ignoreNextUpdate = false; // HACK I hate this
 
     private RNetServerService serverService;
     private ServiceConnection serviceConnection = new ServiceConnection()
@@ -47,7 +44,6 @@ public class ManageSourcesActivity extends AppCompatActivity implements
 
             server.addConnectivityListener(ManageSourcesActivity.this);
             server.addSourcesListener(ManageSourcesActivity.this);
-
             if (server.isReady())
                 sourcesAdapter.notifyDataSetChanged();
             else
@@ -70,7 +66,7 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_zones);
+        setContentView(R.layout.activity_manage_sources);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -97,7 +93,7 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     protected void onStop()
     {
         super.onStop();
-        unbindService(serviceConnection);
+        unbindService();
         if (server != null)
         {
             server.removeConnectivityListener(this);
@@ -130,6 +126,7 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     @Override
     public void finish()
     {
+        unbindService();
         super.finish();
         overridePendingTransition(R.anim.fade_in, R.anim.slide_right);
     }
@@ -139,6 +136,22 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     {
         finish();
         return true;
+    }
+
+    private void unbindService()
+    {
+        if (server != null)
+        {
+            server.removeConnectivityListener(ManageSourcesActivity.this);
+            server.removeSourcesListener(ManageSourcesActivity.this);
+            server = null;
+        }
+
+        if (serverService != null)
+        {
+            unbindService(serviceConnection);
+            serverService = null;
+        }
     }
 
     @Override
@@ -158,7 +171,7 @@ public class ManageSourcesActivity extends AppCompatActivity implements
             @Override
             public void run()
             {
-                finish();
+                sourcesAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -166,13 +179,13 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     @Override
     public void sourceAdded(Source source)
     {
-        // TODO
+        final int index = server.getSources().indexOfValue(source);
         runOnUiThread(new Runnable()
         {
             @Override
             public void run()
             {
-                sourcesAdapter.notifyDataSetChanged();
+                sourcesAdapter.notifyItemInserted(index);
             }
         });
     }
@@ -181,7 +194,20 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     public void sourceChanged(Source source, boolean setRemotely,
             RNetServer.SourceChangeType metadata)
     {
-        // TODO
+        final int index = server.getSources().indexOfValue(source);
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                sourcesAdapter.notifyItemChanged(index);
+            }
+        });
+    }
+
+    @Override
+    public void sourceRemoved(int sourceId)
+    {
         runOnUiThread(new Runnable()
         {
             @Override
@@ -194,20 +220,6 @@ public class ManageSourcesActivity extends AppCompatActivity implements
 
     @Override
     public void descriptiveText(Source source, String text, int length) {}
-
-    @Override
-    public void sourceRemoved(int sourceId)
-    {
-        // TODO
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                sourcesAdapter.notifyDataSetChanged();
-            }
-        });
-    }
 
     @Override
     public void cleared() {}
@@ -260,7 +272,6 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     {
         TextView sourceId;
         TextView name;
-        ImageButton deleteButton;
 
         SourceViewHolder(View itemView)
         {
@@ -268,16 +279,16 @@ public class ManageSourcesActivity extends AppCompatActivity implements
 
             sourceId = itemView.findViewById(R.id.text_id);
             name = itemView.findViewById(R.id.text_name);
-            deleteButton = itemView.findViewById(R.id.button_delete);
-            deleteButton.setOnClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v)
         {
-            ignoreNextUpdate = true;
-            server.deleteSource(server.getSources().keyAt(getAdapterPosition()));
-            sourcesAdapter.notifyItemRemoved(getAdapterPosition());
+            Intent intent = new Intent(ManageSourcesActivity.this, SourceSettingsActivity.class);
+            intent.putExtra("id", server.getSources().keyAt(getAdapterPosition()));
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
         }
     }
 }

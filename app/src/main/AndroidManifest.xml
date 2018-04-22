@@ -40,6 +40,15 @@
             android:label="@string/activity_name_manage_sources"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
+            android:name=".SourceSettingsActivity"
+            android:label="@string/activity_name_source_settings"
+            android:parentActivityName=".ManageSourcesActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="me.zachcheatham.rnetremote.ManageSourcesActivity"/>
+        </activity>
+        <activity
             android:name=".SettingsActivity"
             android:label="@string/settings"
             android:parentActivityName=".MainActivity"

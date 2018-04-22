@@ -506,6 +506,7 @@ public class RNetServer
                         for (SourcesListener listener : sourcesListeners)
                             listener.descriptiveText(source, packet.getText(), packet.getDisplayTime());
                 }
+                break;
             }
             case PacketS2CMediaMetadata.ID:
             {
@@ -515,6 +516,7 @@ public class RNetServer
                 {
                     source.setMediaMetadata(packet.getTitle(), packet.getArtist(), packet.getArtworkUrl());
                 }
+                break;
             }
             case PacketS2CSourceInfo.ID:
             {
@@ -553,6 +555,7 @@ public class RNetServer
                         break;
                     }
                 }
+                break;
             }
             case PacketS2CZoneName.ID:
             {

@@ -4,33 +4,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SRequestSourceProperties;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceInfo;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceProperty;
 
 public class Source
 {
-    private final byte TYPE_GENERIC = 0;
-    private final byte TYPE_AIRPLAY = 1;
-    private final byte TYPE_BLURAY = 2;
-    private final byte TYPE_CABLE = 3;
-    private final byte TYPE_CD = 4;
-    private final byte TYPE_COMPUTER = 5;
-    private final byte TYPE_DVD = 6;
-    private final byte TYPE_GOOGLE_CAST = 7;
-    private final byte TYPE_INTERNET_RADIO = 8;
-    private final byte TYPE_IPOD = 9;
-    private final byte TYPE_MEDIA_SERVER = 10;
-    private final byte TYPE_MP3 = 11;
-    private final byte TYPE_OTA = 12;
-    private final byte TYPE_PHONO = 13;
-    private final byte TYPE_RADIO = 14;
-    private final byte TYPE_SATELITE_TV = 15;
-    private final byte TYPE_SATELITE_RADIO = 16;
-    private final byte TYPE_SONOS = 17;
-    private final byte TYPE_CASSETTE = 18;
-    private final byte TYPE_VCR = 19;
-    public static final byte PROPERTY_AUTO_OFF = 0;
+    public static final byte TYPE_GENERIC = 0;
+    public static final byte TYPE_AIRPLAY = 1;
+    public static final byte TYPE_BLURAY = 2;
+    public static final byte TYPE_CABLE = 3;
+    public static final byte TYPE_CD = 4;
+    public static final byte TYPE_COMPUTER = 5;
+    public static final byte TYPE_DVD = 6;
+    public static final byte TYPE_GOOGLE_CAST = 7;
+    public static final byte TYPE_INTERNET_RADIO = 8;
+    public static final byte TYPE_IPOD = 9;
+    public static final byte TYPE_MEDIA_SERVER = 10;
+    public static final byte TYPE_MP3 = 11;
+    public static final byte TYPE_OTA = 12;
+    public static final byte TYPE_PHONO = 13;
+    public static final byte TYPE_RADIO = 14;
+    public static final byte TYPE_SATELLITE_TV = 15;
+    public static final byte TYPE_SATELLITE_RADIO = 16;
+    public static final byte TYPE_SONOS = 17;
+    public static final byte TYPE_CASSETTE = 18;
+    public static final byte TYPE_VCR = 19;
+
     public static final byte PROPERTY_AUTO_ON_ZONES = 1;
+    public static final byte PROPERTY_AUTO_OFF = 2;
 
     private final int sourceId;
     private final RNetServer server;
@@ -56,7 +58,7 @@ public class Source
         return name;
     }
 
-    void setName(String name, boolean setRemotely)
+    public void setName(String name, boolean setRemotely)
     {
         if (!name.equals(this.name))
         {
@@ -76,7 +78,7 @@ public class Source
         return type;
     }
 
-    void setType(int type, boolean setRemotely)
+    public void setType(int type, boolean setRemotely)
     {
         this.type = type;
 
@@ -126,7 +128,13 @@ public class Source
             listener.sourceChanged(this, false, RNetServer.SourceChangeType.METADATA);
     }
 
-    private boolean getAutoOff()
+    public void requestProperties()
+    {
+        new RNetServer.SendPacketTask(server).execute(
+                new PacketC2SRequestSourceProperties(sourceId));
+    }
+
+    public boolean getAutoOff()
     {
         return autoOff;
     }
@@ -140,7 +148,7 @@ public class Source
 
         if (!setRemotely)
             new RNetServer.SendPacketTask(server).execute(
-                    new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_OFF, setRemotely));
+                    new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_OFF, autoOff));
     }
 
     public int[][] getAutoOnZones()
@@ -152,6 +160,9 @@ public class Source
     {
         this.autoOnZones.clear();
         this.autoOnZones.addAll(Arrays.asList(autoOnZones));
+
+        for (RNetServer.SourcesListener listener : server.sourcesListeners)
+            listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.AUTO_ON);
 
         if (!setRemotely)
             new RNetServer.SendPacketTask(server).execute(
@@ -169,6 +180,5 @@ public class Source
                 break;
             }
         }
-    }
     }
 }

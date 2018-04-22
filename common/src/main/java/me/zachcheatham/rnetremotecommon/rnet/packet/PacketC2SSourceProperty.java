@@ -6,7 +6,7 @@ public class PacketC2SSourceProperty extends RNetPacket
 {
     private static final byte ID = 0x34;
 
-    public PacketC2SSourceProperty(int sourceID, byte propertyID, Object propertyValue)
+    public PacketC2SSourceProperty(int sourceID, int propertyID, Object propertyValue)
     {
         super();
         writeUnsignedByte(sourceID);

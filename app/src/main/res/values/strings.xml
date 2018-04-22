@@ -43,6 +43,8 @@
     <string name="error_source_exists">A source with that ID already exists.</string>
     <string name="error_zone_exists">A zone with that ID already exists.</string>
     <string name="format_zone_id">Controller #%1$d Zone #%2$d</string>
+    <string name="format_source_id">Source #%1$d</string>
+    <string name="format_object_settings">%1$s Settings</string>
     <string name="label_about">About</string>
     <string name="label_auto_off">Trigger Zones Off</string>
     <string name="label_auto_off_desc">Turn off zones playing this source when playback stops</string>

@@ -2,4 +2,27 @@
     <string name="description_toggle_power">Toggle Zone Power</string>
     <string name="notice_connecting">Connecting</string>
     <string name="notice_connecting_long">Unable to connect. Retrying…</string>
+
+    <string-array name="source_type">
+        <item>Generic</item>
+        <item>Apple Airplay</item>
+        <item>Blu-Ray Player</item>
+        <item>Cable TV</item>
+        <item>CD Player</item>
+        <item>Computer</item>
+        <item>DVD Player</item>
+        <item>Google Cast</item>
+        <item>Internet Radio</item>
+        <item>Apple iPod</item>
+        <item>Media Server</item>
+        <item>MP3 Player</item>
+        <item>Antenna TV</item>
+        <item>Vinyl</item>
+        <item>Radio Tuner</item>
+        <item>Satellite TV</item>
+        <item>Satellite Radio</item>
+        <item>Sonos CONNECT</item>
+        <item>Cassette Player</item>
+        <item>VCR</item>
+    </string-array>
 </resources>
