@@ -40,6 +40,17 @@
             android:enabled="false"
             android:key="controller_web_server"/>-->
 
+        <Preference
+            android:enabled="false"
+            android:key="manage_sources"
+            android:persistent="false"
+            android:title="@string/action_manage_sources">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:targetPackage="me.zachcheatham.rnetremote"
+                    android:targetClass="me.zachcheatham.rnetremote.ManageSourcesActivity"/>
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory

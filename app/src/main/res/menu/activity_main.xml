@@ -25,12 +25,7 @@
         android:id="@+id/action_add_zone"
         android:title="@string/action_add_zone"
         app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/action_manage_sources"
-        android:title="@string/action_manage_sources"
-        app:showAsAction="never"/>
-
+    
     <item
         android:id="@+id/action_change_server"
         android:title="@string/action_change_server"

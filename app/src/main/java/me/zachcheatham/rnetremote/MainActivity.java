@@ -189,7 +189,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         menu.findItem(R.id.action_power_all).setVisible(connected);
         menu.findItem(R.id.action_change_server).setVisible(connected);
         menu.findItem(R.id.action_add_zone).setVisible(connected);
-        menu.findItem(R.id.action_manage_sources).setVisible(connected);
         menu.findItem(R.id.action_toggle_mute).setVisible(connected);
 
         return true;
@@ -250,13 +249,6 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             AddZoneDialogFragment dialog = new AddZoneDialogFragment();
             dialog.show(getSupportFragmentManager(), "AddZoneDialogFragment");
             return true;
-        case R.id.action_manage_sources:
-        {
-            Intent intent = new Intent(this, ManageSourcesActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
-            return true;
-        }
         case R.id.settings:
         {
             Intent intent = new Intent(this, SettingsActivity.class);

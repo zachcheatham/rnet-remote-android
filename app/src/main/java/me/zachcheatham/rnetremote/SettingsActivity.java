@@ -74,6 +74,13 @@ public class SettingsActivity extends AppCompatActivity
     }
 
     @Override
+    public void startActivity(Intent intent)
+    {
+        super.startActivity(intent);
+        overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
+    }
+
+    @Override
     public boolean onSupportNavigateUp()
     {
         finish();
@@ -249,6 +256,7 @@ public class SettingsActivity extends AppCompatActivity
                 namePreference.setText(server.getName());
                 namePreference.setEnabled(true);
                 //webServerPreference.setEnabled(true);
+                findPreference("manage_sources").setEnabled(true);
             }
             else
             {
@@ -259,6 +267,7 @@ public class SettingsActivity extends AppCompatActivity
                 namePreference.setSummary(getString(R.string.label_preference_disconnected));
                 namePreference.setEnabled(false);
                 //webServerPreference.setEnabled(false);
+                findPreference("manage_sources").setEnabled(false);
             }
         }
 
