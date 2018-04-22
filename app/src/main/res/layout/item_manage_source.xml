@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="@dimen/list_single_line_height"
+              android:layout_height="@dimen/list_single_line_height" xmlns:app="http://schemas.android.com/apk/res-auto"
               android:gravity="center_vertical"
               android:orientation="horizontal"
               android:background="?attr/selectableItemBackground"
@@ -13,15 +13,16 @@
               android:paddingRight="@dimen/list_horizontal_padding"
               android:paddingStart="@dimen/list_horizontal_padding">
 
-    <TextView
-        android:id="@+id/text_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/list_horizontal_padding"
-        android:layout_marginRight="@dimen/list_horizontal_padding"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/textColorSecondary"
-        tools:text="01"/>
+    <ImageView
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/list_horizontal_padding"
+            android:layout_marginRight="@dimen/list_horizontal_padding"
+            android:tint="@color/textColorSecondary"
+            app:srcCompat="@drawable/ic_input_white_24dp"
+    />
 
     <TextView
         android:id="@+id/text_name"

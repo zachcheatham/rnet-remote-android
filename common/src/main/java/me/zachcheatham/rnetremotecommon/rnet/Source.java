@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.zachcheatham.rnet.R;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SRequestSourceProperties;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceInfo;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceProperty;
@@ -76,6 +77,11 @@ public class Source
     public int getType()
     {
         return type;
+    }
+
+    public int getTypeDrawable()
+    {
+        return getTypeDrawable(type);
     }
 
     public void setType(int type, boolean setRemotely)
@@ -169,16 +175,43 @@ public class Source
                     new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_ON_ZONES, autoOnZones));
     }
 
-    public void removeAutoOnZone(int ctrllrId, int sourceId)
+    static int getTypeDrawable(int type)
     {
-        for (int i = 0; i < autoOnZones.size(); i++)
+        switch (type)
         {
-            int[] zone = autoOnZones.get(i);
-            if (zone[0] == ctrllrId && zone[1] == sourceId)
-            {
-                autoOnZones.remove(i);
-                break;
-            }
+        default:
+        case TYPE_GENERIC:
+        case TYPE_SONOS:
+            return R.drawable.ic_input_white_24dp;
+        case TYPE_AIRPLAY:
+            return R.drawable.ic_airplay_white_24dp;
+        case TYPE_BLURAY:
+        case TYPE_CD:
+        case TYPE_DVD:
+            return R.drawable.ic_disc_white_24dp;
+        case TYPE_CABLE:
+        case TYPE_OTA:
+        case TYPE_SATELLITE_TV:
+            return R.drawable.ic_tv_white_24dp;
+        case TYPE_CASSETTE:
+        case TYPE_VCR:
+            return R.drawable.ic_voicemail_white_24dp;
+        case TYPE_COMPUTER:
+            return R.drawable.ic_computer_white_24dp;
+        case TYPE_GOOGLE_CAST:
+            return R.drawable.ic_cast_white_24dp;
+        case TYPE_INTERNET_RADIO:
+        case TYPE_RADIO:
+        case TYPE_SATELLITE_RADIO:
+            return R.drawable.ic_radio_white_24dp;
+        case TYPE_IPOD:
+            return R.drawable.ic_apple_white_24dp;
+        case TYPE_MEDIA_SERVER:
+            return R.drawable.ic_server_network_white_24dp;
+        case TYPE_MP3:
+            return R.drawable.ic_music_file_white_24dp;
+        case TYPE_PHONO:
+            return R.drawable.ic_album_white_24dp;
         }
     }
 }

@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Locale;
@@ -253,7 +254,7 @@ public class ManageSourcesActivity extends AppCompatActivity implements
             int sourceId = server.getSources().keyAt(position);
             Source source = server.getSources().get(sourceId);
 
-            holder.sourceId.setText(String.format(Locale.getDefault(), "%02d", sourceId + 1));
+            holder.icon.setImageResource(source.getTypeDrawable());
             holder.name.setText(source.getName());
         }
 
@@ -270,15 +271,15 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     private class SourceViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener
     {
-        TextView sourceId;
         TextView name;
+        ImageView icon;
 
         SourceViewHolder(View itemView)
         {
             super(itemView);
 
-            sourceId = itemView.findViewById(R.id.text_id);
             name = itemView.findViewById(R.id.text_name);
+            icon = itemView.findViewById(R.id.icon);
             itemView.setOnClickListener(this);
         }
 
