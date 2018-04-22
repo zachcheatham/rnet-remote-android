@@ -26,7 +26,10 @@ public class PacketS2CSourceInfo extends RNetPacket
     {
         sourceID = readUnsignedByte();
         sourceName = readNTString();
-        type = readUnsignedByte();
+        if (buffer.remaining() > 0)
+            type = readUnsignedByte();
+        else
+            type = 0;
     }
 
     public int getSourceId()
