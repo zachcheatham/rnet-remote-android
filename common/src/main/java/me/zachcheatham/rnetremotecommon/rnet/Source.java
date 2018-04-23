@@ -54,6 +54,11 @@ public class Source
         this.server = server;
     }
 
+    public int getId()
+    {
+        return sourceId;
+    }
+
     public String getName()
     {
         return name;

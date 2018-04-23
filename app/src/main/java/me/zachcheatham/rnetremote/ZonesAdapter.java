@@ -1,10 +1,12 @@
 package me.zachcheatham.rnetremote;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -14,11 +16,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.TextView;
+import android.widget.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,15 +38,13 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private final ArrayList<int[]> zoneIndex = new ArrayList<>();
     private ItemTouchHelper itemTouchHelper;
     private RNetServer server;
-    private ArrayAdapter<String> sourcesAdapter;
+    private SourcesAdapter sourcesAdapter;
     private RecyclerView recyclerView;
 
     ZonesAdapter(Activity a)
     {
         this.activity = a;
-        sourcesAdapter = new ArrayAdapter<>(
-                new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay),
-                android.R.layout.simple_list_item_activated_1, new ArrayList<String>());
+        sourcesAdapter = new SourcesAdapter(new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay));
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(this);
         itemTouchHelper = new ItemTouchHelper(callback);
     }
@@ -408,7 +404,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener,
-            View.OnClickListener, AdapterView.OnItemClickListener, View.OnLongClickListener
+            View.OnClickListener, View.OnLongClickListener
     {
         TextView name;
         ImageButton power;
@@ -512,15 +508,23 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             itemTouchHelper.startDrag(this);
             return false;
         }
+    }
 
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
+    private class SourcesAdapter extends ArrayAdapter<String>
+    {
+        SourcesAdapter(@NonNull Context context)
         {
-            int[] id = zoneIndex.get(getAdapterPosition());
-            Zone zone = server.getZone(id[0], id[1]);
+            super(context, R.layout.item_select_source, R.id.text_name);
+        }
 
-            int sourceId = server.getSources().keyAt(i);
-            zone.setSourceId(sourceId, false);
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
+        {
+            View view = super.getView(position, convertView, parent);
+            int typeDrawable = server.getSource(server.getSources().keyAt(position)).getTypeDrawable();
+            ((ImageView) view.findViewById(R.id.icon)).setImageResource(typeDrawable);
+            return view;
         }
     }
 }

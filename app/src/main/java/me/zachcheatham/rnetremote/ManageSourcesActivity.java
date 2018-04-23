@@ -19,8 +19,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Locale;
-
 import me.zachcheatham.rnetremote.ui.SimpleDividerItemDecoration;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
@@ -244,7 +242,7 @@ public class ManageSourcesActivity extends AppCompatActivity implements
         public SourceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
         {
             View view = LayoutInflater.from(parent.getContext())
-                                      .inflate(R.layout.item_manage_source, parent, false);
+                                      .inflate(R.layout.item_source, parent, false);
             return new SourceViewHolder(view);
         }
 
