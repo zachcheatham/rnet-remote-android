@@ -18,10 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.nostra13.universalimageloader.core.ImageLoader;
 import me.zachcheatham.rnetremote.ui.BackgroundImageViewAware;
 import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
@@ -162,8 +158,8 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                     String artworkUrl = source.getMediaArtworkUrl();
                     if (artworkUrl != null && artworkUrl.length() > 0)
                     {
-                        ImageLoader.getInstance().displayImage(artworkUrl, new BackgroundImageViewAware(holder.innerLayout));
                         ImageLoader.getInstance()
+                                   .displayImage(artworkUrl, new BackgroundImageViewAware(holder.innerLayout));
                     }
                     else
                     {
@@ -344,7 +340,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
     @Override
     public void zoneChanged(final Zone zone, boolean setRemotely,
-            final RNetServer.ZoneChangeType type)
+                            final RNetServer.ZoneChangeType type)
     {
         if (type != RNetServer.ZoneChangeType.PARAMETER)
         {
@@ -398,7 +394,8 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     {
         final int index = server.getSources().indexOfValue(source);
         final String name = source.getName();
-        activity.runOnUiThread(new Runnable() {
+        activity.runOnUiThread(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -409,7 +406,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
     @Override
     public void sourceChanged(Source source, boolean setRemotely,
-            RNetServer.SourceChangeType type)
+                              RNetServer.SourceChangeType type)
     {
         if (type == RNetServer.SourceChangeType.NAME)
         {

@@ -16,7 +16,7 @@
         android:layout_marginLeft="@dimen/dialog_padding"
         android:layout_marginStart="@dimen/dialog_padding"
         app:srcCompat="@drawable/ic_wifi_white_24dp"
-        />
+        android:contentDescription="@null"/>
 
     <TextView
         android:id="@+id/name"
