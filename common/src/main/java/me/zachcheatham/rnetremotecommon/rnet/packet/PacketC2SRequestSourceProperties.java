@@ -11,7 +11,7 @@ public class PacketC2SRequestSourceProperties extends RNetPacket
     @Override
     byte getPacketID()
     {
-        return 0x32;
+        return 0x33;
     }
 
     @Override
