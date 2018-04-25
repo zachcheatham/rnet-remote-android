@@ -6,6 +6,7 @@ import java.util.List;
 
 import me.zachcheatham.rnet.R;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SRequestSourceProperties;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceControl;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceInfo;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceProperty;
 
@@ -34,6 +35,14 @@ public class Source
 
     public static final byte PROPERTY_AUTO_ON_ZONES = 1;
     public static final byte PROPERTY_AUTO_OFF = 2;
+
+    public static final byte CONTROL_NEXT = 0;
+    public static final byte CONTROL_PREV = 1;
+    public static final byte CONTROL_STOP = 2;
+    public static final byte CONTROL_PLAY = 3;
+    public static final byte CONTROL_PAUSE = 4;
+    public static final byte CONTROL_PLUS = 5;
+    public static final byte CONTROL_MINUS = 6;
 
     private final int sourceId;
     private final RNetServer server;
@@ -101,6 +110,11 @@ public class Source
                     new PacketC2SSourceInfo(sourceId, name, type));
     }
 
+    public void control(int operation)
+    {
+        new RNetServer.SendPacketTask(server).execute(
+                new PacketC2SSourceControl(sourceId, operation));
+    }
     public String getPermanentDescriptiveText()
     {
         return this.descriptiveText;
@@ -180,7 +194,7 @@ public class Source
                     new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_ON_ZONES, autoOnZones));
     }
 
-    static int getTypeDrawable(int type)
+    private static int getTypeDrawable(int type)
     {
         switch (type)
         {
