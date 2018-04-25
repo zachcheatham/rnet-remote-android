@@ -190,12 +190,24 @@ public class SettingsActivity extends AppCompatActivity
         {
             super.onStop();
 
-            getActivity().unbindService(serviceConnection);
+            unbindService();
+            applyControllerSettings();
+        }
+
+        private void unbindService()
+        {
             if (server != null)
             {
                 server.removeConnectivityListener(this);
+                server.removeControllerListener(this);
+                server = null;
             }
-            applyControllerSettings();
+
+            if (serverService != null)
+            {
+                getActivity().unbindService(serviceConnection);
+                serverService = null;
+            }
         }
 
         @Override

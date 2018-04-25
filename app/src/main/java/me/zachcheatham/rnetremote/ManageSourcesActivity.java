@@ -93,11 +93,6 @@ public class ManageSourcesActivity extends AppCompatActivity implements
     {
         super.onStop();
         unbindService();
-        if (server != null)
-        {
-            server.removeConnectivityListener(this);
-            server.removeSourcesListener(this);
-        }
     }
 
     @Override
