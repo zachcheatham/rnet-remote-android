@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +22,8 @@ import android.widget.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import me.zachcheatham.rnetremote.ui.BackgroundImageViewAware;
 import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
 import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
@@ -122,7 +125,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ZonesAdapter.ViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
     {
         int[] zoneInfo = zoneIndex.get(position);
         Zone zone = server.getZone(zoneInfo[0], zoneInfo[1]);
@@ -149,6 +152,40 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 holder.seekBar.setEnabled(false);
                 holder.sourceSelect.setEnabled(false);
                 holder.sourceSelect.setAlpha(0.26f);
+            }
+
+            if (zone.getPowered())
+            {
+                Source source = server.getSource(zone.getSourceId());
+                if (source != null)
+                {
+                    String artworkUrl = source.getMediaArtworkUrl();
+                    if (artworkUrl != null && artworkUrl.length() > 0)
+                    {
+                        ImageLoader.getInstance().displayImage(artworkUrl, new BackgroundImageViewAware(holder.innerLayout));
+                    }
+                    else
+                    {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                            holder.innerLayout.setBackground(null);
+                        else
+                            holder.innerLayout.setBackgroundDrawable(null);
+                    }
+                }
+                else
+                {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                        holder.innerLayout.setBackground(null);
+                    else
+                        holder.innerLayout.setBackgroundDrawable(null);
+                }
+            }
+            else
+            {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                    holder.innerLayout.setBackground(null);
+                else
+                    holder.innerLayout.setBackgroundDrawable(null);
             }
         }
     }
@@ -247,6 +284,20 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         editor.apply();
     }
 
+    private int getZoneIndexPosition(int ctrllrID, int zoneID)
+    {
+        for (int i = 0; i < zoneIndex.size(); i++)
+        {
+            if (zoneIndex.get(i)[0] == ctrllrID &&
+                zoneIndex.get(i)[1] == zoneID)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     @Override
     public void cleared()
     {
@@ -301,25 +352,18 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 @Override
                 public void run()
                 {
-                    for (int i = 0; i < zoneIndex.size(); i++)
+                    int i = getZoneIndexPosition(zone.getControllerId(), zone.getZoneId());
+                    if (type == RNetServer.ZoneChangeType.VOLUME && recyclerView != null)
                     {
-                        if (zoneIndex.get(i)[0] == zone.getControllerId() &&
-                            zoneIndex.get(i)[1] == zone.getZoneId())
-                        {
-                            if (type == RNetServer.ZoneChangeType.VOLUME && recyclerView != null)
-                            {
-                                ViewHolder holder = (ViewHolder) recyclerView
-                                        .findViewHolderForAdapterPosition(i);
-                                if (holder != null && holder.seekBar != null &&
-                                    !holder.seekBar.isPressed())
-                                    holder.seekBar
-                                            .setProgress((int) Math.floor(zone.getVolume() / 2));
-                            }
-                            else
-                                notifyItemChanged(i);
-                            break;
-                        }
+                        ViewHolder holder = (ViewHolder) recyclerView
+                                .findViewHolderForAdapterPosition(i);
+                        if (holder != null && holder.seekBar != null &&
+                            !holder.seekBar.isPressed())
+                            holder.seekBar
+                                    .setProgress((int) Math.floor(zone.getVolume() / 2));
                     }
+                    else
+                        notifyItemChanged(i);
                 }
             });
         }
@@ -380,6 +424,25 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 }
             });
         }
+        else if (type == RNetServer.SourceChangeType.METADATA)
+        {
+            for (int i = 0; i < zoneIndex.size(); i++)
+            {
+                Zone zone = server.getZone(zoneIndex.get(i)[0], zoneIndex.get(i)[1]);
+                if (zone.getPowered() && zone.getSourceId() == source.getId())
+                {
+                    final int finalI = i;
+                    activity.runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            notifyItemChanged(finalI);
+                        }
+                    });
+                }
+            }
+        }
     }
 
     @Override
@@ -406,6 +469,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     class ViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener,
             View.OnClickListener, View.OnLongClickListener
     {
+        View innerLayout;
         TextView name;
         ImageButton power;
         ImageButton sourceSelect;
@@ -415,6 +479,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         {
             super(itemView);
 
+            innerLayout = itemView.findViewById(R.id.inner_layout);
             name = itemView.findViewById(R.id.name);
             power = itemView.findViewById(R.id.power);
             seekBar = itemView.findViewById(R.id.volume);
