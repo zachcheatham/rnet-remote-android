@@ -163,6 +163,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                     if (artworkUrl != null && artworkUrl.length() > 0)
                     {
                         ImageLoader.getInstance().displayImage(artworkUrl, new BackgroundImageViewAware(holder.innerLayout));
+                        ImageLoader.getInstance()
                     }
                     else
                     {
@@ -493,6 +494,10 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             {
                 header.setOnClickListener(this);
             }
+            else
+            {
+                name.setOnClickListener(this);
+            }
 
             ImageButton tuneSettings = itemView.findViewById(R.id.settings);
             tuneSettings.setOnClickListener(this);
@@ -526,6 +531,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             switch (view.getId())
             {
             case R.id.header:
+            case R.id.name:
             {
                 Intent intent = new Intent(activity, ZoneActivity.class);
                 intent.putExtra("cid", zone.getControllerId());
