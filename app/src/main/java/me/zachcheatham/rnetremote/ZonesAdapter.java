@@ -529,6 +529,8 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             case R.id.header:
             {
                 Intent intent = new Intent(activity, ZoneActivity.class);
+                intent.putExtra("cid", zone.getControllerId());
+                intent.putExtra("zid", zone.getZoneId());
                 activity.startActivity(intent);
                 activity.overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
                 break;

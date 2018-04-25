@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="me.zachcheatham.rnetremote.ZoneActivity">
+
+    <item
+        android:id="@+id/action_power"
+        android:icon="@drawable/ic_power_settings_white_24dp"
+        android:title="@string/description_toggle_power"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_select_source"
+        android:icon="@drawable/ic_input_white_24dp"
+        android:title="@string/description_select_source"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_tune_white_24dp"
+        android:title="@string/description_zone_settings"
+        app:showAsAction="always"/>
+
+</menu>

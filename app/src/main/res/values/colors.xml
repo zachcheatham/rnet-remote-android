@@ -17,4 +17,5 @@
 
     <color name="colorError">#F44336</color>
     <color name="colorPlaceholderAlbum">#FFFFFFFF</color>
+    <color name="colorMetadataBackground">#CC11212E</color>
 </resources>
