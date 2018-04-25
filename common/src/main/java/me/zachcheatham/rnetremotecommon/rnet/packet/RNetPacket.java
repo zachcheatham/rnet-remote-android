@@ -53,7 +53,7 @@ public abstract class RNetPacket
 
     int readUnsignedShort()
     {
-        return (buffer.get() & 0xffff);
+        return (buffer.getShort() & 0xffff);
     }
 
     void writeNTString(String s)
