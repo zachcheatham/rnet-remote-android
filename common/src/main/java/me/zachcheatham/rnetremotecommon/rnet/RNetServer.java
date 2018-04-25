@@ -711,10 +711,15 @@ public class RNetServer
         version = "<unknown>";
         newVersion = null;
 
-        for (ZonesListener listener : zonesListeners)
+        List<ZonesListener> zonesListenersCopy = new ArrayList<>(zonesListeners);
+        for (ZonesListener listener : zonesListenersCopy)
             listener.cleared();
-        for (SourcesListener listener : sourcesListeners)
+        zonesListenersCopy.clear();
+
+        List<SourcesListener> sourcesListenersCopy = new ArrayList<>(sourcesListeners);
+        for (SourcesListener listener : sourcesListenersCopy)
             listener.cleared();
+        sourcesListenersCopy.clear();
     }
 
     public enum ZoneChangeType
