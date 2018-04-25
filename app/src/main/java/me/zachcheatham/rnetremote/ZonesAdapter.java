@@ -467,7 +467,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener,
-            View.OnClickListener, View.OnLongClickListener
+            View.OnClickListener
     {
         View innerLayout;
         TextView name;
@@ -492,7 +492,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             if (header != null)
             {
                 header.setOnClickListener(this);
-                header.setOnLongClickListener(this);
             }
 
             ImageButton tuneSettings = itemView.findViewById(R.id.settings);
@@ -567,13 +566,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                         .show();
                 break;
             }
-        }
-
-        @Override
-        public boolean onLongClick(View view)
-        {
-            itemTouchHelper.startDrag(this);
-            return false;
         }
     }
 
