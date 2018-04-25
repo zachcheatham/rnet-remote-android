@@ -116,6 +116,7 @@ public class Source
         new RNetServer.SendPacketTask(server).execute(
                 new PacketC2SSourceControl(sourceId, operation));
     }
+
     public String getPermanentDescriptiveText()
     {
         return this.descriptiveText;
@@ -151,7 +152,7 @@ public class Source
         this.artworkUrl = artworkUrl;
 
         for (RNetServer.SourcesListener listener : server.sourcesListeners)
-            listener.sourceChanged(this, false, RNetServer.SourceChangeType.METADATA);
+            listener.sourceChanged(this, true, RNetServer.SourceChangeType.METADATA);
     }
 
     protected void setMediaPlayState(boolean playing)
