@@ -15,29 +15,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SDeleteSource;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SDeleteZone;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SIntent;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SProperty;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceInfo;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SUpdate;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneName;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CMediaMetadata;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CProperty;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDeleted;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDescriptiveText;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceInfo;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceProperty;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CUpdateAvailable;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneDeleted;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneIndex;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneMaxVolume;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneName;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneParameter;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZonePower;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneSource;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneVolume;
-import me.zachcheatham.rnetremotecommon.rnet.packet.RNetPacket;
+import me.zachcheatham.rnetremotecommon.rnet.packet.*;
 
 public class RNetServer
 {
@@ -518,6 +496,16 @@ public class RNetServer
                 }
                 break;
             }
+            case PacketS2CMediaPlayState.ID:
+            {
+                PacketS2CMediaPlayState packet = new PacketS2CMediaPlayState(buffer);
+                Source source = getSource(packet.getSourceId());
+                if (source != null)
+                {
+                    source.setMediaPlayState(packet.getPlaying());
+                }
+                break;
+            }
             case PacketS2CSourceInfo.ID:
             {
                 PacketS2CSourceInfo packet = new PacketS2CSourceInfo(buffer);
@@ -736,7 +724,7 @@ public class RNetServer
 
     public enum SourceChangeType
     {
-        NAME, TYPE, METADATA, AUTO_ON, AUTO_OFF
+        NAME, TYPE, METADATA, AUTO_ON, PLAYSTATE, AUTO_OFF
     }
 
     public interface ConnectivityListener

@@ -52,6 +52,7 @@ public class Source
     private String title = null;
     private String artist = null;
     private String artworkUrl = null;
+    private boolean playing = false;
     private boolean autoOff = false;
     private List<int[]> autoOnZones = new ArrayList<>();
 
@@ -151,6 +152,22 @@ public class Source
 
         for (RNetServer.SourcesListener listener : server.sourcesListeners)
             listener.sourceChanged(this, false, RNetServer.SourceChangeType.METADATA);
+    }
+
+    protected void setMediaPlayState(boolean playing)
+    {
+        if (playing != this.playing)
+        {
+            this.playing = playing;
+
+            for (RNetServer.SourcesListener listener : server.sourcesListeners)
+                listener.sourceChanged(this, false, RNetServer.SourceChangeType.PLAYSTATE);
+        }
+    }
+
+    public boolean getMediaPlayState()
+    {
+        return playing;
     }
 
     public void requestProperties()
