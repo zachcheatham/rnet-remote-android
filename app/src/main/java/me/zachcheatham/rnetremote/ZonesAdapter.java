@@ -17,6 +17,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.*;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import me.zachcheatham.rnetremote.ui.BackgroundImageViewAware;
@@ -25,6 +26,9 @@ import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
 import me.zachcheatham.rnetremotecommon.rnet.Zone;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         implements RNetServer.ZonesListener, ItemTouchHelperAdapter, RNetServer.SourcesListener
@@ -140,6 +144,12 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 holder.seekBar.setEnabled(true);
                 holder.sourceSelect.setEnabled(true);
                 holder.sourceSelect.setAlpha(1.0f);
+                holder.mute.setEnabled(true);
+                holder.mute.setAlpha(1.0f);
+                if (zone.getMute())
+                    holder.mute.setImageResource(R.drawable.ic_volume_off_white_24dp);
+                else
+                    holder.mute.setImageResource(R.drawable.ic_volume_up_white_24dp);
 
                 Source source = server.getSource(zone.getSourceId());
                 if (source != null)
@@ -172,6 +182,9 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                         .setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
                 holder.seekBar.setEnabled(false);
                 holder.sourceSelect.setEnabled(false);
+                holder.mute.setImageResource(R.drawable.ic_volume_up_white_24dp);
+                holder.mute.setEnabled(false);
+                holder.mute.setAlpha(0.26f);
                 holder.sourceSelect.setAlpha(0.26f);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
@@ -466,6 +479,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         TextView name;
         ImageButton power;
         ImageButton sourceSelect;
+        ImageButton mute;
         SeekBar seekBar;
 
         ViewHolder(View itemView)
@@ -475,10 +489,13 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             innerLayout = itemView.findViewById(R.id.inner_layout);
             name = itemView.findViewById(R.id.name);
             power = itemView.findViewById(R.id.power);
+            mute = itemView.findViewById(R.id.button_mute);
             seekBar = itemView.findViewById(R.id.volume);
             sourceSelect = itemView.findViewById(R.id.source_select);
 
             power.setOnClickListener(this);
+            sourceSelect.setOnClickListener(this);
+            mute.setOnClickListener(this);
             seekBar.setOnSeekBarChangeListener(this);
 
             View header = itemView.findViewById(R.id.header);
@@ -493,9 +510,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
             ImageButton tuneSettings = itemView.findViewById(R.id.settings);
             tuneSettings.setOnClickListener(this);
-
-            if (sourceSelect != null)
-                sourceSelect.setOnClickListener(this);
         }
 
         @Override
@@ -562,6 +576,9 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                                 })
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
+                break;
+            case R.id.button_mute:
+                zone.setMute(!zone.getMute(), false);
                 break;
             }
         }

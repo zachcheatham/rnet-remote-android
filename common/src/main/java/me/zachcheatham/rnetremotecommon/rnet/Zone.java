@@ -4,12 +4,7 @@ import android.util.Log;
 
 import java.util.Locale;
 
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneMaxVolume;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneName;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneParameter;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZonePower;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneSource;
-import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneVolume;
+import me.zachcheatham.rnetremotecommon.rnet.packet.*;
 
 public class Zone
 {
@@ -25,14 +20,18 @@ public class Zone
     public static final int PARAMETER_PARTY_MODE_ON = 1;
     public static final int PARAMETER_PARTY_MODE_MASTER = 2;
     public static final int PARAMETER_FRONT_AV_ENABLE = 8;
+
     private static final String LOG_TAG = "Zone";
+
     private final int controllerId;
     private final int zoneId;
     private final RNetServer server;
+
     private final Object[] parameters = new Object[9];
     private String name = "Unknown";
-    private boolean power;
-    private int volume;
+    private boolean power = false;
+    private int volume = 0;
+    private boolean muted = false;
     private int maxVolume = 100;
     private int sourceId;
 
@@ -144,6 +143,27 @@ public class Zone
     public int getVolume()
     {
         return volume;
+    }
+
+    public void setMute(boolean mute, boolean setRemotely)
+    {
+        if (mute != muted)
+        {
+            muted = mute;
+
+            Log.i(LOG_TAG, String.format("Zone #%d-%d mute set to %s", controllerId, zoneId, mute));
+
+            for (RNetServer.ZonesListener listener : server.zonesListeners)
+                listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.MUTE);
+
+            if (!setRemotely)
+                new RNetServer.SendPacketTask(server).execute(new PacketC2SZoneMute(controllerId, zoneId, mute));
+        }
+    }
+
+    public boolean getMute()
+    {
+        return muted;
     }
 
     public void setMaxVolume(int maxVolume, boolean setRemotely)

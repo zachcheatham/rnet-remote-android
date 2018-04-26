@@ -545,6 +545,14 @@ public class RNetServer
                 }
                 break;
             }
+            case PacketS2CZoneMute.ID:
+            {
+                PacketS2CZoneMute packet = new PacketS2CZoneMute(buffer);
+                Zone zone = getZone(packet.getControllerId(), packet.getZoneId());
+                if (zone != null)
+                    zone.setMute(packet.getMute(), true);
+                break;
+            }
             case PacketS2CZoneName.ID:
             {
                 PacketS2CZoneName packet = new PacketS2CZoneName(buffer);
@@ -724,7 +732,7 @@ public class RNetServer
 
     public enum ZoneChangeType
     {
-        NAME, POWER, VOLUME, SOURCE, MAX_VOLUME, PARAMETER
+        NAME, POWER, VOLUME, SOURCE, MAX_VOLUME, MUTE, PARAMETER
     }
 
     public enum SourceChangeType
