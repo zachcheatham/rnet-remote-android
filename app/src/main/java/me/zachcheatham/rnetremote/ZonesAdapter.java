@@ -140,18 +140,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 holder.seekBar.setEnabled(true);
                 holder.sourceSelect.setEnabled(true);
                 holder.sourceSelect.setAlpha(1.0f);
-            }
-            else
-            {
-                holder.power
-                        .setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
-                holder.seekBar.setEnabled(false);
-                holder.sourceSelect.setEnabled(false);
-                holder.sourceSelect.setAlpha(0.26f);
-            }
 
-            if (zone.getPowered())
-            {
                 Source source = server.getSource(zone.getSourceId());
                 if (source != null)
                 {
@@ -179,6 +168,12 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             }
             else
             {
+                holder.power
+                        .setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
+                holder.seekBar.setEnabled(false);
+                holder.sourceSelect.setEnabled(false);
+                holder.sourceSelect.setAlpha(0.26f);
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
                     holder.innerLayout.setBackground(null);
                 else
