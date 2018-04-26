@@ -147,9 +147,15 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 holder.mute.setEnabled(true);
                 holder.mute.setAlpha(1.0f);
                 if (zone.getMute())
+                {
                     holder.mute.setImageResource(R.drawable.ic_volume_off_white_24dp);
+                    holder.mute.setColorFilter(ContextCompat.getColor(activity, R.color.colorMute));
+                }
                 else
+                {
                     holder.mute.setImageResource(R.drawable.ic_volume_up_white_24dp);
+                    holder.mute.setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
+                }
 
                 Source source = server.getSource(zone.getSourceId());
                 if (source != null)
@@ -185,6 +191,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 holder.mute.setImageResource(R.drawable.ic_volume_up_white_24dp);
                 holder.mute.setEnabled(false);
                 holder.mute.setAlpha(0.26f);
+                holder.mute.setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
                 holder.sourceSelect.setAlpha(0.26f);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)

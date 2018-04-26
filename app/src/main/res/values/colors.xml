@@ -16,6 +16,7 @@
     <color name="colorPlaceholderText">#889097</color>
 
     <color name="colorError">#F44336</color>
+    <color name="colorMute">#D32F2F</color>
     <color name="colorPlaceholderAlbum">#FFFFFFFF</color>
     <color name="colorMetadataBackground">#CC11212E</color>
 </resources>
