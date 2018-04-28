@@ -260,7 +260,7 @@ public class ZoneActivity extends AppCompatActivity
                     artworkImageView.setImageResource(source.getTypeDrawable());
                     artworkImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                     artworkImageView.getDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary),
-                                                                  PorterDuff.Mode.SRC_IN);
+                            PorterDuff.Mode.SRC_IN);;
                     int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
                     artworkImageView.setPadding(padding, padding, padding, padding);
                     metadataContainerView.setBackgroundColor(0);
@@ -272,8 +272,8 @@ public class ZoneActivity extends AppCompatActivity
                 titleTextView.setVisibility(View.GONE);
                 artworkImageView.setImageResource(source.getTypeDrawable());
                 artworkImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                artworkImageView.getDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary),
-                                                              PorterDuff.Mode.SRC_IN);
+                artworkImageView.setColorFilter(getResources().getColor(R.color.colorPrimary),
+                        PorterDuff.Mode.SRC_IN);
                 int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin) * 2;
                 artworkImageView.setPadding(padding, padding, padding, padding);
                 metadataContainerView.setBackgroundColor(0);
@@ -365,6 +365,10 @@ public class ZoneActivity extends AppCompatActivity
                     case MAX_VOLUME:
                         volumeSeekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
                         volumeSeekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2));
+                        break;
+                    case SOURCE:
+                        applySource();
+                        break;
                     }
                 }
             });
