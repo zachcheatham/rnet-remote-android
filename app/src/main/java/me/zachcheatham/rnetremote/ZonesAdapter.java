@@ -43,6 +43,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private RNetServer server;
     private SourcesAdapter sourcesAdapter;
     private RecyclerView recyclerView;
+    private boolean showArtwork = true;
 
     ZonesAdapter(Activity a)
     {
@@ -97,6 +98,11 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 });
             }
         }
+    }
+
+    void setShowArtwork(boolean show)
+    {
+        showArtwork = show;
     }
 
     @Override
@@ -160,7 +166,7 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 Source source = server.getSource(zone.getSourceId());
                 if (source != null)
                 {
-                    String artworkUrl = source.getMediaArtworkUrl();
+                    String artworkUrl = showArtwork ? source.getMediaArtworkUrl() : null;
                     if (artworkUrl != null && artworkUrl.length() > 0)
                     {
                         ImageLoader.getInstance()

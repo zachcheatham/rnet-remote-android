@@ -112,4 +112,6 @@
     <string name="toast_system_unmuted">Unmuted</string>
     <string name="active">Active</string>
     <string name="disabled">Disabled</string>
+    <string name="setting_zone_item_art">Card artwork</string>
+    <string name="setting_zone_item_art_desc">Show media artwork on zone cards</string>
 </resources>

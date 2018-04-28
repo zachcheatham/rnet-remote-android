@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
         useVolumeKeys = settings.getBoolean("use_volume_keys", false);
+        zoneAdapter.setShowArtwork(settings.getBoolean("zone_item_art", true));
     }
 
     @Override

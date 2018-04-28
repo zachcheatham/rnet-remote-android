@@ -5,6 +5,12 @@
         android:summary="@string/setting_volume_keys_desc"
         android:title="@string/setting_volume_keys"/>
 
+    <SwitchPreference
+            android:key="zone_item_art"
+            android:title="@string/setting_zone_item_art"
+            android:summary="@string/setting_zone_item_art_desc"
+            android:defaultValue="true"/>
+
     <PreferenceCategory
         android:key="phone_calls"
         android:title="@string/settings_category_phone"
