@@ -42,38 +42,34 @@
                 android:textColor="?android:attr/textColorPrimary"/>
 
             <ImageButton
-                android:id="@+id/power"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/card_icon_button_spacing"
-                android:layout_marginRight="@dimen/card_icon_button_spacing"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/description_toggle_power"
-                android:padding="@dimen/card_icon_button_padding"
-                android:tint="@color/colorCardButton"
-                app:srcCompat="@drawable/ic_power_settings_white_24dp"
-                tools:visible="false"/>
+                    android:id="@+id/power"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="?attr/actionBarItemBackground"
+                    android:contentDescription="@string/description_toggle_power"
+                    android:tint="@color/colorCardButton"
+                    app:srcCompat="@drawable/ic_power_settings_white_24dp"
+                    tools:visible="false"
+                    android:padding="@dimen/card_icon_button_padding"/>
 
             <ImageButton
-                android:id="@+id/source_select"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/card_icon_button_spacing"
-                android:layout_marginRight="@dimen/card_icon_button_spacing"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/description_select_source"
-                android:padding="@dimen/card_icon_button_padding"
-                android:tint="@color/colorCardButton"
-                app:srcCompat="@drawable/ic_input_white_24dp"
-                tools:visible="false"/>
+                    android:id="@+id/source_select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="?attr/actionBarItemBackground"
+                    android:contentDescription="@string/description_select_source"
+                    android:padding="@dimen/card_icon_button_padding"
+                    android:tint="@color/colorCardButton"
+                    app:srcCompat="@drawable/ic_input_white_24dp"
+                    tools:visible="false"/>
 
             <ImageButton
                 android:id="@+id/settings"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/card_icon_button_edge_margin"
-                android:layout_marginRight="@dimen/card_icon_button_edge_margin"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/card_content_padding_button_edge"
+                android:layout_marginRight="@dimen/card_content_padding_button_edge"
+                android:background="?attr/actionBarItemBackground"
                 android:contentDescription="@string/description_zone_settings"
                 android:padding="@dimen/card_icon_button_padding"
                 android:tint="@color/colorCardButton"
@@ -96,11 +92,11 @@
             <ImageButton
                 android:id="@+id/button_mute"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/card_content_padding"
-                android:layout_marginStart="@dimen/card_content_padding"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/card_content_padding_button_edge"
+                android:layout_marginStart="@dimen/card_content_padding_button_edge"
                 android:padding="@dimen/card_icon_button_padding"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="?attr/actionBarItemBackground"
                 android:tint="@color/colorCardButton"
                 app:srcCompat="@drawable/ic_volume_up_white_24dp"/>
 

@@ -24,10 +24,9 @@
     <dimen name="card_content_padding_bottom">16dp</dimen>
     <dimen name="card_action_height">52dp</dimen>
     <dimen name="card_action_padding">8dp</dimen>
-    <dimen name="card_icon_button_padding">4dp</dimen>
-    <dimen name="card_icon_button_edge_margin">16dp</dimen>
+    <dimen name="card_icon_button_padding">10dp</dimen>
+    <dimen name="card_content_padding_button_edge">6dp</dimen>
     <dimen name="card_icon_button_spacing">12dp</dimen>
-    <dimen name="card_icon_button_spacing_half">6dp</dimen>
 
     <dimen name="input_spacing_vert_dense">4dp</dimen>
     <dimen name="input_spacing_horz_half">6dp</dimen>
