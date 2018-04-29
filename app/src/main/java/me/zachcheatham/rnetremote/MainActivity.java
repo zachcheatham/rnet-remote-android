@@ -525,11 +525,5 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                 }
             }
         });
-
-        if (serialConnectionSnackbar != null && serialConnectionSnackbar.isShown())
-        {
-            serialConnectionSnackbar.dismiss();
-            serialConnectionSnackbar = null;
-        }
     }
 }
