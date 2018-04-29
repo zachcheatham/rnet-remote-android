@@ -64,6 +64,14 @@
             android:excludeFromRecents="true"
             android:hardwareAccelerated="false"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity
+                android:name=".LicensesActivity"
+                android:label="@string/title_activity_licenses"
+                android:parentActivityName=".SettingsActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="me.zachcheatham.rnetremote.SettingsActivity"/>
+        </activity>
 
         <service
             android:name="me.zachcheatham.rnetremotecommon.rnet.RNetServerService"

@@ -114,4 +114,6 @@
     <string name="disabled">Disabled</string>
     <string name="setting_zone_item_art">Card artwork</string>
     <string name="setting_zone_item_art_desc">Show media artwork on zone cards</string>
+    <string name="title_activity_licenses">Licenses</string>
+    <string name="error_licenses">An error occurred while opening the licenses.</string>
 </resources>

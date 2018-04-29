@@ -74,6 +74,14 @@
             android:key="controller_address"
             android:persistent="false"
             android:title="@string/setting_about_server_address"/>
+        <Preference
+                android:persistent="false"
+                android:title="@string/title_activity_licenses">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:targetPackage="me.zachcheatham.rnetremote"
+                    android:targetClass="me.zachcheatham.rnetremote.LicensesActivity"/>
+        </Preference>
     </PreferenceCategory>
 
 </PreferenceScreen>
