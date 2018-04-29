@@ -34,6 +34,7 @@ import android.widget.TextView;
 
 import java.net.InetAddress;
 
+import me.zachcheatham.rnetremote.adapter.ZonesAdapter;
 import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;

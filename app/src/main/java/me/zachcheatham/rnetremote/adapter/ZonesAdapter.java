@@ -1,13 +1,11 @@
-package me.zachcheatham.rnetremote;
+package me.zachcheatham.rnetremote.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +18,9 @@ import android.view.ViewGroup;
 
 import android.widget.*;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import me.zachcheatham.rnetremote.R;
+import me.zachcheatham.rnetremote.ZoneActivity;
+import me.zachcheatham.rnetremote.ZoneSettingsActivity;
 import me.zachcheatham.rnetremote.ui.BackgroundImageViewAware;
 import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
 import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
@@ -30,8 +31,8 @@ import me.zachcheatham.rnetremotecommon.rnet.Zone;
 import java.util.ArrayList;
 import java.util.List;
 
-class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
-        implements RNetServer.ZonesListener, ItemTouchHelperAdapter, RNetServer.SourcesListener
+public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
+        implements RNetServer.ZonesListener, ItemTouchHelperAdapter
 {
     @SuppressWarnings("unused")
     private static final String LOG_TAG = "ZonesAdapter";
@@ -45,10 +46,10 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private RecyclerView recyclerView;
     private boolean showArtwork = true;
 
-    ZonesAdapter(Activity a)
+    public ZonesAdapter(Activity a)
     {
         this.activity = a;
-        sourcesAdapter = new SourcesAdapter(new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay));
+        sourcesAdapter = new SourcesAdapter(a);
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(this);
         itemTouchHelper = new ItemTouchHelper(callback);
     }
@@ -63,31 +64,21 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         return false;
     }
 
-    void setServer(RNetServer server)
+    public void setServer(RNetServer server)
     {
         if (this.server != null)
         {
             this.server.removeZonesListener(this);
-            this.server.removeSourcesListener(this);
         }
 
         this.server = server;
-        sourcesAdapter.clear();
 
         if (server != null)
         {
             server.addZonesListener(this);
-            server.addSourcesListener(this);
             if (server.isReady())
             {
-                for (int i = 0; i < server.getSources().size(); i++)
-                {
-                    int key = server.getSources().keyAt(i);
-                    sourcesAdapter.add(server.getSources().get(key).getName());
-                }
-
                 handleIndex();
-
                 activity.runOnUiThread(new Runnable()
                 {
                     @Override
@@ -98,9 +89,11 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 });
             }
         }
+
+        sourcesAdapter.setServer(server);
     }
 
-    void setShowArtwork(boolean show)
+    public void setShowArtwork(boolean show)
     {
         showArtwork = show;
     }
@@ -324,7 +317,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             @Override
             public void run()
             {
-                sourcesAdapter.clear();
                 notifyDataSetChanged();
             }
         });
@@ -405,81 +397,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                         notifyItemRemoved(i);
                         break;
                     }
-                }
-            }
-        });
-    }
-
-    @Override
-    public void sourceAdded(Source source)
-    {
-        final int index = server.getSources().indexOfValue(source);
-        final String name = source.getName();
-        activity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                sourcesAdapter.insert(name, index);
-            }
-        });
-    }
-
-    @Override
-    public void sourceChanged(Source source, boolean setRemotely,
-                              RNetServer.SourceChangeType type)
-    {
-        if (type == RNetServer.SourceChangeType.NAME)
-        {
-            final int index = server.getSources().indexOfValue(source);
-            final String name = source.getName();
-            activity.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    sourcesAdapter.remove(sourcesAdapter.getItem(index));
-                    sourcesAdapter.insert(name, index);
-                }
-            });
-        }
-        else if (type == RNetServer.SourceChangeType.METADATA)
-        {
-            for (int i = 0; i < zoneIndex.size(); i++)
-            {
-                Zone zone = server.getZone(zoneIndex.get(i)[0], zoneIndex.get(i)[1]);
-                if (zone.getPowered() && zone.getSourceId() == source.getId())
-                {
-                    final int finalI = i;
-                    activity.runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            notifyItemChanged(finalI);
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    @Override
-    public void descriptiveText(Source source, String text, int length) {}
-
-    @Override
-    public void sourceRemoved(int sourceId)
-    {
-        activity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                sourcesAdapter.clear();
-                for (int i = 0; i < server.getSources().size(); i++)
-                {
-                    int key = server.getSources().keyAt(i);
-                    sourcesAdapter.add(server.getSources().get(key).getName());
                 }
             }
         });
@@ -594,24 +511,6 @@ class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 zone.setMute(!zone.getMute(), false);
                 break;
             }
-        }
-    }
-
-    private class SourcesAdapter extends ArrayAdapter<String>
-    {
-        SourcesAdapter(@NonNull Context context)
-        {
-            super(context, R.layout.item_select_source, R.id.text_name);
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent)
-        {
-            View view = super.getView(position, convertView, parent);
-            int typeDrawable = server.getSource(server.getSources().keyAt(position)).getTypeDrawable();
-            ((ImageView) view.findViewById(R.id.icon)).setImageResource(typeDrawable);
-            return view;
         }
     }
 }
