@@ -1,11 +1,6 @@
 package me.zachcheatham.rnetremote;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,27 +14,18 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
-import android.support.v7.widget.Toolbar;
-import android.view.ContextThemeWrapper;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.support.v7.widget.*;
+import android.view.*;
 import android.widget.Button;
 import android.widget.TextView;
-
-import java.net.InetAddress;
-
 import me.zachcheatham.rnetremote.adapter.ZonesAdapter;
 import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SAllPower;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SMute;
+
+import java.net.InetAddress;
 
 public class MainActivity extends AppCompatActivity implements SelectServerListener,
         RNetServer.ConnectivityListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
@@ -400,8 +386,16 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
         serverService.stopServerConnection();
         while (!serverService.getServer().canStartConnection())
-            try {Thread.sleep(500);}
-            catch (InterruptedException e) {break;}
+        {
+            try
+            {
+                Thread.sleep(500);
+            }
+            catch (InterruptedException e)
+            {
+                break;
+            }
+        }
 
         serverService.setConnectionInfo(name, address, port);
         serverService.startServerConnection();
