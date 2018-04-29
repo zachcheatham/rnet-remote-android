@@ -1,17 +1,16 @@
 package me.zachcheatham.rnetremote;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.*;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import me.zachcheatham.rnetremote.adapter.SourcesAdapter;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
@@ -29,6 +29,7 @@ public class ZoneActivity extends AppCompatActivity
         implements RNetServer.SourcesListener, RNetServer.ConnectivityListener,
         RNetServer.ZonesListener, SeekBar.OnSeekBarChangeListener, View.OnClickListener
 {
+    private SourcesAdapter sourcesAdapter;
     private Menu actionMenu;
     private View metadataContainerView;
     private View controlsView;
@@ -64,6 +65,7 @@ public class ZoneActivity extends AppCompatActivity
                 return;
             }
 
+            sourcesAdapter.setServer(server);
             applyState();
         }
 
@@ -73,6 +75,7 @@ public class ZoneActivity extends AppCompatActivity
             server.removeConnectivityListener(ZoneActivity.this);
             server.removeZonesListener(ZoneActivity.this);
             server.removeSourcesListener(ZoneActivity.this);
+            sourcesAdapter.setServer(null);
 
             server = null;
             serverService = null;
@@ -91,6 +94,8 @@ public class ZoneActivity extends AppCompatActivity
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        sourcesAdapter = new SourcesAdapter(this);
 
         controllerId = getIntent().getIntExtra("cid", 0);
         zoneId = getIntent().getIntExtra("zid", 0);
@@ -149,6 +154,24 @@ public class ZoneActivity extends AppCompatActivity
             startActivity(intent);
             overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
             break;
+        case R.id.action_select_source:
+            new AlertDialog.Builder(
+                    new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay))
+                    .setTitle(getResources().getString(R.string.dialog_select_source, zone.getName()))
+                    .setSingleChoiceItems(sourcesAdapter,
+                            server.getSources().indexOfKey(zone.getSourceId()),
+                            new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    zone.setSourceId(server.getSources().keyAt(i), false);
+                                    dialogInterface.dismiss();
+                                }
+                            })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+            break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -184,12 +207,22 @@ public class ZoneActivity extends AppCompatActivity
 
         if (actionMenu != null)
         {
+            MenuItem selectSource = actionMenu.findItem(R.id.action_select_source);
+
             if (zone.getPowered())
+            {
                 actionMenu.findItem(R.id.action_power).getIcon()
                           .setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+                selectSource.setEnabled(true);
+                selectSource.getIcon().setAlpha(255);
+            }
             else
+            {
                 actionMenu.findItem(R.id.action_power).getIcon()
                           .setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
+                selectSource.setEnabled(false);
+                selectSource.getIcon().setAlpha(66);
+            }
         }
 
         if (zone.getPowered())
@@ -260,7 +293,7 @@ public class ZoneActivity extends AppCompatActivity
                     artworkImageView.setImageResource(source.getTypeDrawable());
                     artworkImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                     artworkImageView.getDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary),
-                            PorterDuff.Mode.SRC_IN);;
+                            PorterDuff.Mode.SRC_IN);
                     int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
                     artworkImageView.setPadding(padding, padding, padding, padding);
                     metadataContainerView.setBackgroundColor(0);
@@ -289,6 +322,8 @@ public class ZoneActivity extends AppCompatActivity
             server.removeZonesListener(this);
             server.removeSourcesListener(this);
             server = null;
+
+            sourcesAdapter.setServer(null);
         }
 
         if (serverService != null)
@@ -378,7 +413,17 @@ public class ZoneActivity extends AppCompatActivity
     @Override
     public void zoneRemoved(int controllerId, int zoneId)
     {
-
+        if (controllerId == this.controllerId && zoneId == this.zoneId)
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    finish();
+                }
+            });
+        }
     }
 
     @Override

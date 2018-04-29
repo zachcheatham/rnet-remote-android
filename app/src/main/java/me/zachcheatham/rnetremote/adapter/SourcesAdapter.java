@@ -18,7 +18,7 @@ public class SourcesAdapter extends BaseAdapter implements RNetServer.SourcesLis
     private final LayoutInflater inflater;
     private RNetServer server;
 
-    SourcesAdapter(Activity activity)
+    public SourcesAdapter(Activity activity)
     {
         this.activity = activity;
         inflater = LayoutInflater.from(new ContextThemeWrapper(activity, R.style.AppTheme_SourceListOverlay));
