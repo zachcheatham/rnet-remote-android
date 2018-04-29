@@ -29,6 +29,8 @@ public class ZoneActivity extends AppCompatActivity
         implements RNetServer.SourcesListener, RNetServer.ConnectivityListener,
         RNetServer.ZonesListener, SeekBar.OnSeekBarChangeListener, View.OnClickListener
 {
+    private View connectingPlaceholder;
+    private View connectingPlaceholderText;
     private SourcesAdapter sourcesAdapter;
     private Menu actionMenu;
     private View metadataContainerView;
@@ -58,14 +60,27 @@ public class ZoneActivity extends AppCompatActivity
             server.addZonesListener(ZoneActivity.this);
             server.addSourcesListener(ZoneActivity.this);
 
-            zone = server.getZone(controllerId, zoneId);
-            if (zone == null)
+            if (!server.isRunning())
             {
-                finish();
-                return;
+                serverService.startServerConnection();
+                connectingPlaceholder.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                connectingPlaceholder.setVisibility(server.isReady() ? View.GONE : View.VISIBLE);
+                if (server.isReady())
+                {
+                    zone = server.getZone(controllerId, zoneId);
+                    if (zone == null)
+                    {
+                        finish();
+                        return;
+                    }
+
+                    sourcesAdapter.setServer(server);
+                }
             }
 
-            sourcesAdapter.setServer(server);
             applyState();
         }
 
@@ -100,6 +115,8 @@ public class ZoneActivity extends AppCompatActivity
         controllerId = getIntent().getIntExtra("cid", 0);
         zoneId = getIntent().getIntExtra("zid", 0);
 
+        connectingPlaceholder = findViewById(R.id.connecting_placeholder);
+        connectingPlaceholderText = findViewById(R.id.text_view_connecting_placeholder_notice);
         controlsView = findViewById(R.id.controls_container);
         metadataContainerView = findViewById(R.id.metadata_container);
         sourceDescriptionTextView = findViewById(R.id.text_source_description);
@@ -132,9 +149,7 @@ public class ZoneActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.activity_zone, menu);
 
         actionMenu = menu;
-        if (zone != null && zone.getPowered())
-            actionMenu.findItem(R.id.action_power).getIcon()
-                      .setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+        applyActionMenu(menu);
 
         return true;
     }
@@ -201,31 +216,17 @@ public class ZoneActivity extends AppCompatActivity
 
     private void applyState()
     {
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setTitle(zone.getName());
-
-        if (actionMenu != null)
+        if (zone != null)
         {
-            MenuItem selectSource = actionMenu.findItem(R.id.action_select_source);
-
-            if (zone.getPowered())
-            {
-                actionMenu.findItem(R.id.action_power).getIcon()
-                          .setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-                selectSource.setEnabled(true);
-                selectSource.getIcon().setAlpha(255);
-            }
-            else
-            {
-                actionMenu.findItem(R.id.action_power).getIcon()
-                          .setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
-                selectSource.setEnabled(false);
-                selectSource.getIcon().setAlpha(66);
-            }
+            ActionBar actionBar = getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setTitle(zone.getName());
         }
 
-        if (zone.getPowered())
+        if (actionMenu != null)
+            applyActionMenu(actionMenu);
+
+        if (zone != null && zone.getPowered())
         {
             artworkImageView.setVisibility(View.VISIBLE);
             metadataContainerView.setVisibility(View.VISIBLE);
@@ -239,9 +240,50 @@ public class ZoneActivity extends AppCompatActivity
             controlsView.setVisibility(View.GONE);
         }
 
-        volumeSeekBar.setEnabled(zone.getPowered());
-        volumeSeekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
-        volumeSeekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2));
+        volumeSeekBar.setEnabled(zone != null && zone.getPowered());
+        if (zone != null)
+        {
+            volumeSeekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
+            volumeSeekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2));
+
+        }
+    }
+
+    private void applyActionMenu(Menu actionMenu)
+    {
+        MenuItem selectSource = actionMenu.findItem(R.id.action_select_source);
+        MenuItem power = actionMenu.findItem(R.id.action_power);
+        MenuItem zoneSettings = actionMenu.findItem(R.id.action_settings);
+
+        if (zone == null)
+        {
+            power.setEnabled(false);
+            power.getIcon().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
+            power.getIcon().setAlpha(66);
+            selectSource.setEnabled(false);
+            selectSource.getIcon().setAlpha(66);
+            zoneSettings.getIcon().setAlpha(66);
+        }
+        else
+        {
+            power.getIcon().setAlpha(255);
+            power.setEnabled(true);
+            zoneSettings.getIcon().setAlpha(255);
+            zoneSettings.setEnabled(true);
+
+            if (zone.getPowered())
+            {
+                power.getIcon().setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+                selectSource.setEnabled(true);
+                selectSource.getIcon().setAlpha(255);
+            }
+            else
+            {
+                power.getIcon().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
+                selectSource.setEnabled(false);
+                selectSource.getIcon().setAlpha(66);
+            }
+        }
     }
 
     private void applySource()
@@ -281,6 +323,7 @@ public class ZoneActivity extends AppCompatActivity
 
                 if (mediaArtwork != null && mediaArtwork.length() > 0)
                 {
+                    artworkImageView.setImageDrawable(null);
                     artworkImageView.setPadding(0,0,0,0);
                     artworkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     artworkImageView.clearColorFilter();
@@ -316,6 +359,8 @@ public class ZoneActivity extends AppCompatActivity
 
     private void unbindService()
     {
+        zone = null;
+
         if (server != null)
         {
             server.removeConnectivityListener(this);
@@ -347,36 +392,78 @@ public class ZoneActivity extends AppCompatActivity
     public void onStopTrackingTouch(SeekBar seekBar) {}
 
     @Override
-    public void connectionInitiated() {}
-
-    @Override
-    public void connectError() {}
-
-    @Override
-    public void ready() {}
-
-    @Override
-    public void disconnected(boolean unexpected)
+    public void connectionInitiated()
     {
         runOnUiThread(new Runnable()
         {
             @Override
             public void run()
             {
-                finish();
+                connectingPlaceholder.setVisibility(View.VISIBLE);
+                applyState();
             }
         });
     }
 
     @Override
-    public void indexReceived()
+    public void connectError()
     {
+        this.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                connectingPlaceholderText.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
-    public void zoneAdded(Zone zone)
+    public void ready()
     {
+        zone = server.getZone(controllerId, zoneId);
+        if (zone == null)
+        {
+            finish();
+            return;
+        }
+
+        sourcesAdapter.setServer(server);
+
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                connectingPlaceholderText.setVisibility(View.GONE);
+                connectingPlaceholder.setVisibility(View.GONE);
+                applyState();
+            }
+        });
     }
+
+    @Override
+    public void disconnected(final boolean unexpected)
+    {
+        zone = null;
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (unexpected)
+                    connectingPlaceholderText.setVisibility(View.VISIBLE);
+                connectingPlaceholder.setVisibility(View.VISIBLE);
+                applyState();
+            }
+        });
+    }
+
+    @Override
+    public void indexReceived() {}
+
+    @Override
+    public void zoneAdded(Zone zone) {}
 
     @Override
     public void zoneChanged(Zone z, boolean setRemotely, final RNetServer.ZoneChangeType type)
@@ -390,6 +477,11 @@ public class ZoneActivity extends AppCompatActivity
                 {
                     switch (type)
                     {
+                    case NAME:
+                        ActionBar actionBar = getSupportActionBar();
+                        assert actionBar != null;
+                        actionBar.setTitle(zone.getName());
+                        break;
                     case POWER:
                         applyState();
                         break;
@@ -429,14 +521,7 @@ public class ZoneActivity extends AppCompatActivity
     @Override
     public void cleared()
     {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                finish();
-            }
-        });
+
     }
 
     @Override
