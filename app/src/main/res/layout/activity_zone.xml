@@ -179,6 +179,7 @@
                 android:padding="@dimen/card_action_padding">
 
                 <ImageButton
+                    android:id="@+id/button_mute"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/card_action_padding"
@@ -186,7 +187,7 @@
                     android:tint="@color/textColorPrimary"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:background="?attr/actionBarItemBackground"
                     app:srcCompat="@drawable/ic_volume_up_white_24dp"/>
 
                 <SeekBar

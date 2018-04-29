@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +42,7 @@ public class ZoneActivity extends AppCompatActivity
     private ImageView artworkImageView;
     private FloatingActionButton playPauseButton;
     private SeekBar volumeSeekBar;
+    private ImageButton muteButton;
 
     private int controllerId;
     private int zoneId;
@@ -125,6 +127,7 @@ public class ZoneActivity extends AppCompatActivity
         artworkImageView = findViewById(R.id.image_artwork);
         playPauseButton = findViewById(R.id.button_play_pause);
         volumeSeekBar = findViewById(R.id.seek_bar_volume);
+        muteButton = findViewById(R.id.button_mute);
 
         ImageButton prevButton = findViewById(R.id.button_prev);
         ImageButton nextButton = findViewById(R.id.button_next);
@@ -132,6 +135,7 @@ public class ZoneActivity extends AppCompatActivity
         prevButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
         playPauseButton.setOnClickListener(this);
+        muteButton.setOnClickListener(this);
         volumeSeekBar.setOnSeekBarChangeListener(this);
     }
 
@@ -241,11 +245,28 @@ public class ZoneActivity extends AppCompatActivity
         }
 
         volumeSeekBar.setEnabled(zone != null && zone.getPowered());
+        muteButton.setEnabled(zone != null && zone.getPowered());
+        muteButton.setAlpha((zone != null && zone.getPowered()) ? 255 : 66);
         if (zone != null)
         {
             volumeSeekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
             volumeSeekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2));
 
+            if (zone.getMute())
+            {
+                muteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+                muteButton.setColorFilter(ContextCompat.getColor(this, R.color.colorMute));
+            }
+            else
+            {
+                muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
+                muteButton.setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary));
+            }
+        }
+        else
+        {
+            muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
+            muteButton.setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary));
         }
     }
 
@@ -493,6 +514,17 @@ public class ZoneActivity extends AppCompatActivity
                         volumeSeekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
                         volumeSeekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2));
                         break;
+                    case MUTE:
+                        if (zone.getMute())
+                        {
+                            muteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+                            muteButton.setColorFilter(ContextCompat.getColor(ZoneActivity.this, R.color.colorMute));
+                        }
+                        else
+                        {
+                            muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
+                            muteButton.setColorFilter(ContextCompat.getColor(ZoneActivity.this, R.color.textColorPrimary));
+                        }
                     case SOURCE:
                         applySource();
                         break;
@@ -600,6 +632,8 @@ public class ZoneActivity extends AppCompatActivity
                 source.control(Source.CONTROL_NEXT);
             break;
         }
+        case R.id.button_mute:
+            zone.setMute(!zone.getMute(), false);
         }
     }
 }
