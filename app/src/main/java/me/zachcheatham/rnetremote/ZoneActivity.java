@@ -283,7 +283,7 @@ public class ZoneActivity extends AppCompatActivity
                 {
                     artworkImageView.setPadding(0,0,0,0);
                     artworkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    artworkImageView.setImageDrawable(null);
+                    artworkImageView.clearColorFilter();
                     ImageLoader.getInstance().displayImage(mediaArtwork, artworkImageView);
                     metadataContainerView
                             .setBackgroundColor(getResources().getColor(R.color.colorMetadataBackground));
