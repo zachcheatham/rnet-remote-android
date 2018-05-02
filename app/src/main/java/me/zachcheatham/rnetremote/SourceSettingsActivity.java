@@ -79,6 +79,7 @@ public class SourceSettingsActivity extends AppCompatActivity
         private List<String> sourceTypes;
         private Preference sourceIdPreference;
         private EditTextPreference sourceNamePreference;
+        private SwitchPreference overrideNamePreference;
         private ListPreference sourceTypePreference;
         private MultiZoneSelectListPreference autoOnPreference;
         private SwitchPreference autoOffPreference;
@@ -114,8 +115,11 @@ public class SourceSettingsActivity extends AppCompatActivity
                         actionBar.setTitle(getString(R.string.format_object_settings, source.getName()));
 
                     sourceIdPreference.setSummary(getResources().getString(R.string.format_source_id, sourceId+1));
+
                     sourceNamePreference.setText(source.getName());
                     sourceNamePreference.setSummary(source.getName());
+
+                    overrideNamePreference.setChecked(source.getOverrideName());
 
                     sourceTypePreference.setSummary(sourceTypes.get(source.getType()));
                     sourceTypePreference.setValueIndex(source.getType());
@@ -169,6 +173,7 @@ public class SourceSettingsActivity extends AppCompatActivity
 
             sourceIdPreference = findPreference("source_id");
             sourceNamePreference = (EditTextPreference) findPreference("source_name");
+            overrideNamePreference = (SwitchPreference) findPreference("source_name_override");
             sourceTypePreference = (ListPreference) findPreference("source_type");
             autoOffPreference = (SwitchPreference) findPreference("auto_off");
             autoOnPreference = (MultiZoneSelectListPreference) findPreference("auto_on");
@@ -181,6 +186,18 @@ public class SourceSettingsActivity extends AppCompatActivity
                     Source source = server.getSource(sourceId);
                     if (source != null)
                         source.setName((String) newValue, false);
+                    return true;
+                }
+            });
+
+            overrideNamePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+            {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue)
+                {
+                    Source source = server.getSource(sourceId);
+                    if (source != null)
+                        source.setOverrideName((boolean) newValue, false);
                     return true;
                 }
             });
@@ -369,6 +386,17 @@ public class SourceSettingsActivity extends AppCompatActivity
                         }
                     });
                 }
+                break;
+            case OVERRIDE_NAME:
+                final boolean override = source.getOverrideName();
+                getActivity().runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        overrideNamePreference.setChecked(override);
+                    }
+                });
                 break;
             }
         }

@@ -35,6 +35,7 @@ public class Source
 
     public static final byte PROPERTY_AUTO_ON_ZONES = 1;
     public static final byte PROPERTY_AUTO_OFF = 2;
+    public static final byte PROPERTY_OVERRIDE_NAME = 3;
 
     public static final byte CONTROL_NEXT = 0;
     public static final byte CONTROL_PREV = 1;
@@ -55,6 +56,7 @@ public class Source
     private boolean playing = false;
     private boolean autoOff = false;
     private List<int[]> autoOnZones = new ArrayList<>();
+    private boolean overrideName = false;
 
     Source(int id, String name, int type, RNetServer server)
     {
@@ -210,6 +212,23 @@ public class Source
         if (!setRemotely)
             new RNetServer.SendPacketTask(server).execute(
                     new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_ON_ZONES, autoOnZones));
+    }
+
+    public void setOverrideName(boolean overrideName, boolean setRemotely)
+    {
+        this.overrideName = overrideName;
+
+        for (RNetServer.SourcesListener listener : server.sourcesListeners)
+            listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.OVERRIDE_NAME);
+
+        if (!setRemotely)
+            new RNetServer.SendPacketTask(server).execute(
+                    new PacketC2SSourceProperty(sourceId, PROPERTY_OVERRIDE_NAME, overrideName));
+    }
+
+    public boolean getOverrideName()
+    {
+        return this.overrideName;
     }
 
     private static int getTypeDrawable(int type)

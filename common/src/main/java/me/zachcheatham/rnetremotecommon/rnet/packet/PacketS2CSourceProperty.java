@@ -32,6 +32,7 @@ public class PacketS2CSourceProperty extends RNetPacket
         switch (propertyID)
         {
         case Source.PROPERTY_AUTO_OFF:
+        case Source.PROPERTY_OVERRIDE_NAME:
             value = (readUnsignedByte() == 0x01);
             break;
         case Source.PROPERTY_AUTO_ON_ZONES:

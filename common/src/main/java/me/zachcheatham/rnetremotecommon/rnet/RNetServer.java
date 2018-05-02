@@ -541,6 +541,9 @@ public class RNetServer
                     case Source.PROPERTY_AUTO_ON_ZONES:
                         source.setAutoOnZones((int[][]) packet.getPropertyValue(), true);
                         break;
+                    case Source.PROPERTY_OVERRIDE_NAME:
+                        source.setOverrideName((Boolean) packet.getPropertyValue(), true);
+                        break;
                     }
                 }
                 break;
@@ -737,7 +740,7 @@ public class RNetServer
 
     public enum SourceChangeType
     {
-        NAME, TYPE, METADATA, AUTO_ON, PLAYSTATE, AUTO_OFF
+        NAME, TYPE, METADATA, AUTO_ON, PLAYSTATE, OVERRIDE_NAME, AUTO_OFF
     }
 
     public interface ConnectivityListener

@@ -14,11 +14,11 @@
         android:selectAllOnFocus="true"
         tools:summary="Bedroom"/>
 
-    <!--<SwitchPreference
+    <SwitchPreference
         android:key="source_name_override"
         android:persistent="false"
         android:title="@string/label_source_name_override"
-        android:summary="@string/label_source_name_override_desc"/>-->
+        android:summary="@string/label_source_name_override_desc"/>
 
     <ListPreference
         android:key="source_type"

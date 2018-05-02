@@ -14,6 +14,7 @@ public class PacketC2SSourceProperty extends RNetPacket
         switch (propertyID)
         {
         case Source.PROPERTY_AUTO_OFF:
+        case Source.PROPERTY_OVERRIDE_NAME:
         {
             writeUnsignedByte(((Boolean) propertyValue) ? 0x01 : 0x00);
             break;
