@@ -11,6 +11,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
+import android.util.Log;
 import me.zachcheatham.rnetremote.service.ActionService;
 
 public class PhoneStateBroadcastReceiver extends BroadcastReceiver
@@ -93,7 +94,8 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
         {
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-            if (networkInfo.isConnected() && (
+            if (    networkInfo != null &&
+                    networkInfo.isConnected() && (
                     networkInfo.getType() == ConnectivityManager.TYPE_WIFI ||
                     networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET))
             {
@@ -116,6 +118,6 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
             }
         }
 
-        return true;
+        return false;
     }
 }
