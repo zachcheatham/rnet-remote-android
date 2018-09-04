@@ -34,15 +34,12 @@ public class ZoneActivity extends AppCompatActivity
     private View connectingPlaceholderText;
     private SourcesAdapter sourcesAdapter;
     private Menu actionMenu;
-    private View metadataContainerView;
     private View controlsView;
-    private TextView sourceDescriptionTextView;
     private TextView titleTextView;
     private TextView artistTextView;
     private ImageView artworkImageView;
     private FloatingActionButton playPauseButton;
     private SeekBar volumeSeekBar;
-    private ImageButton muteButton;
 
     private int controllerId;
     private int zoneId;
@@ -120,14 +117,11 @@ public class ZoneActivity extends AppCompatActivity
         connectingPlaceholder = findViewById(R.id.connecting_placeholder);
         connectingPlaceholderText = findViewById(R.id.text_view_connecting_placeholder_notice);
         controlsView = findViewById(R.id.controls_container);
-        metadataContainerView = findViewById(R.id.metadata_container);
-        sourceDescriptionTextView = findViewById(R.id.text_source_description);
         titleTextView = findViewById(R.id.text_media_title);
         artistTextView = findViewById(R.id.text_media_artist);
         artworkImageView = findViewById(R.id.image_artwork);
         playPauseButton = findViewById(R.id.button_play_pause);
         volumeSeekBar = findViewById(R.id.seek_bar_volume);
-        muteButton = findViewById(R.id.button_mute);
 
         ImageButton prevButton = findViewById(R.id.button_prev);
         ImageButton nextButton = findViewById(R.id.button_next);
@@ -135,7 +129,7 @@ public class ZoneActivity extends AppCompatActivity
         prevButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
         playPauseButton.setOnClickListener(this);
-        muteButton.setOnClickListener(this);
+        //muteButton.setOnClickListener(this);
         volumeSeekBar.setOnSeekBarChangeListener(this);
     }
 
@@ -220,12 +214,11 @@ public class ZoneActivity extends AppCompatActivity
 
     private void applyState()
     {
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+
         if (zone != null)
-        {
-            ActionBar actionBar = getSupportActionBar();
-            assert actionBar != null;
             actionBar.setTitle(zone.getName());
-        }
 
         if (actionMenu != null)
             applyActionMenu(actionMenu);
@@ -233,20 +226,19 @@ public class ZoneActivity extends AppCompatActivity
         if (zone != null && zone.getPowered())
         {
             artworkImageView.setVisibility(View.VISIBLE);
-            metadataContainerView.setVisibility(View.VISIBLE);
             controlsView.setVisibility(View.VISIBLE);
             applySource();
         }
         else
         {
+            actionBar.setSubtitle(null);
             artworkImageView.setVisibility(View.GONE);
-            metadataContainerView.setVisibility(View.GONE);
             controlsView.setVisibility(View.GONE);
         }
 
         volumeSeekBar.setEnabled(zone != null && zone.getPowered());
-        muteButton.setEnabled(zone != null && zone.getPowered());
-        muteButton.setAlpha((zone != null && zone.getPowered()) ? 255 : 66);
+        //muteButton.setEnabled(zone != null && zone.getPowered());
+        //muteButton.setAlpha((zone != null && zone.getPowered()) ? 255 : 66);
         if (zone != null)
         {
             volumeSeekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
@@ -254,19 +246,19 @@ public class ZoneActivity extends AppCompatActivity
 
             if (zone.getMute())
             {
-                muteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
-                muteButton.setColorFilter(ContextCompat.getColor(this, R.color.colorMute));
+                //muteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+                //muteButton.setColorFilter(ContextCompat.getColor(this, R.color.colorMute));
             }
             else
             {
-                muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
-                muteButton.setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary));
+                //muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
+                //muteButton.setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary));
             }
         }
         else
         {
-            muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
-            muteButton.setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary));
+            //muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
+            //muteButton.setColorFilter(ContextCompat.getColor(this, R.color.textColorPrimary));
         }
     }
 
@@ -312,11 +304,14 @@ public class ZoneActivity extends AppCompatActivity
         if (server.getSource(zone.getSourceId()) != null)
         {
             Source source = server.getSource(zone.getSourceId());
+
+            ActionBar actionBar = getSupportActionBar();
+            assert actionBar != null;
             String descriptiveText = source.getPermanentDescriptiveText();
             if (descriptiveText != null && descriptiveText.length() > 0)
-                sourceDescriptionTextView.setText(descriptiveText);
+                actionBar.setSubtitle(descriptiveText);
             else
-                sourceDescriptionTextView.setText(source.getName());
+                actionBar.setSubtitle(source.getName());
 
             if (source.getMediaPlayState())
                 playPauseButton.setImageResource(R.drawable.ic_pause_black_36dp);
@@ -349,8 +344,6 @@ public class ZoneActivity extends AppCompatActivity
                     artworkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     artworkImageView.clearColorFilter();
                     ImageLoader.getInstance().displayImage(mediaArtwork, artworkImageView);
-                    metadataContainerView
-                            .setBackgroundColor(getResources().getColor(R.color.colorMetadataBackground));
                 }
                 else
                 {
@@ -360,7 +353,6 @@ public class ZoneActivity extends AppCompatActivity
                             PorterDuff.Mode.SRC_IN);
                     int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
                     artworkImageView.setPadding(padding, padding, padding, padding);
-                    metadataContainerView.setBackgroundColor(0);
                 }
             }
             else
@@ -373,7 +365,6 @@ public class ZoneActivity extends AppCompatActivity
                         PorterDuff.Mode.SRC_IN);
                 int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin) * 2;
                 artworkImageView.setPadding(padding, padding, padding, padding);
-                metadataContainerView.setBackgroundColor(0);
             }
         }
     }
@@ -517,13 +508,13 @@ public class ZoneActivity extends AppCompatActivity
                     case MUTE:
                         if (zone.getMute())
                         {
-                            muteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
-                            muteButton.setColorFilter(ContextCompat.getColor(ZoneActivity.this, R.color.colorMute));
+                            //muteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+                            //muteButton.setColorFilter(ContextCompat.getColor(ZoneActivity.this, R.color.colorMute));
                         }
                         else
                         {
-                            muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
-                            muteButton.setColorFilter(ContextCompat.getColor(ZoneActivity.this, R.color.textColorPrimary));
+                            //muteButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
+                            //muteButton.setColorFilter(ContextCompat.getColor(ZoneActivity.this, R.color.textColorPrimary));
                         }
                     case SOURCE:
                         applySource();

@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_alignParentTop="true"
-                android:layout_above="@id/controls_card"
+                android:layout_above="@id/metadata_card"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
@@ -64,143 +64,138 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
-                android:layout_above="@id/controls_card"
+                android:layout_above="@id/metadata_card"
                 android:adjustViewBounds="true"
+                android:foreground="@drawable/bg_overlay_zone"
                 android:contentDescription="@null"/>
 
         <LinearLayout
-                android:id="@+id/metadata_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/controls_card"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:background="@color/colorMetadataBackground"
-                android:visibility="gone">
-
-            <TextView
-                    android:id="@+id/text_source_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textAlignment="center"
-                    tools:text="Google Play Music"/>
-
-            <TextView
-                    android:id="@+id/text_media_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textAlignment="center"
-                    tools:text="Treasure"/>
-
-            <TextView
-                    android:id="@+id/text_media_artist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textAlignment="center"
-                    tools:text="Bruno Mars"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/controls_card"
+            android:id="@+id/controls_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:elevation="4dp"
-            android:background="@color/colorCard">
+            android:layout_above="@id/metadata_card"
+            android:layout_marginBottom="32dp"
+            android:orientation="horizontal">
 
-            <RelativeLayout
-                android:id="@+id/controls_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/card_action_padding"
-                android:visibility="gone">
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
                 <ImageButton
-                        android:id="@+id/button_prev"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="@dimen/card_icon_button_spacing"
-                        android:layout_marginRight="@dimen/card_icon_button_spacing"
-                        android:layout_toLeftOf="@id/button_play_pause"
-                        android:layout_toStartOf="@id/button_play_pause"
-                        android:layout_centerVertical="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:tint="@color/textColorPrimary"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/ic_skip_previous_white_24dp"/>
+                    android:id="@+id/button_prev"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:tint="@color/textColorPrimary"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_skip_previous_white_24dp"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
 
                 <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/button_play_pause"
-                        android:layout_width="@dimen/fab_size"
-                        android:layout_height="@dimen/fab_size"
-                        android:layout_centerVertical="true"
-                        android:layout_centerHorizontal="true"
-                        android:clickable="true"
-                        android:focusable="true"
-                        app:srcCompat="@drawable/ic_pause_black_36dp"
-                        android:scaleType="center"/>
+                    android:id="@+id/button_play_pause"
+                    android:layout_width="@dimen/fab_size"
+                    android:layout_height="@dimen/fab_size"
+                    android:layout_gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:srcCompat="@drawable/ic_pause_black_36dp"
+                    android:scaleType="center"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
                 <ImageButton
                     android:id="@+id/button_next"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_toRightOf="@id/button_play_pause"
-                    android:layout_toEndOf="@id/button_play_pause"
-                    android:layout_marginStart="@dimen/card_icon_button_spacing"
-                    android:layout_marginLeft="@dimen/card_icon_button_spacing"
-                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:tint="@color/textColorPrimary"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     app:srcCompat="@drawable/ic_skip_next_white_24dp"/>
 
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/colorCardDivider"
-                />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="@dimen/card_action_padding">
-
-                <ImageButton
-                    android:id="@+id/button_mute"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/card_action_padding"
-                    android:contentDescription="@null"
-                    android:tint="@color/textColorPrimary"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerCrop"
-                    android:background="?attr/actionBarItemBackground"
-                    app:srcCompat="@drawable/ic_volume_up_white_24dp"/>
-
-                <SeekBar
-                    android:id="@+id/seek_bar_volume"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:maxHeight="1000dp"/>
-
-            </LinearLayout>
+            </FrameLayout>
 
         </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/metadata_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorCard">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@null"
+                    android:tint="@color/textColorSecondary"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_volume_down_white_24dp"/>
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@null"
+                    android:tint="@color/textColorSecondary"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_volume_up_white_24dp"/>
+
+            <TextView
+                android:id="@+id/text_media_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/card_action_padding"
+                android:layout_centerHorizontal="true"
+                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+                android:textAlignment="center"
+                tools:text="Treasure"/>
+
+            <TextView
+                android:id="@+id/text_media_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/text_media_title"
+                android:layout_marginBottom="@dimen/card_action_padding"
+                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                android:textAlignment="center"
+                tools:text="Bruno Mars"/>
+
+        </RelativeLayout>
+
+        <SeekBar
+            android:id="@+id/seek_bar_volume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/metadata_card"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:layout_marginBottom="-8dp"/>
 
     </RelativeLayout>
 
