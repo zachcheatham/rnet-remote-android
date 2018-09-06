@@ -34,4 +34,5 @@
 
     <dimen name="placeholder_spacing_group">32dp</dimen>
     <dimen name="fab_size">56dp</dimen>
+    <dimen name="music_control_spacing">32dp</dimen>
 </resources>

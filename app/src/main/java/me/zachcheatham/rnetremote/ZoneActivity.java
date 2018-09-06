@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +20,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import me.zachcheatham.rnetremote.adapter.SourcesAdapter;
+import me.zachcheatham.rnetremote.ui.BlurryImageViewAware;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
@@ -38,6 +38,7 @@ public class ZoneActivity extends AppCompatActivity
     private TextView titleTextView;
     private TextView artistTextView;
     private ImageView artworkImageView;
+    private ImageView backgroundArtworkImageView;
     private FloatingActionButton playPauseButton;
     private SeekBar volumeSeekBar;
 
@@ -120,6 +121,7 @@ public class ZoneActivity extends AppCompatActivity
         titleTextView = findViewById(R.id.text_media_title);
         artistTextView = findViewById(R.id.text_media_artist);
         artworkImageView = findViewById(R.id.image_artwork);
+        backgroundArtworkImageView = findViewById(R.id.background_artwork);
         playPauseButton = findViewById(R.id.button_play_pause);
         volumeSeekBar = findViewById(R.id.seek_bar_volume);
 
@@ -225,14 +227,14 @@ public class ZoneActivity extends AppCompatActivity
 
         if (zone != null && zone.getPowered())
         {
-            artworkImageView.setVisibility(View.VISIBLE);
+            backgroundArtworkImageView.setVisibility(View.VISIBLE);
             controlsView.setVisibility(View.VISIBLE);
             applySource();
         }
         else
         {
             actionBar.setSubtitle(null);
-            artworkImageView.setVisibility(View.GONE);
+            backgroundArtworkImageView.setVisibility(View.GONE);
             controlsView.setVisibility(View.GONE);
         }
 
@@ -339,32 +341,34 @@ public class ZoneActivity extends AppCompatActivity
 
                 if (mediaArtwork != null && mediaArtwork.length() > 0)
                 {
-                    artworkImageView.setImageDrawable(null);
-                    artworkImageView.setPadding(0,0,0,0);
-                    artworkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    artworkImageView.clearColorFilter();
+                    backgroundArtworkImageView.setImageDrawable(null);
+                    backgroundArtworkImageView.setPadding(0,0,0,0);
+                    backgroundArtworkImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    backgroundArtworkImageView.clearColorFilter();
                     ImageLoader.getInstance().displayImage(mediaArtwork, artworkImageView);
+                    ImageLoader.getInstance()
+                               .displayImage(mediaArtwork, new BlurryImageViewAware(backgroundArtworkImageView));
                 }
                 else
                 {
-                    artworkImageView.setImageResource(source.getTypeDrawable());
-                    artworkImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    artworkImageView.getDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary),
+                    backgroundArtworkImageView.setImageResource(source.getTypeDrawable());
+                    backgroundArtworkImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    backgroundArtworkImageView.getDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary),
                             PorterDuff.Mode.SRC_IN);
                     int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
-                    artworkImageView.setPadding(padding, padding, padding, padding);
+                    backgroundArtworkImageView.setPadding(padding, padding, padding, padding);
                 }
             }
             else
             {
                 artistTextView.setVisibility(View.GONE);
                 titleTextView.setVisibility(View.GONE);
-                artworkImageView.setImageResource(source.getTypeDrawable());
-                artworkImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                artworkImageView.setColorFilter(getResources().getColor(R.color.colorPrimary),
+                backgroundArtworkImageView.setImageResource(source.getTypeDrawable());
+                backgroundArtworkImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                backgroundArtworkImageView.setColorFilter(getResources().getColor(R.color.colorPrimary),
                         PorterDuff.Mode.SRC_IN);
                 int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin) * 2;
-                artworkImageView.setPadding(padding, padding, padding, padding);
+                backgroundArtworkImageView.setPadding(padding, padding, padding, padding);
             }
         }
     }

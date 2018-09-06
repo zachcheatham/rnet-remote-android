@@ -35,7 +35,7 @@
         <activity
             android:name=".ZoneActivity"
             android:label="@string/activity_name_zone"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar.BlackWindow"/>
         <activity
             android:name=".ManageSourcesActivity"
             android:label="@string/activity_name_manage_sources"

@@ -26,4 +26,9 @@
     <style name="AppTheme.SourceListOverlay" parent="ThemeOverlay.AppCompat">
         <item name="colorControlActivated">@color/colorSelectedListItem</item>
     </style>
+
+    <style name="AppTheme.NoActionBar.BlackWindow" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+    </style>
 </resources>
