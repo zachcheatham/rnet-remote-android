@@ -56,7 +56,7 @@ public class CenterCropDrawable extends Drawable
     @Override
     public void draw(@NonNull Canvas canvas)
     {
-        canvas.save(Canvas.CLIP_SAVE_FLAG);
+        canvas.save();
         canvas.clipRect(getBounds());
         target.draw(canvas);
         canvas.restore();

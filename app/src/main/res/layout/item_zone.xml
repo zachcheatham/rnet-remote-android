@@ -10,8 +10,8 @@
                                     android:layout_marginTop="@dimen/card_margin"
                                     card_view:cardBackgroundColor="@color/colorCard">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/inner_layout"
+    <LinearLayout
+            android:id="@+id/inner_layout"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:orientation="vertical">
