@@ -25,7 +25,7 @@ public class RNetServerService extends Service implements RNetServer.Connectivit
     private int port;
     private RNetServer server;
 
-    private Runnable delayedShutdown = new Runnable()
+    private final Runnable delayedShutdown = new Runnable()
     {
         @Override
         public void run()
@@ -34,7 +34,7 @@ public class RNetServerService extends Service implements RNetServer.Connectivit
         }
     };
 
-    private Runnable delayedReconnect = new Runnable()
+    private final Runnable delayedReconnect = new Runnable()
     {
         @Override
         public void run()

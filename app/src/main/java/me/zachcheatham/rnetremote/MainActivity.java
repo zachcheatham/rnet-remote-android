@@ -385,18 +385,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         editor.commit();
 
         serverService.stopServerConnection();
-        while (!serverService.getServer().canStartConnection())
-        {
-            try
-            {
-                Thread.sleep(500);
-            }
-            catch (InterruptedException e)
-            {
-                break;
-            }
-        }
-
+        serverService.getServer().waitForStop();
         serverService.setConnectionInfo(name, address, port);
         serverService.startServerConnection();
     }

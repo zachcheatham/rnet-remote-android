@@ -15,10 +15,33 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.zachcheatham.rnetremotecommon.rnet.packet.*;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SDeleteSource;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SDeleteZone;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SIntent;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SProperty;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SSourceInfo;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SUpdate;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SZoneName;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CMediaMetadata;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CMediaPlayState;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CProperty;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDeleted;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceDescriptiveText;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceInfo;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CSourceProperty;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CUpdateAvailable;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneDeleted;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneIndex;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneMaxVolume;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneMute;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneName;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneParameter;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZonePower;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneSource;
+import me.zachcheatham.rnetremotecommon.rnet.packet.PacketS2CZoneVolume;
+import me.zachcheatham.rnetremotecommon.rnet.packet.RNetPacket;
 
-public class RNetServer
-{
+public class RNetServer {
     public static final int INTENT_ACTION = 0x01;
     public static final int INTENT_SUBSCRIBE = 0x02;
 
@@ -28,71 +51,59 @@ public class RNetServer
     public static final int PROPERTY_WEB_SERVER_ENABLED = 4;
 
     private static final String LOG_TAG = "RNetServer";
+    private final Object runSync = new Object();
     private final ByteBuffer pendingBuffer = ByteBuffer.allocate(255);
+    List<ZonesListener> zonesListeners = new ArrayList<>();
+    List<SourcesListener> sourcesListeners = new ArrayList<>();
     private SocketChannel channel;
     private InetAddress address;
     private int port;
     private int intent;
     private int pendingPacketType = 0;
     private int pendingRemainingBytes = -1;
-
     private boolean run;
     private boolean receivedIndex = false;
     private SparseArray<Source> sources = new SparseArray<>();
     private SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
     private String name = "<unknown>";
+    //private boolean serialConnected = false;
     private String version = "<unknown>";
     private String newVersion = null;
-    //private boolean serialConnected = false;
-
     private List<ConnectivityListener> connectivityListeners = new ArrayList<>();
     private List<ControllerListener> controllerListeners = new ArrayList<>();
-    List<ZonesListener> zonesListeners = new ArrayList<>();
-    List<SourcesListener> sourcesListeners = new ArrayList<>();
 
-    public RNetServer(int intent)
-    {
+    public RNetServer(int intent) {
         pendingBuffer.order(ByteOrder.LITTLE_ENDIAN);
         this.intent = intent;
     }
 
-    public void setConnectionInfo(InetAddress address, int port)
-    {
+    public void setConnectionInfo(InetAddress address, int port) {
         this.address = address;
         this.port = port;
     }
 
-    public void disconnect()
-    {
+    public void disconnect() {
         run = false;
-        if (channel != null)
-        {
-            try
-            {
+        if (channel != null) {
+            try {
                 channel.close();
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void createZone(String zoneName, int controllerId, int zoneId)
-    {
+    public void createZone(String zoneName, int controllerId, int zoneId) {
         if (zones.get(controllerId) == null || zones.get(controllerId).get(zoneId) == null)
             new SendPacketTask(this).execute(new PacketC2SZoneName(controllerId, zoneId, zoneName));
     }
 
-    public void deleteZone(int controllerId, int zoneId, boolean remotelyTriggered)
-    {
-        if (zones.get(controllerId) != null)
-        {
+    public void deleteZone(int controllerId, int zoneId, boolean remotelyTriggered) {
+        if (zones.get(controllerId) != null) {
             zones.get(controllerId).remove(zoneId);
             Log.i(LOG_TAG, String.format("Deleted zone #%d-%d", controllerId, zoneId));
 
-            if (zones.get(controllerId).size() < 1)
-            {
+            if (zones.get(controllerId).size() < 1) {
                 zones.remove(controllerId);
                 Log.i(LOG_TAG, String.format("Deleted controller #%d", controllerId));
             }
@@ -105,65 +116,62 @@ public class RNetServer
         }
     }
 
-    public void createSource(int sourceId, String sourceName, int sourceType)
-    {
+    public void createSource(int sourceId, String sourceName, int sourceType) {
         Source source = new Source(sourceId, sourceName, sourceType, this);
         sources.put(sourceId, source);
 
         new SendPacketTask(this).execute(new PacketC2SSourceInfo(sourceId, sourceName, sourceType));
     }
 
-    public void deleteSource(int sourceId)
-    {
+    public void deleteSource(int sourceId) {
         sources.remove(sourceId);
         new SendPacketTask(this).execute(new PacketC2SDeleteSource(sourceId));
         // We don't update our listeners here because the server is going to send us a packet
         // back...
     }
 
-    public boolean isRunning()
-    {
+    public boolean isRunning() {
         return run;
     }
 
-    public boolean isConnected()
-    {
+    public void waitForStop() {
+        if (channel != null) {
+            synchronized (runSync) {
+                try {
+                    runSync.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public boolean isConnected() {
         return channel != null && channel.isConnected();
     }
 
-    public boolean canStartConnection()
-    {
-        return channel == null;
-    }
-
-    public boolean isReady()
-    {
+    public boolean isReady() {
         return receivedIndex || (intent == INTENT_ACTION && isConnected());
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         if (!name.equals(this.name))
             new SendPacketTask(this).execute(new PacketC2SProperty(PROPERTY_NAME, name));
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
-    public boolean updateAvailable()
-    {
+    public boolean updateAvailable() {
         return newVersion != null;
     }
 
-    public String getNewVersion()
-    {
+    public String getNewVersion() {
         return newVersion;
     }
 
@@ -172,13 +180,10 @@ public class RNetServer
         return serialConnected;
     }*/
 
-    public boolean anyZonesOn()
-    {
-        for (int i = 0; i < zones.size(); i++)
-        {
+    public boolean anyZonesOn() {
+        for (int i = 0; i < zones.size(); i++) {
             int ctrllrId = zones.keyAt(i);
-            for (int c = 0; c < zones.get(ctrllrId).size(); c++)
-            {
+            for (int c = 0; c < zones.get(ctrllrId).size(); c++) {
                 int zoneId = zones.get(ctrllrId).keyAt(c);
                 if (zones.get(ctrllrId).get(zoneId).getPowered())
                     return true;
@@ -188,13 +193,10 @@ public class RNetServer
         return false;
     }
 
-    public boolean allZonesOn()
-    {
-        for (int i = 0; i < zones.size(); i++)
-        {
+    public boolean allZonesOn() {
+        for (int i = 0; i < zones.size(); i++) {
             int ctrllrId = zones.keyAt(i);
-            for (int c = 0; c < zones.get(ctrllrId).size(); c++)
-            {
+            for (int c = 0; c < zones.get(ctrllrId).size(); c++) {
                 int zoneId = zones.get(ctrllrId).keyAt(c);
                 if (!zones.get(ctrllrId).get(zoneId).getPowered())
                     return false;
@@ -204,13 +206,10 @@ public class RNetServer
         return true;
     }
 
-    public void volumeDown()
-    {
-        for (int i = 0; i < zones.size(); i++)
-        {
+    public void volumeDown() {
+        for (int i = 0; i < zones.size(); i++) {
             int ctrllrId = zones.keyAt(i);
-            for (int c = 0; c < zones.get(ctrllrId).size(); c++)
-            {
+            for (int c = 0; c < zones.get(ctrllrId).size(); c++) {
                 int zoneId = zones.get(ctrllrId).keyAt(c);
                 Zone zone = zones.get(ctrllrId).get(zoneId);
                 if (zone.getPowered())
@@ -219,13 +218,10 @@ public class RNetServer
         }
     }
 
-    public void volumeUp()
-    {
-        for (int i = 0; i < zones.size(); i++)
-        {
+    public void volumeUp() {
+        for (int i = 0; i < zones.size(); i++) {
             int ctrllrId = zones.keyAt(i);
-            for (int c = 0; c < zones.get(ctrllrId).size(); c++)
-            {
+            for (int c = 0; c < zones.get(ctrllrId).size(); c++) {
                 int zoneId = zones.get(ctrllrId).keyAt(c);
                 Zone zone = zones.get(ctrllrId).get(zoneId);
                 if (zone.getPowered())
@@ -234,94 +230,75 @@ public class RNetServer
         }
     }
 
-    public InetAddress getAddress()
-    {
+    public InetAddress getAddress() {
         return address;
     }
 
-    public int getPort()
-    {
+    public int getPort() {
         return port;
     }
 
-    public SparseArray<SparseArray<Zone>> getZones()
-    {
+    public SparseArray<SparseArray<Zone>> getZones() {
         return zones;
     }
 
-    public Zone getZone(int controllerId, int zoneId)
-    {
-        if (zones.get(controllerId) != null)
-        {
+    public Zone getZone(int controllerId, int zoneId) {
+        if (zones.get(controllerId) != null) {
             return zones.get(controllerId).get(zoneId);
         }
         return null;
     }
 
-    public SparseArray<Source> getSources()
-    {
+    public SparseArray<Source> getSources() {
         return sources;
     }
 
-    public Source getSource(int sourceId)
-    {
+    public Source getSource(int sourceId) {
         return sources.get(sourceId);
     }
 
-    public void addConnectivityListener(ConnectivityListener listener)
-    {
+    public void addConnectivityListener(ConnectivityListener listener) {
         connectivityListeners.add(listener);
     }
 
-    public void removeConnectivityListener(ConnectivityListener listener)
-    {
+    public void removeConnectivityListener(ConnectivityListener listener) {
         connectivityListeners.remove(listener);
     }
 
-    public void addControllerListener(ControllerListener listener)
-    {
+    public void addControllerListener(ControllerListener listener) {
         controllerListeners.add(listener);
     }
 
-    public void removeControllerListener(ControllerListener listener)
-    {
+    public void removeControllerListener(ControllerListener listener) {
         controllerListeners.remove(listener);
     }
 
-    public void addZonesListener(ZonesListener listener)
-    {
+    public void addZonesListener(ZonesListener listener) {
         zonesListeners.add(listener);
     }
 
-    public void removeZonesListener(ZonesListener listener)
-    {
+    public void removeZonesListener(ZonesListener listener) {
         zonesListeners.remove(listener);
     }
 
-    public void addSourcesListener(SourcesListener listener)
-    {
+    public void addSourcesListener(SourcesListener listener) {
         sourcesListeners.add(listener);
     }
 
-    public void removeSourcesListener(SourcesListener listener)
-    {
+    public void removeSourcesListener(SourcesListener listener) {
         sourcesListeners.remove(listener);
     }
 
-    public void update()
-    {
+    public void update() {
         new SendPacketTask(this).execute(new PacketC2SUpdate());
     }
 
-    public void run()
-    {
-        if (channel != null)
-        {
+    public void run() {
+        if (channel != null) {
             throw new IllegalStateException("RNetServer already running.");
         }
 
-        if (port == 0 || address == null)
-        {
+        if (port == 0 || address == null) {
             throw new IllegalStateException("Connection information hasn't been set yet.");
         }
 
@@ -334,8 +311,7 @@ public class RNetServer
         for (ConnectivityListener listener : connectivityListeners)
             listener.connectionInitiated();
 
-        try
-        {
+        try {
             channel = SocketChannel.open();
             channel.connect(new InetSocketAddress(address, port));
 
@@ -348,11 +324,10 @@ public class RNetServer
 
             readChannel();
 
-            try
-            {
+            try {
                 channel.close();
+            } catch (IOException ignored) {
             }
-            catch (IOException ignored) {}
 
             if (isReady())
                 for (ConnectivityListener listener : connectivityListeners)
@@ -360,51 +335,43 @@ public class RNetServer
             else if (run) // Don't notify an error if we wanted to disconnect
                 for (ConnectivityListener listener : connectivityListeners)
                     listener.connectError();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             if (run)
                 for (ConnectivityListener listener : connectivityListeners)
                     listener.connectError();
         }
 
+        cleanUp();
         channel = null;
         run = false;
-        cleanUp();
+
+        synchronized (runSync) {
+            runSync.notify();
+        }
 
         Log.d(LOG_TAG, "Server run ended.");
     }
 
-    private void readChannel()
-    {
+    private void readChannel() {
         int bytesRead;
         ByteBuffer incomingBuffer = ByteBuffer.allocateDirect(1024);
         incomingBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        try
-        {
-            while (run)
-            {
+        try {
+            while (run) {
                 bytesRead = channel.read(incomingBuffer);
-                if (bytesRead == -1)
-                {
+                if (bytesRead == -1) {
                     channel.close();
-                }
-                else
-                {
+                } else {
                     incomingBuffer.rewind();
                     incomingBuffer.limit(bytesRead);
 
-                    while (incomingBuffer.remaining() > 0)
-                    {
-                        if (pendingRemainingBytes == -1)
-                        {
+                    while (incomingBuffer.remaining() > 0) {
+                        if (pendingRemainingBytes == -1) {
                             pendingPacketType = incomingBuffer.get() & 0xff;
                             pendingRemainingBytes = incomingBuffer.get() & 0xff;
                             pendingBuffer.limit(pendingRemainingBytes);
-                        }
-                        else
-                        {
+                        } else {
                             int bytesToRead;
                             if (pendingRemainingBytes > incomingBuffer.remaining())
                                 bytesToRead = incomingBuffer.remaining();
@@ -417,8 +384,7 @@ public class RNetServer
                             pendingRemainingBytes -= bytesToRead;
                         }
 
-                        if (pendingRemainingBytes == 0)
-                        {
+                        if (pendingRemainingBytes == 0) {
                             pendingBuffer.flip();
                             pendingBuffer.rewind();
                             constructAndHandlePacket(pendingPacketType, pendingBuffer);
@@ -433,247 +399,206 @@ public class RNetServer
                     incomingBuffer.clear();
                 }
             }
+        } catch (IOException ignored) {
         }
-        catch (IOException ignored) {}
     }
 
-    private void constructAndHandlePacket(int packetType, ByteBuffer buffer)
-    {
-        if (receivedIndex)
-        {
-            switch (packetType)
-            {
-            case PacketS2CProperty.ID:
-            {
-                PacketS2CProperty packet = new PacketS2CProperty(buffer);
+    private void constructAndHandlePacket(int packetType, ByteBuffer buffer) {
+        if (receivedIndex) {
+            switch (packetType) {
+                case PacketS2CProperty.ID: {
+                    PacketS2CProperty packet = new PacketS2CProperty(buffer);
 
-                switch (packet.getPropertyID())
-                {
-                case PROPERTY_NAME:
-                    name = (String) packet.getValue();
+                    switch (packet.getPropertyID()) {
+                        case PROPERTY_NAME:
+                            name = (String) packet.getValue();
+                            break;
+                        case PROPERTY_VERSION:
+                            version = (String) packet.getValue();
+                            break;
+                    }
+
+                    for (ControllerListener listener : controllerListeners)
+                        listener.propertyChanged(packet.getPropertyID(), packet.getValue());
                     break;
-                case PROPERTY_VERSION:
-                    version = (String) packet.getValue();
-                    break;
                 }
+                case PacketS2CSourceDeleted.ID: {
+                    PacketS2CSourceDeleted packet = new PacketS2CSourceDeleted(buffer);
+                    sources.remove(packet.getSourceId());
 
-                for (ControllerListener listener : controllerListeners)
-                    listener.propertyChanged(packet.getPropertyID(), packet.getValue());
-                break;
-            }
-            case PacketS2CSourceDeleted.ID:
-            {
-                PacketS2CSourceDeleted packet = new PacketS2CSourceDeleted(buffer);
-                sources.remove(packet.getSourceId());
-
-                Log.i(LOG_TAG, String.format("Source #%d deleted.", packet.getSourceId()));
-
-                for (SourcesListener listener : sourcesListeners)
-                    listener.sourceRemoved(packet.getSourceId());
-                break;
-            }
-            case PacketS2CSourceDescriptiveText.ID:
-            {
-                PacketS2CSourceDescriptiveText packet = new PacketS2CSourceDescriptiveText(buffer);
-                Source source = getSource(packet.getSourceId());
-                if (source != null)
-                {
-                    if (packet.getDisplayTime() == 0)
-                        source.setPermanentDescriptiveText(packet.getText());
-                    else
-                        for (SourcesListener listener : sourcesListeners)
-                            listener.descriptiveText(source, packet.getText(), packet.getDisplayTime());
-                }
-                break;
-            }
-            case PacketS2CMediaMetadata.ID:
-            {
-                PacketS2CMediaMetadata packet = new PacketS2CMediaMetadata(buffer);
-                Source source = getSource(packet.getSourceId());
-                if (source != null)
-                {
-                    source.setMediaMetadata(packet.getTitle(), packet.getArtist(), packet.getArtworkUrl());
-                }
-                break;
-            }
-            case PacketS2CMediaPlayState.ID:
-            {
-                PacketS2CMediaPlayState packet = new PacketS2CMediaPlayState(buffer);
-                Source source = getSource(packet.getSourceId());
-                if (source != null)
-                {
-                    source.setMediaPlayState(packet.getPlaying());
-                }
-                break;
-            }
-            case PacketS2CSourceInfo.ID:
-            {
-                PacketS2CSourceInfo packet = new PacketS2CSourceInfo(buffer);
-                Source source = getSource(packet.getSourceId());
-                if (source == null)
-                {
-                    source = new Source(packet.getSourceId(), packet.getSourceName(), packet.getType(), this);
-                    sources.put(packet.getSourceId(), source);
-
-                    Log.i(LOG_TAG, String.format("Source #%d created (Type #%d)", packet.getSourceId(), packet.getType()));
+                    Log.i(LOG_TAG, String.format("Source #%d deleted.", packet.getSourceId()));
 
                     for (SourcesListener listener : sourcesListeners)
-                        listener.sourceAdded(source);
+                        listener.sourceRemoved(packet.getSourceId());
+                    break;
                 }
-                else
-                {
-                    source.setName(packet.getSourceName(), true);
-                    source.setType(packet.getType(), true);
-                }
-                break;
-            }
-            case PacketS2CSourceProperty.ID:
-            {
-                PacketS2CSourceProperty packet = new PacketS2CSourceProperty(buffer);
-                Source source = getSource(packet.getSourceId());
-                if (source != null)
-                {
-                    switch (packet.getPropertyID())
-                    {
-                    case Source.PROPERTY_AUTO_OFF:
-                        source.setAutoOff((Boolean) packet.getPropertyValue(), true);
-                        break;
-                    case Source.PROPERTY_AUTO_ON_ZONES:
-                        source.setAutoOnZones((int[][]) packet.getPropertyValue(), true);
-                        break;
-                    case Source.PROPERTY_OVERRIDE_NAME:
-                        source.setOverrideName((Boolean) packet.getPropertyValue(), true);
-                        break;
+                case PacketS2CSourceDescriptiveText.ID: {
+                    PacketS2CSourceDescriptiveText packet = new PacketS2CSourceDescriptiveText(buffer);
+                    Source source = getSource(packet.getSourceId());
+                    if (source != null) {
+                        if (packet.getDisplayTime() == 0)
+                            source.setPermanentDescriptiveText(packet.getText());
+                        else
+                            for (SourcesListener listener : sourcesListeners)
+                                listener.descriptiveText(source, packet.getText(), packet.getDisplayTime());
                     }
+                    break;
                 }
-                break;
-            }
-            case PacketS2CZoneMute.ID:
-            {
-                PacketS2CZoneMute packet = new PacketS2CZoneMute(buffer);
-                Zone zone = getZone(packet.getControllerId(), packet.getZoneId());
-                if (zone != null)
-                    zone.setMute(packet.getMute(), true);
-                break;
-            }
-            case PacketS2CZoneName.ID:
-            {
-                PacketS2CZoneName packet = new PacketS2CZoneName(buffer);
-                if (zones.get(packet.getControllerId()) == null)
-                {
-                    zones.put(packet.getControllerId(), new SparseArray<Zone>());
-                    Log.i(LOG_TAG,
-                            String.format("Created controller #%d", packet.getControllerId()));
-                }
-
-                Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
-                if (zone == null)
-                {
-                    zone = new Zone(packet.getControllerId(), packet.getZoneId(), this);
-                    zones.get(packet.getControllerId()).put(packet.getZoneId(), zone);
-
-                    Log.i(LOG_TAG,
-                            String.format("Created zone #%d-%d", packet.getControllerId(),
-                                    packet.getZoneId()));
-
-                    for (ZonesListener listener : zonesListeners)
-                        listener.zoneAdded(zone);
-                }
-
-                zone.setName(packet.getZoneName(), true);
-                break;
-            }
-            case PacketS2CZoneDeleted.ID:
-            {
-                PacketS2CZoneDeleted packet = new PacketS2CZoneDeleted(buffer);
-                deleteZone(packet.getControllerId(), packet.getZoneId(), true);
-                break;
-            }
-            case PacketS2CZonePower.ID:
-            {
-                PacketS2CZonePower packet = new PacketS2CZonePower(buffer);
-                if (zones.get(packet.getControllerId()) != null)
-                {
-                    Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
-                    if (zone != null)
-                        zone.setPower(packet.getPowered(), true);
-                }
-                break;
-            }
-            case PacketS2CZoneParameter.ID:
-            {
-                PacketS2CZoneParameter packet = new PacketS2CZoneParameter(buffer);
-                if (zones.get(packet.getControllerId()) != null)
-                {
-                    Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
-                    if (zone != null)
-                        zone.setParameter(packet.getParameterId(), packet.getParameterValue(),
-                                true);
-                }
-                break;
-            }
-            case PacketS2CZoneSource.ID:
-            {
-                PacketS2CZoneSource packet = new PacketS2CZoneSource(buffer);
-                if (zones.get(packet.getControllerId()) != null)
-                {
-                    Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
-                    if (zone != null)
-                        zone.setSourceId(packet.getSourceId(), true);
-                }
-                break;
-            }
-            case PacketS2CZoneVolume.ID:
-            {
-                PacketS2CZoneVolume packet = new PacketS2CZoneVolume(buffer);
-                if (zones.get(packet.getControllerId()) != null)
-                {
-                    Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
-                    if (zone != null)
-                        zone.setVolume(packet.getVolume(), true);
-                }
-                break;
-            }
-            case PacketS2CZoneMaxVolume.ID:
-            {
-                PacketS2CZoneMaxVolume packet = new PacketS2CZoneMaxVolume(buffer);
-                if (zones.get(packet.getControllerId()) != null)
-                {
-                    Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
-                    if (zone != null)
-                    {
-                        zone.setMaxVolume(packet.getMaxVolume(), true);
+                case PacketS2CMediaMetadata.ID: {
+                    PacketS2CMediaMetadata packet = new PacketS2CMediaMetadata(buffer);
+                    Source source = getSource(packet.getSourceId());
+                    if (source != null) {
+                        source.setMediaMetadata(packet.getTitle(), packet.getArtist(), packet.getArtworkUrl());
                     }
+                    break;
                 }
+                case PacketS2CMediaPlayState.ID: {
+                    PacketS2CMediaPlayState packet = new PacketS2CMediaPlayState(buffer);
+                    Source source = getSource(packet.getSourceId());
+                    if (source != null) {
+                        source.setMediaPlayState(packet.getPlaying());
+                    }
+                    break;
+                }
+                case PacketS2CSourceInfo.ID: {
+                    PacketS2CSourceInfo packet = new PacketS2CSourceInfo(buffer);
+                    Source source = getSource(packet.getSourceId());
+                    if (source == null) {
+                        source = new Source(packet.getSourceId(), packet.getSourceName(), packet.getType(), this);
+                        sources.put(packet.getSourceId(), source);
 
-                break;
+                        Log.i(LOG_TAG, String.format("Source #%d created (Type #%d)", packet.getSourceId(), packet.getType()));
+
+                        for (SourcesListener listener : sourcesListeners)
+                            listener.sourceAdded(source);
+                    } else {
+                        source.setName(packet.getSourceName(), true);
+                        source.setType(packet.getType(), true);
+                    }
+                    break;
+                }
+                case PacketS2CSourceProperty.ID: {
+                    PacketS2CSourceProperty packet = new PacketS2CSourceProperty(buffer);
+                    Source source = getSource(packet.getSourceId());
+                    if (source != null) {
+                        switch (packet.getPropertyID()) {
+                            case Source.PROPERTY_AUTO_OFF:
+                                source.setAutoOff((Boolean) packet.getPropertyValue(), true);
+                                break;
+                            case Source.PROPERTY_AUTO_ON_ZONES:
+                                source.setAutoOnZones((int[][]) packet.getPropertyValue(), true);
+                                break;
+                            case Source.PROPERTY_OVERRIDE_NAME:
+                                source.setOverrideName((Boolean) packet.getPropertyValue(), true);
+                                break;
+                        }
+                    }
+                    break;
+                }
+                case PacketS2CZoneMute.ID: {
+                    PacketS2CZoneMute packet = new PacketS2CZoneMute(buffer);
+                    Zone zone = getZone(packet.getControllerId(), packet.getZoneId());
+                    if (zone != null)
+                        zone.setMute(packet.getMute(), true);
+                    break;
+                }
+                case PacketS2CZoneName.ID: {
+                    PacketS2CZoneName packet = new PacketS2CZoneName(buffer);
+                    if (zones.get(packet.getControllerId()) == null) {
+                        zones.put(packet.getControllerId(), new SparseArray<Zone>());
+                        Log.i(LOG_TAG,
+                                String.format("Created controller #%d", packet.getControllerId()));
+                    }
+
+                    Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
+                    if (zone == null) {
+                        zone = new Zone(packet.getControllerId(), packet.getZoneId(), this);
+                        zones.get(packet.getControllerId()).put(packet.getZoneId(), zone);
+
+                        Log.i(LOG_TAG,
+                                String.format("Created zone #%d-%d", packet.getControllerId(),
+                                        packet.getZoneId()));
+
+                        for (ZonesListener listener : zonesListeners)
+                            listener.zoneAdded(zone);
+                    }
+
+                    zone.setName(packet.getZoneName(), true);
+                    break;
+                }
+                case PacketS2CZoneDeleted.ID: {
+                    PacketS2CZoneDeleted packet = new PacketS2CZoneDeleted(buffer);
+                    deleteZone(packet.getControllerId(), packet.getZoneId(), true);
+                    break;
+                }
+                case PacketS2CZonePower.ID: {
+                    PacketS2CZonePower packet = new PacketS2CZonePower(buffer);
+                    if (zones.get(packet.getControllerId()) != null) {
+                        Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
+                        if (zone != null)
+                            zone.setPower(packet.getPowered(), true);
+                    }
+                    break;
+                }
+                case PacketS2CZoneParameter.ID: {
+                    PacketS2CZoneParameter packet = new PacketS2CZoneParameter(buffer);
+                    if (zones.get(packet.getControllerId()) != null) {
+                        Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
+                        if (zone != null)
+                            zone.setParameter(packet.getParameterId(), packet.getParameterValue(),
+                                    true);
+                    }
+                    break;
+                }
+                case PacketS2CZoneSource.ID: {
+                    PacketS2CZoneSource packet = new PacketS2CZoneSource(buffer);
+                    if (zones.get(packet.getControllerId()) != null) {
+                        Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
+                        if (zone != null)
+                            zone.setSourceId(packet.getSourceId(), true);
+                    }
+                    break;
+                }
+                case PacketS2CZoneVolume.ID: {
+                    PacketS2CZoneVolume packet = new PacketS2CZoneVolume(buffer);
+                    if (zones.get(packet.getControllerId()) != null) {
+                        Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
+                        if (zone != null)
+                            zone.setVolume(packet.getVolume(), true);
+                    }
+                    break;
+                }
+                case PacketS2CZoneMaxVolume.ID: {
+                    PacketS2CZoneMaxVolume packet = new PacketS2CZoneMaxVolume(buffer);
+                    if (zones.get(packet.getControllerId()) != null) {
+                        Zone zone = zones.get(packet.getControllerId()).get(packet.getZoneId());
+                        if (zone != null) {
+                            zone.setMaxVolume(packet.getMaxVolume(), true);
+                        }
+                    }
+
+                    break;
+                }
+                case PacketS2CUpdateAvailable.ID: {
+                    PacketS2CUpdateAvailable packet = new PacketS2CUpdateAvailable(buffer);
+                    newVersion = packet.getNewVersion();
+                    for (ControllerListener listener : controllerListeners)
+                        listener.updateAvailable();
+                }
+                default:
+                    Log.w(LOG_TAG, String.format("Received invalid packet %d", packetType));
             }
-            case PacketS2CUpdateAvailable.ID:
-            {
-                PacketS2CUpdateAvailable packet = new PacketS2CUpdateAvailable(buffer);
-                newVersion = packet.getNewVersion();
-                for (ControllerListener listener : controllerListeners)
-                    listener.updateAvailable();
-            }
-            default:
-                Log.w(LOG_TAG, String.format("Received invalid packet %d", packetType));
-            }
-        }
-        else if (packetType == PacketS2CZoneIndex.ID)
-        {
+        } else if (packetType == PacketS2CZoneIndex.ID) {
             PacketS2CZoneIndex packet = new PacketS2CZoneIndex(buffer);
-            for (int[] zoneInfo : packet.getIndex())
-            {
-                if (zones.get(zoneInfo[0]) == null)
-                {
+            for (int[] zoneInfo : packet.getIndex()) {
+                if (zones.get(zoneInfo[0]) == null) {
                     zones.put(zoneInfo[0], new SparseArray<Zone>());
                     Log.i(LOG_TAG,
                             String.format("Created controller #%d", zoneInfo[0]));
                 }
 
                 Zone zone = zones.get(zoneInfo[0]).get(zoneInfo[1]);
-                if (zone == null)
-                {
+                if (zone == null) {
                     zone = new Zone(zoneInfo[0], zoneInfo[1], this);
                     zones.get(zoneInfo[0]).put(zoneInfo[1], zone);
 
@@ -693,25 +618,18 @@ public class RNetServer
         }
     }
 
-    public void sendPacket(RNetPacket packet)
-    {
-        if (channel != null)
-        {
-            try
-            {
+    public void sendPacket(RNetPacket packet) {
+        if (channel != null) {
+            try {
                 channel.write(ByteBuffer.wrap(packet.getData()));
-            }
-            catch (IOException | NotYetConnectedException e)
-            {
+            } catch (IOException | NotYetConnectedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void cleanUp()
-    {
-        for (int i = 0; i < zones.size(); i++)
-        {
+    private void cleanUp() {
+        for (int i = 0; i < zones.size(); i++) {
             int k = zones.keyAt(i);
             zones.get(k).clear();
         }
@@ -733,61 +651,64 @@ public class RNetServer
         sourcesListenersCopy.clear();
     }
 
-    public enum ZoneChangeType
-    {
+    public enum ZoneChangeType {
         NAME, POWER, VOLUME, SOURCE, MAX_VOLUME, MUTE, PARAMETER
     }
 
-    public enum SourceChangeType
-    {
+    public enum SourceChangeType {
         NAME, TYPE, METADATA, AUTO_ON, PLAYSTATE, OVERRIDE_NAME, AUTO_OFF
     }
 
-    public interface ConnectivityListener
-    {
+    public interface ConnectivityListener {
         void connectionInitiated();
+
         void connectError();
+
         void ready();
+
         void disconnected(boolean unexpected);
     }
 
-    public interface ControllerListener
-    {
+    public interface ControllerListener {
         void updateAvailable();
+
         void propertyChanged(int prop, Object value);
     }
 
-    public interface ZonesListener
-    {
+    public interface ZonesListener {
         void indexReceived();
+
         void zoneAdded(Zone zone);
+
         void zoneChanged(Zone zone, boolean setRemotely, ZoneChangeType type);
+
         void zoneRemoved(int controllerId, int zoneId);
+
         void cleared();
     }
 
-    public interface SourcesListener
-    {
+    public interface SourcesListener {
         void sourceAdded(Source source);
+
         void sourceChanged(Source source, boolean setRemotely,
-                SourceChangeType type);
+                           SourceChangeType type);
+
         void descriptiveText(Source source, String text, int length);
+
         void sourceRemoved(int sourceId);
+
         void cleared();
     }
 
-    public static class SendPacketTask extends AsyncTask<RNetPacket, Void, Void>
-    {
+    public static class SendPacketTask extends AsyncTask<RNetPacket, Void, Void> {
         private final WeakReference<RNetServer> serverReference;
 
-        public SendPacketTask(RNetServer server)
-        {
+        public SendPacketTask(RNetServer server) {
             serverReference = new WeakReference<>(server);
         }
 
         @Override
-        protected Void doInBackground(RNetPacket... rNetPackets)
-        {
+        protected Void doInBackground(RNetPacket... rNetPackets) {
             RNetServer server = serverReference.get();
             if (server != null)
                 for (RNetPacket packet : rNetPackets)
@@ -797,11 +718,9 @@ public class RNetServer
         }
     }
 
-    public class ServerRunnable implements Runnable
-    {
+    public class ServerRunnable implements Runnable {
         @Override
-        public void run()
-        {
+        public void run() {
             RNetServer.this.run();
         }
     }
