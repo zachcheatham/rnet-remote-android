@@ -20,9 +20,8 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/list_horizontal_padding"
             android:layout_marginRight="@dimen/list_horizontal_padding"
-            android:tint="@color/textColorSecondary"
             app:srcCompat="@drawable/ic_input_white_24dp"
-    />
+            app:tint="@color/textColorSecondary" />
 
     <TextView
         android:id="@+id/text_name"

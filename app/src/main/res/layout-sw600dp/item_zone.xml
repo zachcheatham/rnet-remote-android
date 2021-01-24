@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                                     xmlns:app="http://schemas.android.com/apk/res-auto"
                                     xmlns:card_view="http://schemas.android.com/apk/res-auto"
                                     xmlns:tools="http://schemas.android.com/tools"
@@ -10,8 +10,7 @@
                                     android:layout_marginTop="@dimen/card_margin"
                                     card_view:cardBackgroundColor="@color/colorCard">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/inner_layout"
+    <LinearLayout android:id="@+id/inner_layout"
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:orientation="vertical">
@@ -31,7 +30,8 @@
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="?android:attr/textColorPrimary"
-            android:foreground="?android:attr/selectableItemBackground"/>
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center_horizontal" />
 
         <View
                 android:layout_width="match_parent"
@@ -142,4 +142,4 @@
 
     </LinearLayout>
 
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

@@ -8,9 +8,9 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.*;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import me.zachcheatham.rnetremote.ui.MultiZoneSelectListPreference;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;

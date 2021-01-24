@@ -6,15 +6,18 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.*;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.*;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
+
 import android.view.*;
 import android.widget.Button;
 import android.widget.TextView;
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     private boolean serverPromptOpened = false;
     private RNetServer server;
     private RNetServerService serverService;
-    private ServiceConnection serviceConnection = new ServiceConnection()
+    private final ServiceConnection serviceConnection = new ServiceConnection()
     {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder)
@@ -305,10 +308,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     {
         DialogFragment dialog;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            dialog = new SelectServerDialogFragment();
-        else
-            dialog = new EnterServerDialogFragment();
+        dialog = new SelectServerDialogFragment();
 
         dialog.setCancelable(cancelable);
         dialog.show(getSupportFragmentManager(), "SelectServerDialogFragment");

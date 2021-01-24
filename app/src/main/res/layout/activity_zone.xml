@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                  xmlns:app="http://schemas.android.com/apk/res-auto"
                                                  xmlns:tools="http://schemas.android.com/tools"
                                                  android:id="@+id/main_content"
@@ -8,22 +8,22 @@
                                                  android:fitsSystemWindows="true"
                                                  tools:context="me.zachcheatham.rnetremote.ZoneSettingsActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -81,8 +81,8 @@
                          android:layout_weight="2">
 
 
-                <android.support.v7.widget.CardView
-                        android:layout_width="wrap_content"
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:cardBackgroundColor="@android:color/transparent"
                         app:cardElevation="15dp"
@@ -94,7 +94,7 @@
                             android:layout_height="256dp"
                             android:contentDescription="@null"/>
 
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView >
 
             </FrameLayout>
 
@@ -119,8 +119,8 @@
                         android:scaleType="centerCrop"
                         app:srcCompat="@drawable/ic_skip_previous_white_24dp"/>
 
-                <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/button_play_pause"
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/button_play_pause"
                         android:layout_width="@dimen/fab_size"
                         android:layout_height="@dimen/fab_size"
                         android:layout_centerInParent="true"
@@ -161,10 +161,10 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
                     android:contentDescription="@null"
-                    android:tint="@color/textColorSecondary"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/ic_volume_down_white_24dp"/>
+                    app:srcCompat="@drawable/ic_volume_down_white_24dp"
+                    app:tint="@color/textColorSecondary" />
 
                 <ImageView
                     android:layout_width="18dp"
@@ -175,10 +175,10 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:contentDescription="@null"
-                    android:tint="@color/textColorSecondary"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/ic_volume_up_white_24dp"/>
+                    app:srcCompat="@drawable/ic_volume_up_white_24dp"
+                    app:tint="@color/textColorSecondary" />
 
             <TextView
                 android:id="@+id/text_media_title"
@@ -188,7 +188,8 @@
                 android:layout_centerHorizontal="true"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
                 android:textAlignment="center"
-                tools:text="Treasure"/>
+                tools:text="Treasure"
+                android:gravity="center_horizontal" />
 
             <TextView
                 android:id="@+id/text_media_artist"
@@ -199,7 +200,8 @@
                 android:layout_marginBottom="@dimen/card_action_padding"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
                 android:textAlignment="center"
-                tools:text="Bruno Mars"/>
+                tools:text="Bruno Mars"
+                android:gravity="center_horizontal" />
 
         </RelativeLayout>
 
@@ -214,4 +216,4 @@
 
     </RelativeLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
