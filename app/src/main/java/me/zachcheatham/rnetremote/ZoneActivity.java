@@ -234,6 +234,7 @@ public class ZoneActivity extends AppCompatActivity
         if (zone != null && zone.getPowered())
         {
             backgroundArtworkImageView.setVisibility(View.VISIBLE);
+            artworkImageView.setVisibility(View.VISIBLE);
             controlsView.setVisibility(View.VISIBLE);
             applySource();
         }
@@ -241,6 +242,7 @@ public class ZoneActivity extends AppCompatActivity
         {
             actionBar.setSubtitle(null);
             backgroundArtworkImageView.setVisibility(View.GONE);
+            artworkImageView.setVisibility(View.GONE);
             controlsView.setVisibility(View.GONE);
         }
 
@@ -354,6 +356,7 @@ public class ZoneActivity extends AppCompatActivity
                     ImageLoader.getInstance().displayImage(mediaArtwork, artworkImageView);
                     ImageLoader.getInstance()
                                .displayImage(mediaArtwork, new BlurryImageViewAware(backgroundArtworkImageView));
+                    artworkImageView.setVisibility(View.VISIBLE);
                 }
                 else
                 {
@@ -363,6 +366,7 @@ public class ZoneActivity extends AppCompatActivity
                             PorterDuff.Mode.SRC_IN);
                     int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
                     backgroundArtworkImageView.setPadding(padding, padding, padding, padding);
+                    artworkImageView.setVisibility(View.GONE);
                 }
             }
             else
@@ -375,6 +379,7 @@ public class ZoneActivity extends AppCompatActivity
                         PorterDuff.Mode.SRC_IN);
                 int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin) * 2;
                 backgroundArtworkImageView.setPadding(padding, padding, padding, padding);
+                artworkImageView.setVisibility(View.GONE);
             }
         }
     }

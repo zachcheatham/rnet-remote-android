@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            android:elevation="8dp"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
         </androidx.appcompat.widget.Toolbar>
@@ -60,7 +61,7 @@
             android:layout_height="wrap_content"
             android:text="@string/action_change_server"
             android:textColor="@color/colorAccent"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </LinearLayout>
 
