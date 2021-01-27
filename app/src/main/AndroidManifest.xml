@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="me.zachcheatham.rnetremote">
+    package="me.zachcheatham.rnetremote">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".RNetRemoteApplication"
@@ -20,26 +20,26 @@
             android:label="@string/app_name_short"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts"/>
+                android:resource="@xml/shortcuts" />
         </activity>
         <activity
             android:name=".ZoneSettingsActivity"
             android:label="@string/activity_name_zone_settings"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ZoneActivity"
             android:label="@string/activity_name_zone"
-            android:theme="@style/AppTheme.NoActionBar.BlackWindow"/>
+            android:theme="@style/AppTheme.NoActionBar.BlackWindow" />
         <activity
             android:name=".ManageSourcesActivity"
             android:label="@string/activity_name_manage_sources"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SourceSettingsActivity"
             android:label="@string/activity_name_source_settings"
@@ -47,7 +47,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.zachcheatham.rnetremote.ManageSourcesActivity"/>
+                android:value="me.zachcheatham.rnetremote.ManageSourcesActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
@@ -56,58 +56,58 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.zachcheatham.rnetremote.MainActivity"/>
+                android:value="me.zachcheatham.rnetremote.MainActivity" />
         </activity>
         <activity
             android:name=".ActionShortcutActivity"
             android:clearTaskOnLaunch="true"
             android:excludeFromRecents="true"
             android:hardwareAccelerated="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-                android:name=".LicensesActivity"
-                android:label="@string/title_activity_licenses"
-                android:parentActivityName=".SettingsActivity">
+            android:name=".LicensesActivity"
+            android:label="@string/title_activity_licenses"
+            android:parentActivityName=".SettingsActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="me.zachcheatham.rnetremote.SettingsActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="me.zachcheatham.rnetremote.SettingsActivity" />
         </activity>
 
         <service
             android:name="me.zachcheatham.rnetremotecommon.rnet.RNetServerService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
         <service
             android:name=".service.ActionService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
         <receiver android:name=".PhoneStateBroadcastReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE"/>
+                <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="com.lge.support.SPLIT_WINDOW"
-            android:value="true"/>
+            android:value="true" />
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"
-            android:required="false"/>
+            android:required="false" />
 
         <meta-data
             android:name="com.sec.android.support.multiwindow"
-            android:value="true"/>
+            android:value="true" />
         <meta-data
             android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W"
-            android:value="632.0dip"/>
+            android:value="632.0dip" />
         <meta-data
             android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H"
-            android:value="598.0dip"/>
+            android:value="598.0dip" />
         <meta-data
             android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable"
-            android:value="true"/>
+            android:value="true" />
     </application>
 
 </manifest>

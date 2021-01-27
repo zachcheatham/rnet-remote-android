@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 xmlns:tools="http://schemas.android.com/tools"
-                                                 android:id="@+id/main_content"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent"
-                                                 android:animateLayoutChanges="true"
-                                                 android:fitsSystemWindows="true"
-                                                 tools:context="me.zachcheatham.rnetremote.MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:fitsSystemWindows="false"
+    android:clipChildren="false"
+    tools:context="me.zachcheatham.rnetremote.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
@@ -39,8 +41,7 @@
         <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/text_view_connecting_placeholder_notice"
@@ -50,7 +51,7 @@
             android:text="@string/notice_connecting_long"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/colorPlaceholderText"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/button_connecting_placeholder_connect"
@@ -63,18 +64,17 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <me.zachcheatham.rnetremote.ui.BottomInsetRecyclerView
         android:id="@+id/list_zones"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="@dimen/card_margin"
-        android:paddingEnd="0dp"
-        android:paddingLeft="@dimen/card_margin"
-        android:paddingRight="0dp"
+        android:fitsSystemWindows="true"
         android:paddingStart="@dimen/card_margin"
+        android:paddingEnd="0dp"
+        android:paddingBottom="@dimen/card_margin"
         android:scrollbars="vertical"
         android:visibility="gone"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

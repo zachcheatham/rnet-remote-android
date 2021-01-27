@@ -85,7 +85,7 @@ public class SourceSettingsActivity extends AppCompatActivity
         private SwitchPreference autoOffPreference;
 
         private RNetServer server;
-        private ServiceConnection serviceConnection = new ServiceConnection()
+        private final ServiceConnection serviceConnection = new ServiceConnection()
         {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder)

@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import me.zachcheatham.rnetremote.adapter.ZonesAdapter;
 import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
+import me.zachcheatham.rnetremote.ui.VerticalSpaceItemDecoration;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SAllPower;
@@ -107,6 +109,11 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
 
         Configuration config = getResources().getConfiguration();
 
