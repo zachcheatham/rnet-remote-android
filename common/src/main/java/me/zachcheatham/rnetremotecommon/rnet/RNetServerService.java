@@ -53,7 +53,7 @@ public class RNetServerService extends Service implements RNetServer.Connectivit
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
         String name = settings.getString("server_name", "");
-        if (name.length() > 0)
+        if (!name.isEmpty())
         {
             this.name = name;
             this.port = settings.getInt("server_port", 0);

@@ -24,7 +24,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import me.zachcheatham.rnetremote.adapter.ZonesAdapter;
 import me.zachcheatham.rnetremote.ui.GridAutofitLayoutManager;
-import me.zachcheatham.rnetremote.ui.VerticalSpaceItemDecoration;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SAllPower;

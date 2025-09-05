@@ -64,6 +64,8 @@ public class SettingsActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults)
     {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED)
         {
             new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay))
