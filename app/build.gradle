@@ -9,7 +9,7 @@ android {
         versionCode 10
         versionName "1.0.0-beta10"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        resConfigs 'en'
+        resourceConfigurations += ['en']
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -19,6 +19,7 @@ android {
         }
     }
     buildToolsVersion '30.0.3'
+    namespace 'me.zachcheatham.rnetremote'
 }
 
 dependencies {
