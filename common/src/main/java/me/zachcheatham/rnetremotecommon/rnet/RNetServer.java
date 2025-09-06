@@ -1,11 +1,11 @@
 package me.zachcheatham.rnetremotecommon.rnet;
 
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -14,6 +14,8 @@ import java.nio.channels.NotYetConnectedException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SDeleteSource;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SDeleteZone;
@@ -50,31 +52,38 @@ public class RNetServer {
     public static final int PROPERTY_SERIAL_CONNECTED = 3;
     public static final int PROPERTY_WEB_SERVER_ENABLED = 4;
 
-    private static final String LOG_TAG = "RNetServer";
+    private static final String LOG_TAG = RNetServer.class.getSimpleName();
+
     private final Object runSync = new Object();
     private final ByteBuffer pendingBuffer = ByteBuffer.allocate(255);
+    private final SparseArray<Source> sources = new SparseArray<>();
+    private final SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
+    private final List<ConnectivityListener> connectivityListeners = new ArrayList<>();
+    private final List<ControllerListener> controllerListeners = new ArrayList<>();
+    private final ExecutorService executor;
+    private final Handler handler;
     List<ZonesListener> zonesListeners = new ArrayList<>();
     List<SourcesListener> sourcesListeners = new ArrayList<>();
     private SocketChannel channel;
     private InetAddress address;
     private int port;
-    private int intent;
+    private final int intent;
     private int pendingPacketType = 0;
     private int pendingRemainingBytes = -1;
     private boolean run;
     private boolean receivedIndex = false;
-    private SparseArray<Source> sources = new SparseArray<>();
-    private SparseArray<SparseArray<Zone>> zones = new SparseArray<>();
     private String name = "<unknown>";
     //private boolean serialConnected = false;
     private String version = "<unknown>";
     private String newVersion = null;
-    private List<ConnectivityListener> connectivityListeners = new ArrayList<>();
-    private List<ControllerListener> controllerListeners = new ArrayList<>();
+
 
     public RNetServer(int intent) {
         pendingBuffer.order(ByteOrder.LITTLE_ENDIAN);
         this.intent = intent;
+
+        executor = Executors.newSingleThreadExecutor();
+        handler = new Handler(Looper.getMainLooper());
     }
 
     public void setConnectionInfo(InetAddress address, int port) {
@@ -87,7 +96,8 @@ public class RNetServer {
         if (channel != null) {
             try {
                 channel.close();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -95,7 +105,7 @@ public class RNetServer {
 
     public void createZone(String zoneName, int controllerId, int zoneId) {
         if (zones.get(controllerId) == null || zones.get(controllerId).get(zoneId) == null)
-            new SendPacketTask(this).execute(new PacketC2SZoneName(controllerId, zoneId, zoneName));
+            sendPacketAsync(new PacketC2SZoneName(controllerId, zoneId, zoneName));
     }
 
     public void deleteZone(int controllerId, int zoneId, boolean remotelyTriggered) {
@@ -112,7 +122,7 @@ public class RNetServer {
                 listener.zoneRemoved(controllerId, zoneId);
 
             if (!remotelyTriggered)
-                new SendPacketTask(this).execute(new PacketC2SDeleteZone(controllerId, zoneId));
+                sendPacketAsync(new PacketC2SDeleteZone(controllerId, zoneId));
         }
     }
 
@@ -120,18 +130,16 @@ public class RNetServer {
         Source source = new Source(sourceId, sourceName, sourceType, this);
         sources.put(sourceId, source);
 
-        new SendPacketTask(this).execute(new PacketC2SSourceInfo(sourceId, sourceName, sourceType));
+        sendPacketAsync(new PacketC2SSourceInfo(sourceId, sourceName, sourceType));
     }
 
     public void deleteSource(int sourceId) {
         sources.remove(sourceId);
-        new SendPacketTask(this).execute(new PacketC2SDeleteSource(sourceId));
-        // We don't update our listeners here because the server is going to send us a packet
-        // back...
+        sendPacketAsync(new PacketC2SDeleteSource(sourceId));
     }
 
-    public boolean isRunning() {
-        return run;
+    public boolean isStopped() {
+        return !run;
     }
 
     public void waitForStop() {
@@ -160,7 +168,7 @@ public class RNetServer {
 
     public void setName(String name) {
         if (!name.equals(this.name))
-            new SendPacketTask(this).execute(new PacketC2SProperty(PROPERTY_NAME, name));
+            sendPacketAsync(new PacketC2SProperty(PROPERTY_NAME, name));
     }
 
     public String getVersion() {
@@ -174,11 +182,6 @@ public class RNetServer {
     public String getNewVersion() {
         return newVersion;
     }
-
-    /*public boolean isSerialConnected()
-    {
-        return serialConnected;
-    }*/
 
     public boolean anyZonesOn() {
         for (int i = 0; i < zones.size(); i++) {
@@ -290,7 +293,7 @@ public class RNetServer {
     }
 
     public void update() {
-        new SendPacketTask(this).execute(new PacketC2SUpdate());
+        sendPacketAsync(new PacketC2SUpdate());
     }
 
     public void run() {
@@ -618,11 +621,16 @@ public class RNetServer {
         }
     }
 
+    public void sendPacketAsync(RNetPacket packet) {
+        executor.execute(() -> RNetServer.this.sendPacket(packet));
+    }
+
     public void sendPacket(RNetPacket packet) {
         if (channel != null) {
             try {
                 channel.write(ByteBuffer.wrap(packet.getData()));
-            } catch (IOException | NotYetConnectedException e) {
+            }
+            catch (IOException | NotYetConnectedException e) {
                 e.printStackTrace();
             }
         }
@@ -698,24 +706,6 @@ public class RNetServer {
         void sourceRemoved(int sourceId);
 
         void cleared();
-    }
-
-    public static class SendPacketTask extends AsyncTask<RNetPacket, Void, Void> {
-        private final WeakReference<RNetServer> serverReference;
-
-        public SendPacketTask(RNetServer server) {
-            serverReference = new WeakReference<>(server);
-        }
-
-        @Override
-        protected Void doInBackground(RNetPacket... rNetPackets) {
-            RNetServer server = serverReference.get();
-            if (server != null)
-                for (RNetPacket packet : rNetPackets)
-                    server.sendPacket(packet);
-
-            return null;
-        }
     }
 
     public class ServerRunnable implements Runnable {

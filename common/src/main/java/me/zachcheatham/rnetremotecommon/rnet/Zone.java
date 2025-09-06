@@ -77,8 +77,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.NAME);
 
             if (!setRemotely)
-                new RNetServer.SendPacketTask(server)
-                        .execute(new PacketC2SZoneName(controllerId, zoneId, name));
+                server.sendPacketAsync(new PacketC2SZoneName(controllerId, zoneId, name));
         }
     }
 
@@ -100,8 +99,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.POWER);
 
             if (!setRemotely)
-                new RNetServer.SendPacketTask(server)
-                        .execute(new PacketC2SZonePower(controllerId, zoneId, power));
+                server.sendPacketAsync(new PacketC2SZonePower(controllerId, zoneId, power));
         }
     }
 
@@ -123,8 +121,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.VOLUME);
 
             if (!setRemotely)
-                new RNetServer.SendPacketTask(server)
-                        .execute(new PacketC2SZoneVolume(controllerId, zoneId, volume));
+                server.sendPacketAsync(new PacketC2SZoneVolume(controllerId, zoneId, volume));
         }
     }
 
@@ -157,7 +154,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.MUTE);
 
             if (!setRemotely)
-                new RNetServer.SendPacketTask(server).execute(new PacketC2SZoneMute(controllerId, zoneId, mute));
+                server.sendPacketAsync(new PacketC2SZoneMute(controllerId, zoneId, mute));
         }
     }
 
@@ -179,8 +176,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.MAX_VOLUME);
 
             if (!setRemotely)
-                new RNetServer.SendPacketTask(server)
-                        .execute(new PacketC2SZoneMaxVolume(controllerId, zoneId, maxVolume));
+                server.sendPacketAsync(new PacketC2SZoneMaxVolume(controllerId, zoneId, maxVolume));
         }
     }
 
@@ -202,8 +198,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.SOURCE);
 
             if (!setRemotely)
-                new RNetServer.SendPacketTask(server)
-                        .execute(new PacketC2SZoneSource(controllerId, zoneId, sourceId));
+                server.sendPacketAsync(new PacketC2SZoneSource(controllerId, zoneId, sourceId));
         }
     }
 
@@ -246,8 +241,7 @@ public class Zone
                 listener.zoneChanged(this, setRemotely, RNetServer.ZoneChangeType.PARAMETER);
 
             if (!setRemotely)
-                new RNetServer.SendPacketTask(server).execute(
-                        new PacketC2SZoneParameter(controllerId, zoneId, parameterId, value));
+                server.sendPacketAsync(new PacketC2SZoneParameter(controllerId, zoneId, parameterId, value));
         }
     }
 

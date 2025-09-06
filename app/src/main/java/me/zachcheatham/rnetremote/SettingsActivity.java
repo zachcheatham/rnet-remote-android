@@ -10,15 +10,16 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
+import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceFragmentCompat;
+
 import android.view.ContextThemeWrapper;
 
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
@@ -26,7 +27,7 @@ import me.zachcheatham.rnetremotecommon.rnet.RNetServerService;
 
 public class SettingsActivity extends AppCompatActivity
 {
-    private ServiceConnection serviceConnection = new ServiceConnection()
+    private final ServiceConnection serviceConnection = new ServiceConnection()
     {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {}
@@ -40,8 +41,10 @@ public class SettingsActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        getFragmentManager().beginTransaction()
-                            .replace(android.R.id.content, new SettingsFragment()).commit();
+        setContentView(R.layout.activity_settings);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.settings_container, new SettingsFragment()).commit();
     }
 
     @Override
@@ -96,7 +99,7 @@ public class SettingsActivity extends AppCompatActivity
         overridePendingTransition(R.anim.fade_in, R.anim.slide_right);
     }
 
-    public static class SettingsFragment extends PreferenceFragment
+    public static class SettingsFragment extends PreferenceFragmentCompat
             implements SharedPreferences.OnSharedPreferenceChangeListener, RNetServer.ControllerListener,
             RNetServer.ConnectivityListener
     {
@@ -112,7 +115,7 @@ public class SettingsActivity extends AppCompatActivity
                 serverService = binder.getService();
                 server = serverService.getServer();
 
-                if (serverService.hasServerInfo() && !server.isRunning())
+                if (serverService.hasServerInfo() && server.isStopped())
                 {
                     serverService.startServerConnection();
                 }
@@ -135,29 +138,23 @@ public class SettingsActivity extends AppCompatActivity
         };
 
         @Override
-        public void onCreate(@Nullable Bundle savedInstanceState)
-        {
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+
             getPreferenceManager().setSharedPreferencesName("rnet_remote");
             addPreferencesFromResource(R.xml.settings);
 
             if (!getActivity().getPackageManager()
-                              .hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
+                    .hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
             {
                 getPreferenceScreen().removePreference(findPreference("phone_calls"));
             }
 
             findPreference("controller_name").setOnPreferenceChangeListener(
-                    new Preference.OnPreferenceChangeListener()
-                    {
-                        @Override
-                        public boolean onPreferenceChange(Preference preference, Object newValue)
-                        {
-                            if (server != null && server.isReady())
-                                server.setName((String) newValue);
+                    (preference, newValue) -> {
+                        if (server != null && server.isReady())
+                            server.setName((String) newValue);
 
-                            return true;
-                        }
+                        return true;
                     });
             findPreference("application_version").setSummary(BuildConfig.VERSION_NAME);
         }
@@ -228,18 +225,11 @@ public class SettingsActivity extends AppCompatActivity
                                 R.style.AppTheme_DialogOverlay))
                                 .setMessage(R.string.permission_explanation_phone)
                                 .setPositiveButton(android.R.string.ok,
-                                        new DialogInterface.OnClickListener()
-                                        {
-                                            public void onClick(DialogInterface dialog,
-                                                    int whichButton)
-                                            {
-                                                ActivityCompat.requestPermissions(getActivity(),
-                                                        new String[]{
-                                                                Manifest.permission
-                                                                        .READ_PHONE_STATE},
-                                                        1);
-                                            }
-                                        })
+                                        (dialog, whichButton) -> ActivityCompat.requestPermissions(getActivity(),
+                                                new String[]{
+                                                        Manifest.permission
+                                                                .READ_PHONE_STATE},
+                                                1))
                                 .show();
                     }
                     else
@@ -255,9 +245,7 @@ public class SettingsActivity extends AppCompatActivity
         {
             Preference versionPreference = findPreference("controller_version");
             Preference addressPreference = findPreference("controller_address");
-            EditTextPreference namePreference = (EditTextPreference) findPreference(
-                    "controller_name");
-            //Preference webServerPreference = findPreference("controller_web_server");
+            EditTextPreference namePreference = findPreference("controller_name");
 
             if (server != null && server.isReady())
             {
@@ -280,7 +268,6 @@ public class SettingsActivity extends AppCompatActivity
                 addressPreference.setEnabled(false);
                 namePreference.setSummary(getString(R.string.label_preference_disconnected));
                 namePreference.setEnabled(false);
-                //webServerPreference.setEnabled(false);
                 findPreference("manage_sources").setEnabled(false);
             }
         }

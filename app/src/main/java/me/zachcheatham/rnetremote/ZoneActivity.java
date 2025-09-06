@@ -62,7 +62,7 @@ public class ZoneActivity extends AppCompatActivity
             server.addZonesListener(ZoneActivity.this);
             server.addSourcesListener(ZoneActivity.this);
 
-            if (!server.isRunning())
+            if (server.isStopped())
             {
                 serverService.startServerConnection();
                 connectingPlaceholder.setVisibility(View.VISIBLE);

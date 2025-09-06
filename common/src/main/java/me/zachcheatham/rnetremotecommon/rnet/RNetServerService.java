@@ -39,7 +39,7 @@ public class RNetServerService extends Service implements RNetServer.Connectivit
         @Override
         public void run()
         {
-            if (!server.isRunning())
+            if (server.isStopped())
                 new Thread(server.new ServerRunnable()).start();
         }
     };

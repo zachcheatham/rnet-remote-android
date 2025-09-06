@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreferenceCompat
         android:key="use_volume_keys"
         android:summary="@string/setting_volume_keys_desc"
         android:title="@string/setting_volume_keys"/>
 
-    <SwitchPreference
+    <SwitchPreferenceCompat
             android:key="zone_item_art"
             android:title="@string/setting_zone_item_art"
             android:summary="@string/setting_zone_item_art_desc"
@@ -16,12 +16,12 @@
         android:title="@string/settings_category_phone"
         >
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="mute_on_ring"
             android:summary="@string/setting_mute_on_ring_desc"
             android:title="@string/setting_mute_on_ring"/>
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="mute_on_call"
             android:summary="@string/setting_mute_during_call_desc"
             android:title="@string/setting_mute_during_call"/>
@@ -84,4 +84,4 @@
         </Preference>
     </PreferenceCategory>
 
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>

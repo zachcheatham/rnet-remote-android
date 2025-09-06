@@ -9,7 +9,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.app.AlertDialog;
@@ -30,6 +30,7 @@ import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SAllPower;
 import me.zachcheatham.rnetremotecommon.rnet.packet.PacketC2SMute;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements SelectServerListener,
         RNetServer.ConnectivityListener, View.OnClickListener, AddZoneDialogFragment.AddZoneListener,
@@ -37,8 +38,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 {
     private static final String PREFS = "rnet_remote";
     private static final String PREFS_ORDER = "rnet_remote_zone_order";
-    @SuppressWarnings("unused")
-    private static final String LOG_TAG = "MainActivity";
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView zoneList;
     private ZonesAdapter zoneAdapter;
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                 //noinspection ConstantConditions
                 getSupportActionBar().setTitle(serverService.getSavedServerName());
 
-                if (!server.isRunning())
+                if (server.isStopped())
                 {
                     serverService.startServerConnection();
                 }
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             zoneList.setLayoutManager(new LinearLayoutManager(this));
         else
             zoneList.setLayoutManager(new GridAutofitLayoutManager(this, 350));
-        ((SimpleItemAnimator) zoneList.getItemAnimator()).setSupportsChangeAnimations(false);
+        ((SimpleItemAnimator) Objects.requireNonNull(zoneList.getItemAnimator())).setSupportsChangeAnimations(false);
         zoneList.setAdapter(zoneAdapter);
 
         connectingPlaceholder = findViewById(R.id.connecting_placeholder);
@@ -136,8 +136,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
-        //noinspection ConstantConditions
-        getSupportActionBar().setTitle("");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
     }
 
     @Override
@@ -214,16 +213,13 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId())
-        {
-        case R.id.action_change_server:
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_change_server) {
             promptSelectServer(true);
-            return true;
-        case R.id.action_power_all:
-            if (server.allZonesOn())
-            {
-                new RNetServer.SendPacketTask(server).execute(new PacketC2SAllPower(false));
-            }
+        }
+        else if (itemId == R.id.action_power_all) {
+            if (server.allZonesOn()) server.sendPacketAsync(new PacketC2SAllPower(false));
             else if (server.anyZonesOn())
             {
                 PopupMenu menu = new PopupMenu(
@@ -233,28 +229,19 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                 menu.inflate(R.menu.all_on_off_popup);
                 menu.show();
             }
-            else
-            {
-                new RNetServer.SendPacketTask(server).execute(new PacketC2SAllPower(true));
-            }
-            return true;
-        case R.id.action_toggle_mute:
-            new RNetServer.SendPacketTask(server)
-                    .execute(new PacketC2SMute(PacketC2SMute.MUTE_TOGGLE, (short) 0));
-            return true;
-        case R.id.action_add_zone:
-            AddZoneDialogFragment dialog = new AddZoneDialogFragment();
-            dialog.show(getSupportFragmentManager(), "AddZoneDialogFragment");
-            return true;
-        case R.id.settings:
-        {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
-            return true;
+            else server.sendPacketAsync(new PacketC2SAllPower(true));
         }
-        case R.id.action_update:
-        {
+        else if (itemId == R.id.action_toggle_mute) {
+            server.sendPacketAsync(new PacketC2SMute(PacketC2SMute.MUTE_TOGGLE, (short) 0));
+        }
+        else if (itemId == R.id.action_add_zone) {
+            new AddZoneDialogFragment().show(getSupportFragmentManager(), "AddZoneDialogFragment");
+        }
+        else if (itemId == R.id.settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            overridePendingTransition(R.anim.slide_left, R.anim.fade_out);
+        }
+        else if (itemId == R.id.action_update) {
             AlertDialog.Builder builder = new AlertDialog.Builder(
                     new ContextThemeWrapper(this, R.style.AppTheme_DialogOverlay));
             builder.setTitle(R.string.proxy_update_available);
@@ -275,11 +262,12 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                     });
             builder.setNegativeButton(getString(android.R.string.cancel), null);
             builder.create().show();
-            return true;
         }
+        else {
+            return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     private void setConnectingVisible(boolean visible)
@@ -345,17 +333,18 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     @Override
     public boolean onMenuItemClick(MenuItem item)
     {
-        switch (item.getItemId())
-        {
-        case R.id.action_all_on:
-            new RNetServer.SendPacketTask(server).execute(new PacketC2SAllPower(true));
-            return true;
-        case R.id.action_all_off:
-            new RNetServer.SendPacketTask(server).execute(new PacketC2SAllPower(false));
-            return true;
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_all_on) {
+            server.sendPacketAsync(new PacketC2SAllPower(true));
+        }
+        else if (itemId == R.id.action_all_off) {
+            server.sendPacketAsync(new PacketC2SAllPower(false));
+        }
+        else {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     @Override
@@ -388,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         settings = getSharedPreferences(PREFS_ORDER, 0);
         editor = settings.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
 
         serverService.stopServerConnection();
         serverService.getServer().waitForStop();

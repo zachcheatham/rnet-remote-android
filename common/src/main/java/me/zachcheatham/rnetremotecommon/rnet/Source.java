@@ -55,7 +55,7 @@ public class Source
     private String artworkUrl = null;
     private boolean playing = false;
     private boolean autoOff = false;
-    private List<int[]> autoOnZones = new ArrayList<>();
+    private final List<int[]> autoOnZones = new ArrayList<>();
     private boolean overrideName = false;
 
     Source(int id, String name, int type, RNetServer server)
@@ -86,8 +86,7 @@ public class Source
                 listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.NAME);
 
             if (!setRemotely)
-                new RNetServer.SendPacketTask(server).execute(
-                        new PacketC2SSourceInfo(sourceId, name, type));
+                server.sendPacketAsync(new PacketC2SSourceInfo(sourceId, name, type));
         }
     }
 
@@ -109,14 +108,12 @@ public class Source
             listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.TYPE);
 
         if (!setRemotely)
-            new RNetServer.SendPacketTask(server).execute(
-                    new PacketC2SSourceInfo(sourceId, name, type));
+            server.sendPacketAsync(new PacketC2SSourceInfo(sourceId, name, type));
     }
 
     public void control(int operation)
     {
-        new RNetServer.SendPacketTask(server).execute(
-                new PacketC2SSourceControl(sourceId, operation));
+        server.sendPacketAsync(new PacketC2SSourceControl(sourceId, operation));
     }
 
     public String getPermanentDescriptiveText()
@@ -175,8 +172,7 @@ public class Source
 
     public void requestProperties()
     {
-        new RNetServer.SendPacketTask(server).execute(
-                new PacketC2SRequestSourceProperties(sourceId));
+        server.sendPacketAsync(new PacketC2SRequestSourceProperties(sourceId));
     }
 
     public boolean getAutoOff()
@@ -192,8 +188,7 @@ public class Source
             listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.AUTO_OFF);
 
         if (!setRemotely)
-            new RNetServer.SendPacketTask(server).execute(
-                    new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_OFF, autoOff));
+            server.sendPacketAsync(new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_OFF, autoOff));
     }
 
     public int[][] getAutoOnZones()
@@ -210,8 +205,7 @@ public class Source
             listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.AUTO_ON);
 
         if (!setRemotely)
-            new RNetServer.SendPacketTask(server).execute(
-                    new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_ON_ZONES, autoOnZones));
+            server.sendPacketAsync(new PacketC2SSourceProperty(sourceId, PROPERTY_AUTO_ON_ZONES, autoOnZones));
     }
 
     public void setOverrideName(boolean overrideName, boolean setRemotely)
@@ -222,8 +216,7 @@ public class Source
             listener.sourceChanged(this, setRemotely, RNetServer.SourceChangeType.OVERRIDE_NAME);
 
         if (!setRemotely)
-            new RNetServer.SendPacketTask(server).execute(
-                    new PacketC2SSourceProperty(sourceId, PROPERTY_OVERRIDE_NAME, overrideName));
+            server.sendPacketAsync(new PacketC2SSourceProperty(sourceId, PROPERTY_OVERRIDE_NAME, overrideName));
     }
 
     public boolean getOverrideName()
@@ -233,41 +226,20 @@ public class Source
 
     private static int getTypeDrawable(int type)
     {
-        switch (type)
-        {
-        default:
-        case TYPE_GENERIC:
-        case TYPE_SONOS:
-            return R.drawable.ic_input_white_24dp;
-        case TYPE_AIRPLAY:
-            return R.drawable.ic_airplay_white_24dp;
-        case TYPE_BLURAY:
-        case TYPE_CD:
-        case TYPE_DVD:
-            return R.drawable.ic_disc_white_24dp;
-        case TYPE_CABLE:
-        case TYPE_OTA:
-        case TYPE_SATELLITE_TV:
-            return R.drawable.ic_tv_white_24dp;
-        case TYPE_CASSETTE:
-        case TYPE_VCR:
-            return R.drawable.ic_voicemail_white_24dp;
-        case TYPE_COMPUTER:
-            return R.drawable.ic_computer_white_24dp;
-        case TYPE_GOOGLE_CAST:
-            return R.drawable.ic_cast_white_24dp;
-        case TYPE_INTERNET_RADIO:
-        case TYPE_RADIO:
-        case TYPE_SATELLITE_RADIO:
-            return R.drawable.ic_radio_white_24dp;
-        case TYPE_IPOD:
-            return R.drawable.ic_apple_white_24dp;
-        case TYPE_MEDIA_SERVER:
-            return R.drawable.ic_server_network_white_24dp;
-        case TYPE_MP3:
-            return R.drawable.ic_music_file_white_24dp;
-        case TYPE_PHONO:
-            return R.drawable.ic_album_white_24dp;
-        }
+        return switch (type) {
+            case TYPE_AIRPLAY -> R.drawable.ic_airplay_white_24dp;
+            case TYPE_BLURAY, TYPE_CD, TYPE_DVD -> R.drawable.ic_disc_white_24dp;
+            case TYPE_CABLE, TYPE_OTA, TYPE_SATELLITE_TV -> R.drawable.ic_tv_white_24dp;
+            case TYPE_CASSETTE, TYPE_VCR -> R.drawable.ic_voicemail_white_24dp;
+            case TYPE_COMPUTER -> R.drawable.ic_computer_white_24dp;
+            case TYPE_GOOGLE_CAST -> R.drawable.ic_cast_white_24dp;
+            case TYPE_INTERNET_RADIO, TYPE_RADIO, TYPE_SATELLITE_RADIO ->
+                    R.drawable.ic_radio_white_24dp;
+            case TYPE_IPOD -> R.drawable.ic_apple_white_24dp;
+            case TYPE_MEDIA_SERVER -> R.drawable.ic_server_network_white_24dp;
+            case TYPE_MP3 -> R.drawable.ic_music_file_white_24dp;
+            case TYPE_PHONO -> R.drawable.ic_album_white_24dp;
+            default -> R.drawable.ic_input_white_24dp;
+        };
     }
 }

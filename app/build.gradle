@@ -6,8 +6,8 @@ android {
         applicationId "me.zachcheatham.rnetremote"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 10
-        versionName "1.0.0-beta10"
+        versionCode 11
+        versionName "1.1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         resourceConfigurations += ['en']
         vectorDrawables.useSupportLibrary = true
@@ -27,6 +27,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.9.3'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.3'
+    implementation 'androidx.preference:preference:1.2.1'
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
