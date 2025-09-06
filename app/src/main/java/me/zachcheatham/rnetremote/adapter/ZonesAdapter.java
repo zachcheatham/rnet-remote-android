@@ -1,10 +1,10 @@
 package me.zachcheatham.rnetremote.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -23,6 +23,7 @@ import me.zachcheatham.rnetremote.ZoneActivity;
 import me.zachcheatham.rnetremote.ZoneSettingsActivity;
 import me.zachcheatham.rnetremote.ui.BackgroundImageViewAware;
 import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
+import me.zachcheatham.rnetremote.ui.NoSkipSeekBar;
 import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
@@ -40,9 +41,9 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
     private final Activity activity;
     private final ArrayList<int[]> zoneIndex = new ArrayList<>();
-    private ItemTouchHelper itemTouchHelper;
+    private final ItemTouchHelper itemTouchHelper;
     private RNetServer server;
-    private SourcesAdapter sourcesAdapter;
+    private final SourcesAdapter sourcesAdapter;
     private RecyclerView recyclerView;
     private boolean showArtwork = true;
 
@@ -79,14 +80,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             if (server.isReady())
             {
                 handleIndex();
-                activity.runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        notifyDataSetChanged();
-                    }
-                });
+                activity.runOnUiThread(() -> notifyDataSetChanged());
             }
         }
 
@@ -123,6 +117,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         return new ZonesAdapter.ViewHolder(view);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position)
     {
@@ -131,11 +126,12 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
         if (zone != null)
         {
+
             holder.name.setText(zone.getName());
             if (!holder.seekBar.isPressed())
-                holder.seekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
+                holder.seekBar.setProgress((int) Math.floor(zone.getVolume() / 2d));
 
-            holder.seekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2));
+            holder.seekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2d));
 
             if (zone.getPowered())
             {
@@ -160,25 +156,19 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 if (source != null)
                 {
                     String artworkUrl = showArtwork ? source.getMediaArtworkUrl() : null;
-                    if (artworkUrl != null && artworkUrl.length() > 0)
+                    if (artworkUrl != null && !artworkUrl.isEmpty())
                     {
                         ImageLoader.getInstance()
                                    .displayImage(artworkUrl, new BackgroundImageViewAware(holder.innerLayout));
                     }
                     else
                     {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                            holder.innerLayout.setBackground(null);
-                        else
-                            holder.innerLayout.setBackgroundDrawable(null);
+                        holder.innerLayout.setBackground(null);
                     }
                 }
                 else
                 {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                        holder.innerLayout.setBackground(null);
-                    else
-                        holder.innerLayout.setBackgroundDrawable(null);
+                    holder.innerLayout.setBackground(null);
                 }
             }
             else
@@ -192,11 +182,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 holder.mute.setAlpha(0.26f);
                 holder.mute.setColorFilter(ContextCompat.getColor(activity, R.color.colorCardButton));
                 holder.sourceSelect.setAlpha(0.26f);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                    holder.innerLayout.setBackground(null);
-                else
-                    holder.innerLayout.setBackgroundDrawable(null);
+                holder.innerLayout.setBackground(null);
             }
         }
     }
@@ -325,29 +311,19 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public void indexReceived()
     {
-        activity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                handleIndex();
-                notifyDataSetChanged();
-            }
+        activity.runOnUiThread(() -> {
+            handleIndex();
+            notifyDataSetChanged();
         });
     }
 
     @Override
     public void zoneAdded(final Zone zone)
     {
-        activity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                zoneIndex
-                        .add(zoneIndex.size(), new int[]{zone.getControllerId(), zone.getZoneId()});
-                notifyItemInserted(zoneIndex.size() - 1);
-            }
+        activity.runOnUiThread(() -> {
+            zoneIndex
+                    .add(zoneIndex.size(), new int[]{zone.getControllerId(), zone.getZoneId()});
+            notifyItemInserted(zoneIndex.size() - 1);
         });
     }
 
@@ -357,24 +333,19 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     {
         if (type != RNetServer.ZoneChangeType.PARAMETER)
         {
-            activity.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
+            activity.runOnUiThread(() -> {
+                int i = getZoneIndexPosition(zone.getControllerId(), zone.getZoneId());
+                if (type == RNetServer.ZoneChangeType.VOLUME && recyclerView != null)
                 {
-                    int i = getZoneIndexPosition(zone.getControllerId(), zone.getZoneId());
-                    if (type == RNetServer.ZoneChangeType.VOLUME && recyclerView != null)
-                    {
-                        ViewHolder holder = (ViewHolder) recyclerView
-                                .findViewHolderForAdapterPosition(i);
-                        if (holder != null && holder.seekBar != null &&
-                            !holder.seekBar.isPressed())
-                            holder.seekBar
-                                    .setProgress((int) Math.floor(zone.getVolume() / 2));
-                    }
-                    else
-                        notifyItemChanged(i);
+                    ViewHolder holder = (ViewHolder) recyclerView
+                            .findViewHolderForAdapterPosition(i);
+                    if (holder != null && holder.seekBar != null &&
+                        !holder.seekBar.isPressed())
+                        holder.seekBar
+                                .setProgress((int) (double) (zone.getVolume() / 2));
                 }
+                else
+                    notifyItemChanged(i);
             });
         }
     }
@@ -410,7 +381,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         ImageButton power;
         ImageButton sourceSelect;
         ImageButton mute;
-        SeekBar seekBar;
+        NoSkipSeekBar seekBar;
 
         ViewHolder(View itemView)
         {

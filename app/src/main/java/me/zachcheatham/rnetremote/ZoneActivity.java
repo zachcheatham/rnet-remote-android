@@ -251,8 +251,8 @@ public class ZoneActivity extends AppCompatActivity
         //muteButton.setAlpha((zone != null && zone.getPowered()) ? 255 : 66);
         if (zone != null)
         {
-            volumeSeekBar.setProgress((int) Math.floor(zone.getVolume() / 2));
-            volumeSeekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2));
+            volumeSeekBar.setProgress((int) Math.floor(zone.getVolume() / 2d));
+            volumeSeekBar.setMax((int) Math.floor(zone.getMaxVolume() / 2d));
 
             if (zone.getMute())
             {
@@ -318,7 +318,7 @@ public class ZoneActivity extends AppCompatActivity
             ActionBar actionBar = getSupportActionBar();
             assert actionBar != null;
             String descriptiveText = source.getPermanentDescriptiveText();
-            if (descriptiveText != null && descriptiveText.length() > 0)
+            if (descriptiveText != null && !descriptiveText.isEmpty())
                 actionBar.setSubtitle(descriptiveText);
             else
                 actionBar.setSubtitle(source.getName());
@@ -330,14 +330,14 @@ public class ZoneActivity extends AppCompatActivity
 
             String mediaTitle = source.getMediaTitle();
 
-            if (mediaTitle != null && mediaTitle.length() > 0)
+            if (mediaTitle != null && !mediaTitle.isEmpty())
             {
                 String mediaArtist = source.getMediaArtist();
                 String mediaArtwork = source.getMediaArtworkUrl();
 
                 titleTextView.setVisibility(View.VISIBLE);
                 titleTextView.setText(mediaTitle);
-                if (mediaArtist != null && mediaArtist.length() > 0)
+                if (mediaArtist != null && !mediaArtist.isEmpty())
                 {
                     artistTextView.setVisibility(View.VISIBLE);
                     artistTextView.setText(mediaArtist);
@@ -347,7 +347,7 @@ public class ZoneActivity extends AppCompatActivity
                     artistTextView.setVisibility(View.GONE);
                 }
 
-                if (mediaArtwork != null && mediaArtwork.length() > 0)
+                if (mediaArtwork != null && !mediaArtwork.isEmpty())
                 {
                     backgroundArtworkImageView.setImageDrawable(null);
                     backgroundArtworkImageView.setPadding(0,0,0,0);

@@ -400,43 +400,25 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     @Override
     public void connectionInitiated()
     {
-        runOnUiThread(new Runnable()
-        {
-            @SuppressWarnings("ConstantConditions")
-            @Override
-            public void run()
-            {
-                getSupportActionBar().setTitle(serverService.getSavedServerName());
-                setConnectingVisible(true);
-            }
+        runOnUiThread(() -> {
+            getSupportActionBar().setTitle(serverService.getSavedServerName());
+            setConnectingVisible(true);
         });
     }
 
     @Override
     public void connectError()
     {
-        this.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                setConnectingError(true);
-            }
-        });
+        this.runOnUiThread(() -> setConnectingError(true));
     }
 
     @Override
     public void ready()
     {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                setConnectingVisible(false);
-                setConnectingError(false);
-                invalidateOptionsMenu();
-            }
+        runOnUiThread(() -> {
+            setConnectingVisible(false);
+            setConnectingError(false);
+            invalidateOptionsMenu();
         });
     }
 
