@@ -23,7 +23,6 @@ import me.zachcheatham.rnetremote.ZoneActivity;
 import me.zachcheatham.rnetremote.ZoneSettingsActivity;
 import me.zachcheatham.rnetremote.ui.BackgroundImageViewAware;
 import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
-import me.zachcheatham.rnetremote.ui.NoSkipSeekBar;
 import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
@@ -381,7 +380,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         ImageButton power;
         ImageButton sourceSelect;
         ImageButton mute;
-        NoSkipSeekBar seekBar;
+        SeekBar seekBar;
 
         ViewHolder(View itemView)
         {
@@ -418,7 +417,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         {
             if (userSet)
             {
-                int[] id = zoneIndex.get(getAdapterPosition());
+                int[] id = zoneIndex.get(getBindingAdapterPosition());
                 server.getZone(id[0], id[1]).setVolume(progress * 2, false);
             }
         }

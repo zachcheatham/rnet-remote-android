@@ -197,10 +197,10 @@ public class ZoneSettingsActivity extends AppCompatActivity implements View.OnCl
                 if (!turnOnVolumeSlider.isPressed())
                     turnOnVolumeSlider.setProgress(
                             (int) Math.floor(((Integer) zone
-                                    .getParameter(Zone.PARAMETER_TURN_ON_VOLUME)) / 2));
+                                    .getParameter(Zone.PARAMETER_TURN_ON_VOLUME)) / 2d));
                 if (!maxVolumeSlider.isPressed())
                     maxVolumeSlider.setProgress(
-                            (int) Math.floor((zone.getMaxVolume()) / 2));
+                            (int) Math.floor((zone.getMaxVolume()) / 2d));
                 loudnessSwitch.setChecked((Boolean) zone.getParameter(Zone.PARAMETER_LOUDNESS));
                 doNotDisturbSwitch
                         .setChecked((Boolean) zone.getParameter(Zone.PARAMETER_DO_NOT_DISTURB));

@@ -1,11 +1,15 @@
 package me.zachcheatham.rnetremote.ui;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatSeekBar;
+
+import me.zachcheatham.rnetremote.R;
 
 public class NoSkipSeekBar extends AppCompatSeekBar {
 
@@ -20,10 +24,71 @@ public class NoSkipSeekBar extends AppCompatSeekBar {
 
     public NoSkipSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        setClickable(true);
+        setFocusable(true);
     }
 
     public NoSkipSeekBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    private void startDrag(MotionEvent event) {
+        setPressed(true);
+
+        setBackgroundColor(getResources().getColor(R.color.colorMute));
+
+        if (getThumb() != null) {
+            invalidate(getThumb().getBounds());
+        }
+
+        if (mListener != null) {
+            mListener.onStartTrackingTouch(this);
+        }
+
+        startX = event.getX();
+        startProgress = getProgress();
+        claimDrag();
+    }
+
+    private void stopDrag(MotionEvent event) {
+        setPressed(false);
+
+        setBackgroundColor(0);
+
+        if (getThumb() != null) {
+            invalidate(getThumb().getBounds());
+        }
+
+        if (mListener != null) {
+            mListener.onStopTrackingTouch(this);
+        }
+
+        startX = -1;
+        startProgress = -1;
+    }
+
+    private void trackTouchEvent(MotionEvent event) {
+        float x = event.getX();
+        float width = getWidth() - getPaddingLeft() - getPaddingRight();
+        int progressMax = getMax();
+
+        float delta = x - startX;
+        int progressDelta = Math.round(delta * progressMax / width);
+        int newProgress = Math.min(Math.max(0, startProgress + progressDelta), progressMax);
+
+        setProgress(newProgress);
+        if (mListener != null) {
+            mListener.onProgressChanged(this, newProgress, true);
+        }
+
+        setProgress(newProgress);
+    }
+
+    private void claimDrag() {
+        if (getParent() != null) {
+            getParent().requestDisallowInterceptTouchEvent(true);
+        }
     }
 
     @Override
@@ -33,40 +98,29 @@ public class NoSkipSeekBar extends AppCompatSeekBar {
             return false;
         }
 
-        float x = event.getX();
-        float width = getWidth() - getPaddingLeft() - getPaddingRight();
-        int progressMax = getMax();
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                startX = event.getX();
-                startProgress = getProgress();
-
-                getParent().requestDisallowInterceptTouchEvent(true);
-                setPressed(true);
-
-                return true;
+                startDrag(event);
+                break;
             case MotionEvent.ACTION_MOVE:
-                float delta = x - startX;
-                int progressDelta = Math.round(delta * progressMax / width);
-                int newProgress = Math.min(Math.max(0, startProgress + progressDelta), progressMax);
-
-                setProgress(newProgress);
-                if (mListener != null) {
-                    mListener.onProgressChanged(this, newProgress, true);
+                if (startX == -1) {
+                    startDrag(event);
+                }
+                else {
+                    trackTouchEvent(event);
                 }
 
-                return true;
+                break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                startX = -1;
-                startProgress = -1;
-                getParent().requestDisallowInterceptTouchEvent(false);
-                setPressed(false);
-                return true;
+                stopDrag(event);
+                break;
         }
-        return super.onTouchEvent(event);
+
+        return true;
     }
+
+
 
     @Override
     public void setOnSeekBarChangeListener(OnSeekBarChangeListener l) {
