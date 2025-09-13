@@ -122,10 +122,14 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
         zoneAdapter = new ZonesAdapter(this);
 
         zoneList = findViewById(R.id.list_zones);
-        if (config.smallestScreenWidthDp < 600)
+        if (config.smallestScreenWidthDp < 600) {
             zoneList.setLayoutManager(new LinearLayoutManager(this));
-        else
-            zoneList.setLayoutManager(new GridAutofitLayoutManager(this, 350));
+            zoneAdapter.setGridLayout(false);
+        }
+        else {
+            zoneList.setLayoutManager(new GridAutofitLayoutManager(this, 600));
+            zoneAdapter.setGridLayout(true);
+        }
         ((SimpleItemAnimator) Objects.requireNonNull(zoneList.getItemAnimator())).setSupportsChangeAnimations(false);
         zoneList.setAdapter(zoneAdapter);
 
@@ -248,16 +252,11 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
             builder.setMessage(String.format(getString(R.string.proxy_update_available_desc),
                     server.getNewVersion()));
             builder.setPositiveButton(getString(R.string.action_update),
-                    new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
+                    (dialog, which) -> {
+                        if (boundToServerService)
                         {
-                            if (boundToServerService)
-                            {
-                                server.update();
-                                notifyUpdating();
-                            }
+                            server.update();
+                            notifyUpdating();
                         }
                     });
             builder.setNegativeButton(getString(android.R.string.cancel), null);
@@ -457,14 +456,9 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
                 editor.putString("server_name", name);
                 editor.apply();
 
-                runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        //noinspection ConstantConditions
-                        getSupportActionBar().setTitle(name);
-                    }
+                runOnUiThread(() -> {
+                    //noinspection ConstantConditions
+                    getSupportActionBar().setTitle(name);
                 });
             }
         }
@@ -473,22 +467,17 @@ public class MainActivity extends AppCompatActivity implements SelectServerListe
     @Override
     public void disconnected(final boolean unexpected)
     {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
+        runOnUiThread(() -> {
+            if (unexpected)
+                setConnectingError(true);
+            setConnectingVisible(true);
+
+            invalidateOptionsMenu();
+
+            if (serialConnectionSnackbar != null && serialConnectionSnackbar.isShown())
             {
-                if (unexpected)
-                    setConnectingError(true);
-                setConnectingVisible(true);
-
-                invalidateOptionsMenu();
-
-                if (serialConnectionSnackbar != null && serialConnectionSnackbar.isShown())
-                {
-                    serialConnectionSnackbar.dismiss();
-                    serialConnectionSnackbar = null;
-                }
+                serialConnectionSnackbar.dismiss();
+                serialConnectionSnackbar = null;
             }
         });
     }

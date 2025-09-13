@@ -36,8 +36,6 @@ public class NoSkipSeekBar extends AppCompatSeekBar {
     private void startDrag(MotionEvent event) {
         setPressed(true);
 
-        setBackgroundColor(getResources().getColor(R.color.colorMute));
-
         if (getThumb() != null) {
             invalidate(getThumb().getBounds());
         }
@@ -53,8 +51,6 @@ public class NoSkipSeekBar extends AppCompatSeekBar {
 
     private void stopDrag(MotionEvent event) {
         setPressed(false);
-
-        setBackgroundColor(0);
 
         if (getThumb() != null) {
             invalidate(getThumb().getBounds());
@@ -93,7 +89,6 @@ public class NoSkipSeekBar extends AppCompatSeekBar {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         if (!isEnabled()) {
             return false;
         }
@@ -119,8 +114,6 @@ public class NoSkipSeekBar extends AppCompatSeekBar {
 
         return true;
     }
-
-
 
     @Override
     public void setOnSeekBarChangeListener(OnSeekBarChangeListener l) {

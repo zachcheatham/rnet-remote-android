@@ -2,7 +2,6 @@ package me.zachcheatham.rnetremote.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
@@ -10,6 +9,8 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
+
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -22,8 +23,6 @@ import me.zachcheatham.rnetremote.R;
 import me.zachcheatham.rnetremote.ZoneActivity;
 import me.zachcheatham.rnetremote.ZoneSettingsActivity;
 import me.zachcheatham.rnetremote.ui.BackgroundImageViewAware;
-import me.zachcheatham.rnetremote.ui.ItemTouchHelperAdapter;
-import me.zachcheatham.rnetremote.ui.SimpleItemTouchHelperCallback;
 import me.zachcheatham.rnetremotecommon.rnet.RNetServer;
 import me.zachcheatham.rnetremotecommon.rnet.Source;
 import me.zachcheatham.rnetremotecommon.rnet.Zone;
@@ -45,13 +44,13 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     private final SourcesAdapter sourcesAdapter;
     private RecyclerView recyclerView;
     private boolean showArtwork = true;
+    private boolean gridLayout = false;
 
     public ZonesAdapter(Activity a)
     {
         this.activity = a;
         sourcesAdapter = new SourcesAdapter(a);
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(this);
-        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback());
     }
 
     private static boolean zoneIndexContains(List<int[]> index, int controllerId, int zoneId)
@@ -84,6 +83,10 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         }
 
         sourcesAdapter.setServer(server);
+    }
+
+    public void setGridLayout(boolean gridLayout) {
+        this.gridLayout = gridLayout;
     }
 
     public void setShowArtwork(boolean show)
@@ -193,17 +196,6 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             return 0;
         else
             return zoneIndex.size();
-    }
-
-    @Override
-    public void onItemMove(int fromPosition, int toPosition)
-    {
-        int[] i = zoneIndex.get(fromPosition);
-        zoneIndex.remove(fromPosition);
-        zoneIndex.add(toPosition, i);
-
-        notifyItemMoved(fromPosition, toPosition);
-        saveIndex();
     }
 
     private void handleIndex()
@@ -345,29 +337,23 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public void zoneRemoved(final int controllerId, final int zoneId)
     {
-        activity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
+        activity.runOnUiThread(() -> {
+            for (int i = 0; i < zoneIndex.size(); i++)
             {
-                for (int i = 0; i < zoneIndex.size(); i++)
+                if (zoneIndex.get(i)[0] == controllerId &&
+                    zoneIndex.get(i)[1] == zoneId)
                 {
-                    if (zoneIndex.get(i)[0] == controllerId &&
-                        zoneIndex.get(i)[1] == zoneId)
-                    {
-                        zoneIndex.remove(i);
+                    zoneIndex.remove(i);
 
-                        notifyItemRemoved(i);
-                        break;
-                    }
+                    notifyItemRemoved(i);
+                    break;
                 }
             }
         });
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements SeekBar.OnSeekBarChangeListener,
-            View.OnClickListener
-    {
+            View.OnClickListener, View.OnLongClickListener {
         View innerLayout;
         TextView name;
         ImageButton power;
@@ -395,10 +381,12 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             if (header != null)
             {
                 header.setOnClickListener(this);
+                header.setOnLongClickListener(this);
             }
             else
             {
                 name.setOnClickListener(this);
+                name.setOnLongClickListener(this);
             }
 
             ImageButton tuneSettings = itemView.findViewById(R.id.settings);
@@ -458,14 +446,9 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                                           .getString(R.string.dialog_select_source, zone.getName()))
                         .setSingleChoiceItems(sourcesAdapter,
                                 server.getSources().indexOfKey(zone.getSourceId()),
-                                new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i)
-                                    {
-                                        zone.setSourceId(server.getSources().keyAt(i), false);
-                                        dialogInterface.dismiss();
-                                    }
+                                (dialogInterface, i) -> {
+                                    zone.setSourceId(server.getSources().keyAt(i), false);
+                                    dialogInterface.dismiss();
                                 })
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
@@ -474,6 +457,48 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
                 zone.setMute(!zone.getMute(), false);
                 break;
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            itemTouchHelper.startDrag(this);
+            return true;
+        }
+    }
+
+    private class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
+        @Override
+        public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+            if (gridLayout) {
+                return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0);
+            }
+            else {
+                return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
+            }
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+
+            int fromPosition = viewHolder.getAbsoluteAdapterPosition();
+            int toPosition = target.getAbsoluteAdapterPosition();
+
+            int[] i = zoneIndex.get(fromPosition);
+            zoneIndex.remove(fromPosition);
+            zoneIndex.add(toPosition, i);
+
+            notifyItemMoved(fromPosition, toPosition);
+            saveIndex();
+
+            return true;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {}
+
+        @Override
+        public boolean isLongPressDragEnabled() {
+            return false;
         }
     }
 }

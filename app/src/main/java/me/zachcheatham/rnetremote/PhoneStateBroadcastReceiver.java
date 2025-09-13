@@ -20,11 +20,10 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
     public void onReceive(Context context, Intent intent)
     {
         String action = intent.getAction();
-
         if (action == null || !action.equals("android.intent.action.PHONE_STATE")) return;
 
         SharedPreferences settings = context.getSharedPreferences(PREFS, 0);
-        boolean muteOnRing = settings.getBoolean("mute_in_ring", false);
+        boolean muteOnRing = settings.getBoolean("mute_on_ring", false);
         boolean muteOnCall = settings.getBoolean("mute_on_call", false);
         //int muteTime = settings.getInt("mute_fade_time", 0);
         int networkId = settings.getInt("server_network", -1);
