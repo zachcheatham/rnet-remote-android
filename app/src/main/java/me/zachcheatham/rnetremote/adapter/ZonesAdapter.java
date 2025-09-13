@@ -30,8 +30,7 @@ import me.zachcheatham.rnetremotecommon.rnet.Zone;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
-        implements RNetServer.ZonesListener, ItemTouchHelperAdapter
+public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder> implements RNetServer.ZonesListener, RNetServer.SourcesListener
 {
     @SuppressWarnings("unused")
     private static final String LOG_TAG = "ZonesAdapter";
@@ -75,6 +74,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
         if (server != null)
         {
             server.addZonesListener(this);
+            server.addSourcesListener(this);
             if (server.isReady())
             {
                 handleIndex();
@@ -285,6 +285,38 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
 
         return -1;
     }
+
+    @Override
+    public void sourceAdded(Source source) {}
+
+    @Override
+    public void sourceChanged(Source source, boolean setRemotely, RNetServer.SourceChangeType type) {
+        // Notify artwork changed
+        if (type == RNetServer.SourceChangeType.METADATA && showArtwork) {
+            ArrayList<Integer> itemsChanged = new ArrayList<>();
+            for (int i = 0; i < zoneIndex.size(); i++) {
+                int[] zoneId = zoneIndex.get(i);
+                Zone zone = server.getZone(zoneId[0], zoneId[1]);
+                if (zone.getSourceId() == source.getId()) {
+                    itemsChanged.add(i);
+                }
+            }
+
+            if (!itemsChanged.isEmpty()) {
+                activity.runOnUiThread(() -> {
+                    for (int i : itemsChanged) {
+                        notifyItemChanged(i);
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void descriptiveText(Source source, String text, int length) {}
+
+    @Override
+    public void sourceRemoved(int sourceId) {}
 
     @Override
     public void cleared()
