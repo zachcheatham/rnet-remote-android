@@ -79,7 +79,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
             if (server.isReady())
             {
                 handleIndex();
-                activity.runOnUiThread(() -> notifyDataSetChanged());
+                activity.runOnUiThread(this::notifyDataSetChanged);
             }
         }
 
@@ -297,14 +297,7 @@ public class ZonesAdapter extends RecyclerView.Adapter<ZonesAdapter.ViewHolder>
     @Override
     public void cleared()
     {
-        activity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                notifyDataSetChanged();
-            }
-        });
+        activity.runOnUiThread(this::notifyDataSetChanged);
     }
 
     @Override

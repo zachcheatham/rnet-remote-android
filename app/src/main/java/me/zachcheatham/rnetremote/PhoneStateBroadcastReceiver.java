@@ -4,15 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.telephony.TelephonyManager;
 
-import android.util.Log;
-import me.zachcheatham.rnetremote.service.ActionService;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
+import me.zachcheatham.rnetremotecommon.rnet.RNetServerWorker;
 
 public class PhoneStateBroadcastReceiver extends BroadcastReceiver
 {
@@ -22,102 +20,55 @@ public class PhoneStateBroadcastReceiver extends BroadcastReceiver
     public void onReceive(Context context, Intent intent)
     {
         String action = intent.getAction();
-        if (action != null && action.equals("android.intent.action.PHONE_STATE"))
-        {
-            Intent serviceIntent = null;
 
-            SharedPreferences settings = context.getSharedPreferences(PREFS, 0);
+        if (action == null || !action.equals("android.intent.action.PHONE_STATE")) return;
 
-            int networkId = settings.getInt("server_network", -1);
-            boolean muteOnRing = settings.getBoolean("mute_on_ring", false);
-            boolean muteOnCall = settings.getBoolean("mute_on_call", false);
-            //int muteTime = settings.getInt("mute_fade_time", 0);
+        SharedPreferences settings = context.getSharedPreferences(PREFS, 0);
+        boolean muteOnRing = settings.getBoolean("mute_in_ring", false);
+        boolean muteOnCall = settings.getBoolean("mute_on_call", false);
+        //int muteTime = settings.getInt("mute_fade_time", 0);
+        int networkId = settings.getInt("server_network", -1);
+        String serverHost = settings.getString("server_address", "");
+        int serverPort = settings.getInt("server_port", 0);
 
-            String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-            if (state.equals(TelephonyManager.EXTRA_STATE_RINGING))
-            {
-                if (muteOnRing && onNetwork(context, networkId))
-                {
-                    serviceIntent = new Intent(context, ActionService.class);
-                    serviceIntent.setAction("me.zachcheatham.rnetremote.action.MUTE");
-                    serviceIntent.putExtra(ActionService.EXTRA_MUTED, true);
-                }
-            }
-            else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK))
-            {
-                if (muteOnCall)
-                {
-                    if (onNetwork(context, networkId))
-                    {
-                        serviceIntent = new Intent(context, ActionService.class);
-                        serviceIntent.setAction("me.zachcheatham.rnetremote.action.MUTE");
-                        serviceIntent.putExtra(ActionService.EXTRA_MUTED, true);
-                        serviceIntent.putExtra(ActionService.EXTRA_MUTE_TIME, (short) 1000);
-                    }
-                }
-                else if (muteOnRing && onNetwork(context, networkId))
-                {
-                    serviceIntent = new Intent(context, ActionService.class);
-                    serviceIntent.setAction("me.zachcheatham.rnetremote.action.MUTE");
-                    serviceIntent.putExtra(ActionService.EXTRA_MUTED, false);
-                    serviceIntent.putExtra(ActionService.EXTRA_MUTE_TIME, (short) 1000);
-                }
-            }
-            else if ((muteOnCall || muteOnRing) && onNetwork(context, networkId))
-            {
-                serviceIntent = new Intent(context, ActionService.class);
-                serviceIntent.setAction("me.zachcheatham.rnetremote.action.MUTE");
-                serviceIntent.putExtra(ActionService.EXTRA_MUTED, false);
-                serviceIntent.putExtra(ActionService.EXTRA_MUTE_TIME, (short) 1000);
-            }
+        String phoneState = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+        Data.Builder workerDataBuilder = null;
 
-            if (serviceIntent != null)
-            {
-                //serviceIntent.putExtra(ActionService.EXTRA_MUTE_TIME, muteTime);
-                serviceIntent.putExtra(ActionService.EXTRA_SILENT, true);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                {
-                    serviceIntent.putExtra(ActionService.EXTRA_FOREGROUND, true);
-                    context.startForegroundService(serviceIntent);
-                }
-                else
-                    context.startService(serviceIntent);
+        if (phoneState.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+            if (muteOnRing) {
+                workerDataBuilder = new Data.Builder();
+                workerDataBuilder.putBoolean(RNetServerWorker.KEY_MUTED, true);
             }
         }
-    }
-
-    private boolean onNetwork(Context context, int targetNetwork)
-    {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null)
-        {
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
-            if (    networkInfo != null &&
-                    networkInfo.isConnected() && (
-                    networkInfo.getType() == ConnectivityManager.TYPE_WIFI ||
-                    networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET))
-            {
-                if (networkInfo.getType() == ConnectivityManager.TYPE_ETHERNET ||
-                    targetNetwork == -1)
-                {
-                    return true;
-                }
-                else
-                {
-                    WifiManager wifiManager = (WifiManager) context.getApplicationContext()
-                                                                   .getSystemService(
-                                                                           Context.WIFI_SERVICE);
-                    if (wifiManager != null)
-                    {
-                        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                        return (wifiInfo != null && targetNetwork == wifiInfo.getNetworkId());
-                    }
-                }
+        else if (phoneState.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+            if (muteOnCall) {
+                workerDataBuilder = new Data.Builder();
+                workerDataBuilder.putBoolean(RNetServerWorker.KEY_MUTED, true);
+            }
+            else if (muteOnRing) {
+                workerDataBuilder = new Data.Builder();
+                workerDataBuilder.putBoolean(RNetServerWorker.KEY_MUTED, false);
+            }
+        }
+        else if (phoneState.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            if (muteOnCall || muteOnRing) {
+                workerDataBuilder = new Data.Builder();
+                workerDataBuilder.putBoolean(RNetServerWorker.KEY_MUTED, false);
             }
         }
 
-        return false;
+        if (workerDataBuilder != null) {
+            workerDataBuilder.putString(RNetServerWorker.KEY_ACTION, RNetServerWorker.ACTION_MUTE);
+            workerDataBuilder.putInt(RNetServerWorker.KEY_TARGET_NETWORK, networkId);
+            workerDataBuilder.putInt(RNetServerWorker.KEY_MUTE_TIME, 1000);
+            workerDataBuilder.putString(RNetServerWorker.KEY_HOST, serverHost);
+            workerDataBuilder.putInt(RNetServerWorker.KEY_PORT, serverPort);
+
+            OneTimeWorkRequest muteWorkRequest = new OneTimeWorkRequest.Builder(RNetServerWorker.class)
+                    .setInputData(workerDataBuilder.build())
+                    .build();
+
+            WorkManager.getInstance(context).enqueue(muteWorkRequest);
+        }
     }
 }

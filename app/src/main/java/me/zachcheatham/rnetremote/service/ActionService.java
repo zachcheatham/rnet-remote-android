@@ -51,35 +51,35 @@ public class ActionService extends IntentService implements RNetServer.Connectiv
     protected void onHandleIntent(@Nullable final Intent intent)
     {
         assert intent != null;
-        if (intent.getBooleanExtra(EXTRA_FOREGROUND, false) &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            foreground = true;
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(
-                    Context.NOTIFICATION_SERVICE);
-            assert notificationManager != null;
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ACTIVITY,
-                    getString(R.string.notification_channel_activity),
-                    NotificationManager.IMPORTANCE_LOW);
-            channel.setDescription(getString(R.string.notification_channel_activity_desc));
-            notificationManager.createNotificationChannel(channel);
-
-            Notification notification = new NotificationCompat.Builder(this,
-                    NOTIFICATION_CHANNEL_ACTIVITY)
-                    .setSmallIcon(R.drawable.ic_app_24)
-                    .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
-                    .setContentTitle(getString(R.string.notification_sending_command))
-                    .build();
-
-            startForeground(NOTIFICATION_ID, notification);
-        }
+//        if (intent.getBooleanExtra(EXTRA_FOREGROUND, false) &&
+//            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+//        {
+//            foreground = true;
+//
+//            NotificationManager notificationManager = (NotificationManager) getSystemService(
+//                    Context.NOTIFICATION_SERVICE);
+//            assert notificationManager != null;
+//            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ACTIVITY,
+//                    getString(R.string.notification_channel_activity),
+//                    NotificationManager.IMPORTANCE_LOW);
+//            channel.setDescription(getString(R.string.notification_channel_activity_desc));
+//            notificationManager.createNotificationChannel(channel);
+//
+//            Notification notification = new NotificationCompat.Builder(this,
+//                    NOTIFICATION_CHANNEL_ACTIVITY)
+//                    .setSmallIcon(R.drawable.ic_app_24)
+//                    .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
+//                    .setContentTitle(getString(R.string.notification_sending_command))
+//                    .build();
+//
+//            startForeground(NOTIFICATION_ID, notification);
+//        }
 
         server = new RNetServer(RNetServer.INTENT_ACTION);
 
         SharedPreferences settings = getSharedPreferences(PREFS, 0);
         String addressString = settings.getString("server_address", "");
-        if (addressString.length() > 0)
+        if (!addressString.isEmpty())
         {
             int port = settings.getInt("server_port", 0);
             try
